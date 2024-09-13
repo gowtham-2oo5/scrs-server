@@ -1,0 +1,33 @@
+# ROOT LOCATION
+.metadata
+Servers
+About.pdf
+DB_Schema.sql
+ImplementationPlan.md
+ImplementationPlan.pdf
+ScreensImplementationPlan.md
+ScreensImplementationPlan.pdf
+
+
+# CLIENT FOLDER
+
+scrs-client/npm-debug.log*
+scrs-client/yarn-debug.log*
+scrs-client/yarn-error.log*
+scrs-client/pnpm-debug.log*
+scrs-client/lerna-debug.log*
+
+scrs-client/node_modules
+scrs-client/dist
+scrs-client/dist-ssr
+scrs-client/*.local
+scrs-client/# Editor directories and files
+scrs-client/.vscode/*
+scrs-client/!.vscode/extensions.json
+scrs-client/.idea
+scrs-client/.DS_Store
+scrs-client/*.suo
+scrs-client/*.ntvs*
+scrs-client/*.njsproj
+scrs-client/*.sln
+scrs-client/*.sw?
