@@ -11,20 +11,20 @@ import com.scrs.repository.UserRepo;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepo userRepo;
+	@Autowired
+	private UserRepo userRepo;
 
-    @Override
-    public void addUser(UserModel user) {
-        userRepo.save(user);
-        System.out.println("User added successfully");
-    }
+	@Override
+	public void addUser(UserModel user) {
+		userRepo.save(user);
+		System.out.println("User added successfully");
+	}
 
-    @Override
-    public List<UserModel> getAllStudents() {
-        List<UserModel> users = userRepo.findAll();
-        System.out.println("Fetched Data: ");
-        users.forEach((s) -> System.out.println(s.toString()));
-        return users;
-    }
+	@Override
+	public List<UserModel> getAllStudents() {
+		List<UserModel> users = userRepo.findAll();
+		System.out.println("Fetched Data: ");
+		users.forEach(user -> System.out.println(user)); // Ensure this prints data
+		return users;
+	}
 }

@@ -14,8 +14,8 @@ import com.scrs.model.UserModel;
 import com.scrs.service.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/user")
-@CrossOrigin
 public class UserController {
 
 	@Autowired
@@ -26,9 +26,9 @@ public class UserController {
 		userService.addUser(user);
 		return "User added";
 	}
-	
+
 	@GetMapping("/get-all")
-	public List<UserModel> getUsers(){
+	public List<UserModel> getUsers() {
 		return userService.getAllStudents();
 	}
 
