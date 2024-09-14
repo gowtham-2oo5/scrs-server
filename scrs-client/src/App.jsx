@@ -1,30 +1,47 @@
-import useFetchUsers from "./hooks/useFetchUsers"; // Adjust the path as needed
+import useFetchUsers from "./hooks/useFetchUsers";
+import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 
 const App = () => {
-  // Use the custom hook to fetch users
   const { users, loading, error } = useFetchUsers();
 
-  // Render loading state
-  if (loading) return <h2>Loading...</h2>;
+  if (loading)
+    return (
+      <Typography variant="h2" color="blue" className="font-bold">
+        Loading...
+      </Typography>
+    );
+  if (error)
+    return (
+      <Typography variant="h2" color="red" className="font-bold">
+        Error: {error}
+      </Typography>
+    );
 
-  // Render error state
-  if (error) return <h2>Error: {error}</h2>;
-
-  // Render the user list
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <h1>Users List</h1>
-      {users.length === 0 ? (
-        <p>No users found</p>
-      ) : (
-        <ul>
-          {users.map((user, index) => (
-            <li key={user.id || index}>{user.username}</li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Card className="w-96 mx-auto mt-10">
+      <CardBody>
+        <Typography variant="h1" color="blue-gray" className="mb-4">
+          Hello world!
+        </Typography>
+        <Button color="blue" ripple={true} className="mb-4">
+          Material Tailwind Button
+        </Button>
+        <Typography variant="h2" color="blue-gray" className="mb-2">
+          Users List
+        </Typography>
+        {users.length === 0 ? (
+          <Typography color="gray">No users found</Typography>
+        ) : (
+          <ul className="list-disc pl-5">
+            {users.map((user, index) => (
+              <li key={user.id || index} className="text-indigo-600">
+                <Typography>{user.username}</Typography>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 
