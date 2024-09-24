@@ -4,19 +4,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "scrs_users")
-public class UserModel {
+public abstract class UserModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	private String username;
+	private String name;
+	private String email;
 	private String password;
-	private String user_role;
+
+	@Enumerated(EnumType.STRING)
+	private UserRole userRole;
 
 	public int getId() {
 		return id;
@@ -26,12 +34,20 @@ public class UserModel {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getName() {
+		return name;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
@@ -42,18 +58,17 @@ public class UserModel {
 		this.password = password;
 	}
 
-	public String getUser_role() {
-		return user_role;
+	public UserRole getUserRole() {
+		return userRole;
 	}
 
-	public void setUser_role(String user_role) {
-		this.user_role = user_role;
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
 	}
 
 	@Override
 	public String toString() {
-		return "UserModel [id=" + id + ", username=" + username + ", password=" + password + ", user_role=" + user_role
-				+ "]";
+		return "UserModel [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", userRole="
+				+ userRole + "]";
 	}
-
 }

@@ -5,26 +5,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.scrs.dao.UserDAO;
 import com.scrs.model.UserModel;
-import com.scrs.repository.UserRepo;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	private UserRepo userRepo;
+	private UserDAO userDAO;
 
 	@Override
 	public void addUser(UserModel user) {
-		userRepo.save(user);
-		System.out.println("User added successfully");
+		userDAO.addUser(user);
 	}
 
 	@Override
-	public List<UserModel> getAllStudents() {
-		List<UserModel> users = userRepo.findAll();
-		System.out.println("Fetched Data: ");
-		users.forEach(user -> System.out.println(user)); // Ensure this prints data
-		return users;
+	public List<UserModel> getAllUsers() {
+		return userDAO.getAllUsers();
 	}
 }

@@ -1,0 +1,59 @@
+package com.scrs.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "faculty")
+public class FacultyModel extends UserModel {
+
+	private String empId;
+	private String department;
+	private String joinedAt;
+	private int experience;
+
+	@Column(name = "instructing_course")
+	private String instructingCourse;
+
+	public String getEmpId() {
+		return empId;
+	}
+
+	public void setEmpId(String empId) {
+		this.empId = empId;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getJoinedAt() {
+		return joinedAt;
+	}
+
+	public void setJoinedAt(String joinedAt) {
+		this.joinedAt = joinedAt;
+	}
+
+	public int getExperience() {
+		return experience;
+	}
+
+	public void setExperience(int experience) {
+		this.experience = experience;
+	}
+
+	public String getInstructingCourse() {
+		return instructingCourse;
+	}
+
+	public void setInstructingCourse(String instructingCourse) {
+		this.instructingCourse = instructingCourse;
+	}
+
+}
