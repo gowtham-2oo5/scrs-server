@@ -20,8 +20,13 @@ const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
-    path: "admin-dashboard",
-    element: <AdminDashboard />
+    path: "admin",
+    children: [
+      {
+        path: "",
+        element: <AdminDashboard />
+      }
+    ]
   }
 ]);
 

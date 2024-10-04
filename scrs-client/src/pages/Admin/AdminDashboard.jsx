@@ -10,30 +10,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
+
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
     BookOpen,
     Calendar,
-    ChevronRight,
     ClipboardList,
-    FileText,
     GraduationCap,
     HelpCircle,
     LogOut,
     Menu,
-    Settings,
     Users,
     AlertCircle,
     Bell,
     User
 } from "lucide-react"
-
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
 import {
     BarChart,
     Bar,
@@ -44,13 +40,22 @@ import {
     ResponsiveContainer,
 } from "recharts"
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import Sidebar from "@/components/Sidebar"
+
 // Sample data for charts and tables
 const enrollmentData = [
-    { name: "Computer Science", students: 120 },
-    { name: "Engineering", students: 98 },
-    { name: "Business", students: 110 },
-    { name: "Arts", students: 85 },
-    { name: "Medicine", students: 75 },
+    { name: "CSE", students: 120 },
+    { name: "ECE", students: 98 },
+    { name: "EEE", students: 110 },
+    { name: "Civil", students: 85 },
+    { name: "Mechanical", students: 75 },
 ]
 
 const recentActivities = [
@@ -91,62 +96,14 @@ const sidebarItems = [
 
 const singleItems = [
     { icon: Bell, label: "Notifications" },
-    { icon: FileText, label: "Reports" },
-    { icon: User, label: "Profile" },
-    { icon: Settings, label: "Settings" },
+    //{ icon: FileText, label: "Reports" },
+    // { icon: User, label: "Profile" },
+    //  { icon: Settings, label: "Settings" },
     { icon: HelpCircle, label: "Help & Support" },
-    { icon: LogOut, label: "Log Out" },
+    //{ icon: LogOut, label: "Log Out" },
 ]
 
-const Sidebar = ({ className }) => (
-    <Card className={`h-full rounded-none border-r ${className}`}>
-        <CardHeader>
-            <CardTitle>Admin Dashboard</CardTitle>
-        </CardHeader>
-        <ScrollArea className="h-[calc(100vh-5rem)]">
-            <CardContent>
-                <Accordion type="multiple" className="w-full">
-                    {sidebarItems.map((item, index) => (
-                        <AccordionItem value={`item-${index}`} key={index}>
-                            <AccordionTrigger>
-                                <div className="flex items-center gap-2">
-                                    {React.createElement(item.icon, { className: "h-4 w-4" })}
-                                    {item.label}
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <div className="flex flex-col space-y-2 pl-6">
-                                    {item.items.map((subItem, subIndex) => (
-                                        <Button
-                                            key={subIndex}
-                                            variant="ghost"
-                                            className="justify-start gap-2"
-                                        >
-                                            <ChevronRight className="h-4 w-4" />
-                                            {subItem}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-                <div className="mt-4 space-y-2">
-                    {singleItems.map((item, index) => (
-                        <Button
-                            key={index}
-                            variant="ghost"
-                            className="w-full justify-start gap-2"
-                        >
-                            {React.createElement(item.icon, { className: "h-4 w-4" })}
-                            {item.label}
-                        </Button>
-                    ))}
-                </div>
-            </CardContent>
-        </ScrollArea>
-    </Card>
-)
+const activeUserProfile = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=626&ext=jpg&ga=GA1.1.454232400.1727809163&semt=ais_hybrid";
 
 export default function AdminDashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -154,13 +111,33 @@ export default function AdminDashboard() {
     return (
         <div className="flex h-screen bg-background">
             {/* Sidebar for larger screens */}
-            <Sidebar className="hidden lg:block w-64" />
+            <Sidebar className="hidden lg:block lg:w-64 w-[16rem]" sidebarItems={sidebarItems} singleItems={singleItems} />
 
             {/* Main content */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
                 <header className="flex items-center justify-between px-6 py-4 border-b">
                     <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+                    <div className="self-end hidden lg:block">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Avatar className="cursor-pointer">
+                                    <AvatarImage src={activeUserProfile} alt="@shadcn" />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem>
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>Manage Profile</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Logout</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                     <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
                         <SheetTrigger asChild>
                             <Button variant="outline" size="icon" className="lg:hidden">
@@ -168,7 +145,7 @@ export default function AdminDashboard() {
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="p-0 w-64">
-                            <Sidebar />
+                            <Sidebar sidebarItems={sidebarItems} singleItems={singleItems} />
                         </SheetContent>
                     </Sheet>
                 </header>
@@ -272,9 +249,10 @@ export default function AdminDashboard() {
                                 </CardHeader>
                                 <CardContent className="space-y-2">
                                     <Button className="w-full">Add New Student</Button>
+                                    <Button className="w-full">Add New Faculty</Button>
                                     <Button className="w-full">Create Course</Button>
                                     <Button className="w-full">Manage Schedule</Button>
-                                    <Button className="w-full">Generate Reports</Button>
+                                    <Button className="w-full">Manage Notifications</Button>
                                 </CardContent>
                             </Card>
 

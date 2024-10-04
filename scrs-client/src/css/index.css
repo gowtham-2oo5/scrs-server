@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 *{
-  font-family: "Montserrat", sans-serif;;
+  font-family: "Montserrat", sans-serif;
 }
 @layer base {
   :root {
