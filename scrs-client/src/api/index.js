@@ -16,3 +16,16 @@ export const loginUser = async (credentials) => {
     throw error.response ? error.response.data : error; // Handle and rethrow errors
   }
 };
+
+export const createAdmin = async (formData) => {
+  try {
+    const response = await axios.post(`${backendUrl}/admin/create`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data; // Return the response data
+  } catch (error) {
+    throw error.response ? error.response.data : error; // Handle and rethrow errors
+  }
+};

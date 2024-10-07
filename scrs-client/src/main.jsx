@@ -9,6 +9,7 @@ import "./css/index.css";
 import { ThemeProvider } from "./utils/ThemeProvider.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
+import CreateNewAdmin from "./pages/Admin/CreateNewAdmin.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,11 +21,15 @@ const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
-    path: "admin",
+    path: "/admin",
     children: [
       {
         path: "",
         element: <AdminDashboard />
+      },
+      {
+        path: "create",
+        element: <CreateNewAdmin />
       }
     ]
   }

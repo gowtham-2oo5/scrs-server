@@ -7,7 +7,6 @@ import useLoginForm from '../hooks/useLoginForm'; // Correct for default export
 import l1 from '../assets/humanPointing.png'
 import l2 from '../assets/womanPointingAtSomething.png';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import PropTypes from 'prop-types';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
