@@ -23,7 +23,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
 	// @Autowired
 	// private JavaMailSender mailSender;
 
@@ -53,36 +52,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String authenticate(String username, String password) {
-	    this.username = username;
-	    UserModel user = userRepo.findByUsername(username);
-	    
-	    // Check if user exists
-	    if (user != null) {
-	        // Validate password
-	        if (passwordEncoder.matches(password, user.getPassword())) {
-	            sendOtp(user.getEmail());
-	            // Mask email before returning the success message
-	            String maskedEmail = maskEmail(user.getEmail());
-	            return "OTP has been sent to your email: " + maskedEmail;
-	        } else {
-	            return "Invalid Credentials";
-	        }
-	    } else {
-	        return "User doesn't exist";
-	    }
+		this.username = username;
+		UserModel user = userRepo.findByUsername(username);
+
+		if (user != null) {
+			if (passwordEncoder.matches(password, user.getPassword())) {
+				sendOtp(user.getEmail());
+				String maskedEmail = maskEmail(user.getEmail());
+				return "OTP has been sent to your email: " + maskedEmail;
+			} else {
+				return "Invalid Credentials";
+			}
+		} else {
+			return "User doesn't exist";
+		}
 	}
 
 	// Method to mask the email
 	public String maskEmail(String email) {
-	    int atSymbolIndex = email.indexOf('@');
-	    if (atSymbolIndex <= 2) {
-	        // If email is too short to mask properly, return as is
-	        return email;
-	    }
-	    // Show first 2 characters and last 2 characters before @domain
-	    return email.substring(0, 2) + "****" + email.substring(atSymbolIndex - 2);
+		int atSymbolIndex = email.indexOf('@');
+		if (atSymbolIndex <= 2) {
+			// If email is too short to mask properly, return as is
+			return email;
+		}
+		// Show first 2 characters and last 2 characters before @domain
+		return email.substring(0, 2) + "****" + email.substring(atSymbolIndex - 2);
 	}
-
 
 	public void sendOtp(String mail) {
 		SecureRandom secureRandom = new SecureRandom();

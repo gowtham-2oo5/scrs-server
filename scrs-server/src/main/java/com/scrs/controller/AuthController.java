@@ -33,21 +33,25 @@ public class AuthController {
 		String msg = userService.authenticate(loginInfo.getUsername(), loginInfo.getPassword());
 
 		if (msg.startsWith("OTP has been sent")) {
-			// If credentials are valid and OTP is sent
+
 			return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
+
 		} else if (msg.equalsIgnoreCase("Invalid Credentials")) {
-			// If credentials are invalid
+
 			return new ResponseEntity<String>(msg, HttpStatus.UNAUTHORIZED);
+
 		} else if (msg.equalsIgnoreCase("User doesn't exist")) {
-			// If the user is not found
+
 			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
+
 		} else {
-			// Fallback in case of any unexpected message
+
 			return new ResponseEntity<String>("An error occurred", HttpStatus.BAD_REQUEST);
+
 		}
 	}
 
-	@PostMapping("otp")
+	@PostMapping("verify-otp")
 	public ResponseEntity<String> verifyOtp(@RequestBody OtpDTO otp) {
 		UserModel user = userService.verifyOtp(otp.getOtp());
 		if (user != null) {

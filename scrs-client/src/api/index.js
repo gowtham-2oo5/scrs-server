@@ -42,3 +42,15 @@ export const createAdmin = async (formData) => {
     throw error.response ? error.response.data : error; // Handle and rethrow errors
   }
 };
+
+export const verifyGivenOtp = async (otp) => {
+  try {
+    const response = await axios.post(`${backendUrl}/auth/verify-otp`, { otp });
+    return {
+      data: response.data,
+      status: response.status,
+    };
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "OTP verification failed");
+  }
+};

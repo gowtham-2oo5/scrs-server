@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import useLoginForm from '../hooks/useLoginForm';
 import l1 from '../assets/humanPointing.png';
 import l2 from '../assets/womanPointingAtSomething.png';
+import OTPModal from '@/components/OtpModal';
 
 const schema = z.object({
     username: z.string().min(3, "Username must be at least 3 characters long"),
@@ -22,6 +23,9 @@ const schema = z.object({
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [generalError, setGeneralError] = useState(null);
+    const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+    const [otpMessage, setOtpMessage] = useState("");
+
     const { handleLoginForm } = useLoginForm();
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -47,6 +51,9 @@ const LoginPage = () => {
                     setGeneralError('An unexpected error occurred. Please try again.');
                 }
             } else {
+                setIsOtpModalOpen(!isOtpModalOpen);
+                console.log(`Otp Modal status: ${isOtpModalOpen}`)
+                setOtpMessage(response.data);
                 // Handle 202 status code (success case) in your own logic
                 console.log('OTP sent successfully, handle this in your UI logic.');
             }
@@ -145,6 +152,11 @@ const LoginPage = () => {
                         />
                     </div>
                 </div>
+                <OTPModal
+                    isOpen={isOtpModalOpen}
+                    onClose={() => setIsOtpModalOpen(!isOtpModalOpen)}
+                    message={otpMessage}
+                />
             </main>
             <footer className="p-4 text-center text-gray-600">
                 <div className="flex justify-center">
