@@ -11,12 +11,10 @@ public class App {
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
 
-		// Just displaying the link
 		String url = "http://localhost:8080/swagger-ui/index.html";
 		String clickableUrl = "\u001B[1;36m" + url + "\u001B[0m";
 		System.out.println("Swagger UI: " + clickableUrl);
 
-		// Launch automatically
 		// openBrowser(url);
 	}
 

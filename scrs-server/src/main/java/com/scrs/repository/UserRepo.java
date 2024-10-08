@@ -7,4 +7,5 @@ import com.scrs.model.UserModel;
 @Repository
 public interface UserRepo extends JpaRepository<UserModel, Integer> {
     // No need to implement anything, Spring Data JPA will provide the implementation.
+    UserModel findByUsername(String username);
 }

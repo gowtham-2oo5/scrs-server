@@ -1,11 +1,13 @@
 package com.scrs.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "faculty")
+@DiscriminatorValue("fac")
 public class FacultyModel extends UserModel {
 
 	private String empId;

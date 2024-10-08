@@ -1,15 +1,19 @@
 package com.scrs.model;
 
+import java.sql.Date;
+
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "student_users")
+@Table(name = "students")
+@DiscriminatorValue("stud")
 public class StudentModel extends UserModel {
 
 	private String regNum;
 	private String specialization;
-	private String joinedAt;
+	private Date joinedAt;
 	private int year;
 	private int semester;
 
@@ -29,11 +33,11 @@ public class StudentModel extends UserModel {
 		this.specialization = specialization;
 	}
 
-	public String getJoinedAt() {
+	public Date getJoinedAt() {
 		return joinedAt;
 	}
 
-	public void setJoinedAt(String joinedAt) {
+	public void setJoinedAt(Date joinedAt) {
 		this.joinedAt = joinedAt;
 	}
 

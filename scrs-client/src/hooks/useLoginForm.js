@@ -11,8 +11,8 @@ const useLoginForm = () => {
     setError(null);
 
     try {
-      //const data = await loginUser(formData); // Call the API function
-      const data = {formData}
+      const data = await loginUser(formData); // Call the API function
+      //const data = {formData}
       return data; // Return the API response data
     } catch (err) {
       setError(err.message); // Set the error state

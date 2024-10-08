@@ -11,9 +11,19 @@ export default async function getUsers() {
 export const loginUser = async (credentials) => {
   try {
     const response = await axios.post(`${backendUrl}/auth/login`, credentials);
-    return response.data; // Return the response data
+    return {
+      data: response.data,
+      status: response.status,
+    };
   } catch (error) {
-    throw error.response ? error.response.data : error; // Handle and rethrow errors
+    if (error.response) {
+      return {
+        data: error.response.data,
+        status: error.response.status,
+      };
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -24,7 +34,10 @@ export const createAdmin = async (formData) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    return response.data; // Return the response data
+    return {
+      data: response.data,
+      status: response.status,
+    }; // Return the response data
   } catch (error) {
     throw error.response ? error.response.data : error; // Handle and rethrow errors
   }
