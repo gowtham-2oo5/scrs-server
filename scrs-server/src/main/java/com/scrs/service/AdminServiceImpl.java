@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.scrs.dto.AdminDTO;
+import com.scrs.dto.AdminRegsDTO;
 import com.scrs.model.AdminModel;
 import com.scrs.repository.AdminRepo;
 
@@ -23,7 +23,7 @@ public class AdminServiceImpl implements AdminService {
 	private static final long MAX_SIZE = 5 * 1024 * 1024;
 
 	@Override
-	public AdminModel createAdmin(AdminDTO adminDTO, MultipartFile profilePicture) throws IOException {
+	public AdminModel createAdmin(AdminRegsDTO adminDTO, MultipartFile profilePicture) throws IOException {
 		// Encrypt the password using BCryptPasswordEncoder
 		String encryptedPassword = passwordEncoder.encode(adminDTO.getPassword());
 

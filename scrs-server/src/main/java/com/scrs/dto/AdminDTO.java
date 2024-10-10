@@ -1,18 +1,33 @@
 package com.scrs.dto;
 
-import java.util.Arrays;
+import java.util.Base64;
+
+import com.scrs.model.UserModel;
+import com.scrs.model.UserRole;
 
 public class AdminDTO {
 
+	private int id;
 	private String name;
+	private String profilePicture;
+	private boolean isSuperAdmin;
+	private UserRole role;
 
-	private String username;
+	public AdminDTO(UserModel user, boolean superAdmin) {
+		this.id = user.getId();
+		this.name = user.getName();
+		this.profilePicture = Base64.getEncoder().encodeToString(user.getProfilePicture());
+		this.role = user.getUserRole();
+		this.isSuperAdmin = superAdmin;
+	}
 
-	private String email;
-	private String password;
-	private String contact;
+	public int getId() {
+		return id;
+	}
 
-	private byte[] profilePicture;
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
@@ -22,50 +37,34 @@ public class AdminDTO {
 		this.name = name;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getContact() {
-		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
-	}
-
-	public byte[] getProfilePicture() {
+	public String getProfilePicture() {
 		return profilePicture;
 	}
 
-	public void setProfilePicture(byte[] profilePicture) {
+	public void setProfilePicture(String profilePicture) {
 		this.profilePicture = profilePicture;
+	}
+
+	public boolean isSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setSuperAdmin(boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public UserRole getRole() {
+		return role;
+	}
+
+	public void setRole(UserRole role) {
+		this.role = role;
 	}
 
 	@Override
 	public String toString() {
-		return "AdminDTO [ name=" + name + ", username=" + username + ", email=" + email + ", password="
-				+ password + ", contact=" + contact + ", profilePicture=" + Arrays.toString(profilePicture) + "]";
+		return "Sending this Admin DATA: [id=" + id + ", name=" + name + ", profilePicture=" + profilePicture
+				+ ", isSuperAdmin=" + isSuperAdmin + ", role=" + role + "]";
 	}
 
 }

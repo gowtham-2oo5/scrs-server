@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scrs.dto.AdminDTO;
+import com.scrs.dto.AdminRegsDTO;
 import com.scrs.model.AdminModel;
 import com.scrs.service.AdminService;
 
@@ -35,7 +35,7 @@ public class AdminController {
 			@RequestPart("adminDetails") String adminDetailsJson) throws JsonProcessingException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		AdminDTO adminDetails = objectMapper.readValue(adminDetailsJson, AdminDTO.class);
+		AdminRegsDTO adminDetails = objectMapper.readValue(adminDetailsJson, AdminRegsDTO.class);
 
 		System.out.println("Admin details: " + adminDetails);
 		System.out.println("Profile picture: " + profilePicture.getOriginalFilename());

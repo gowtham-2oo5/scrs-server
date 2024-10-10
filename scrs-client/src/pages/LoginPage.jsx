@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 import useLoginForm from '../hooks/useLoginForm';
 import l1 from '../assets/humanPointing.png';
 import l2 from '../assets/womanPointingAtSomething.png';
@@ -20,13 +21,14 @@ const schema = z.object({
     )
 });
 
-const LoginPage = () => {
+export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [generalError, setGeneralError] = useState(null);
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
     const [otpMessage, setOtpMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
 
-    const { handleLoginForm } = useLoginForm();
+    const { handleLoginForm, error } = useLoginForm();
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(schema)
@@ -38,11 +40,13 @@ const LoginPage = () => {
 
     const onSubmit = async (data) => {
         setGeneralError(null);
+        setIsLoading(true); // Start loading
+
         try {
             const response = await handleLoginForm(data);
 
             if (response.status !== 202) {
-                // Handle errors for status codes other than 202
+                setIsLoading(false); // Stop loading on error
                 if (response.status === 401) {
                     setGeneralError('Invalid credentials. Please try again.');
                 } else if (response.status === 404) {
@@ -51,20 +55,22 @@ const LoginPage = () => {
                     setGeneralError('An unexpected error occurred. Please try again.');
                 }
             } else {
-                setIsOtpModalOpen(!isOtpModalOpen);
-                console.log(`Otp Modal status: ${isOtpModalOpen}`)
+                // If credentials are correct, wait for the mail to be sent and then show the OTP modal
                 setOtpMessage(response.data);
-                // Handle 202 status code (success case) in your own logic
-                console.log('OTP sent successfully, handle this in your UI logic.');
+                setIsOtpModalOpen(true);
+                // Optionally, you can set isLoading to false after a short timeout if needed
+                // setTimeout(() => setIsLoading(false), 2000); // Wait for mail processing
+                // or if the mail sending is handled in `handleLoginForm`, 
+                // you might want to set loading state back to false here
             }
-
         } catch (error) {
-            // Handle network or other errors
             setGeneralError('An error occurred during login. Please try again.');
             console.error('Login error:', error);
+        } finally {
+            // Ensure isLoading is false when finished
+            setIsLoading(false);
         }
     };
-
 
     return (
         <div className="min-h-screen bg-blue-50 flex flex-col justify-between">
@@ -91,6 +97,7 @@ const LoginPage = () => {
                                             placeholder="Enter Username"
                                             className="bg-white"
                                             {...register('username')}
+                                            disabled={isLoading}
                                         />
                                         {errors.username && (
                                             <p className="text-red-500 text-sm font-medium mt-1">{errors.username.message}</p>
@@ -107,6 +114,7 @@ const LoginPage = () => {
                                                 placeholder="Enter your password"
                                                 className="bg-white pr-10"
                                                 {...register('password')}
+                                                disabled={isLoading}
                                             />
                                             <Button
                                                 type="button"
@@ -115,6 +123,7 @@ const LoginPage = () => {
                                                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                                 onClick={togglePasswordVisibility}
                                                 aria-label={showPassword ? "Hide password" : "Show password"}
+                                                disabled={isLoading}
                                             >
                                                 {showPassword ? (
                                                     <EyeOffIcon className="h-4 w-4 text-gray-400" />
@@ -130,13 +139,24 @@ const LoginPage = () => {
                                     <a href="#" className="text-sm text-blue-600 text-start hover:underline block">
                                         Forgot password?
                                     </a>
-                                    <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                                        LOGIN
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Logging in...
+                                            </>
+                                        ) : (
+                                            'LOGIN'
+                                        )}
                                     </Button>
                                 </form>
-                                {generalError && (
+                                {(generalError || error) && (
                                     <Alert variant="destructive" className="mt-4">
-                                        <AlertDescription>{generalError}</AlertDescription>
+                                        <AlertDescription>{generalError || error}</AlertDescription>
                                     </Alert>
                                 )}
                                 <a href="/" className="text-sm text-blue-600 hover:underline block mt-4 text-center">
@@ -154,7 +174,7 @@ const LoginPage = () => {
                 </div>
                 <OTPModal
                     isOpen={isOtpModalOpen}
-                    onClose={() => setIsOtpModalOpen(!isOtpModalOpen)}
+                    onClose={() => setIsOtpModalOpen(false)}
                     message={otpMessage}
                 />
             </main>
@@ -165,6 +185,4 @@ const LoginPage = () => {
             </footer>
         </div>
     );
-};
-
-export default LoginPage;
+}

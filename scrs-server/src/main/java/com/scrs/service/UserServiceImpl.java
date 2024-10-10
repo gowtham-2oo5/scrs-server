@@ -7,11 +7,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.scrs.dto.AdminDTO;
+import com.scrs.model.AdminModel;
+import com.scrs.model.FacultyModel;
+import com.scrs.model.StudentModel;
 import com.scrs.model.UserModel;
+import com.scrs.model.UserRole;
 import com.scrs.repository.UserRepo;
 
 @Service
@@ -23,8 +28,8 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	// @Autowired
-	// private JavaMailSender mailSender;
+	@Autowired
+	private JavaMailSender mailSender;
 
 	private String username;
 
@@ -91,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			// Commenting temporarilt
-			// mailSender.send(message);
+			//mailSender.send(message);
 			// Log OTP generation (without logging the actual OTP)
 			System.out.println("OTP sent to: " + mail);
 			System.out.print("OTP IS: " + generatedOtp);
@@ -107,14 +112,47 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserModel verifyOtp(String otp) {
+	public Object verifyOtp(String otp) {
+
 		System.out.println("Given OTP: " + otp);
 		System.out.println("Generated OTP: " + generatedOtp);
+
 		long currentTime = System.currentTimeMillis();
+
 		if (generatedOtp.equals(otp) && (currentTime - otpGeneratedTime < otpValidity)) {
 			System.out.println("OTP Verified bro");
-			return userRepo.findByUsername(username);
-		} else
+			UserModel user = userRepo.findByUsername(username);
+
+			// Check user role using the UserRole enum
+			UserRole userRole = user.getUserRole(); // Retrieve the user's role
+
+			switch (userRole) {
+			case ADMIN:
+				AdminModel adminModel = (AdminModel) user; // Cast to AdminModel
+				AdminDTO admin = new AdminDTO(user, adminModel.isSuperAdmin());
+				System.out.println(admin.toString());
+				return admin; // Pass additional fields
+
+			case FACULTY:
+				FacultyModel faculty = (FacultyModel) user; // Cast to FacultyModel
+				return null;
+			// return new FacultyRegsDTO(user, faculty.getEmpId(), faculty.getDepartment(),
+			// faculty.getJoinedAt(), faculty.getExperience(),
+			// faculty.getInstructingCourse());
+
+			case STUDENT:
+				StudentModel student = (StudentModel) user; // Cast to StudentModel
+				return null;
+			// return new StudentDTO(user, student.getRegNum(), student.getSpecialization(),
+			// student.getJoinedAt(), student.getYear(), student.getSemester());
+
+			default:
+				throw new IllegalArgumentException("Invalid user role: " + userRole);
+			}
+
+		} else {
 			return null;
+		}
 	}
+
 }

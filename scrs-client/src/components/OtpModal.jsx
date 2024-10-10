@@ -38,9 +38,17 @@ export default function OTPModal({ message, isOpen, onClose }) {
                 console.log(`Entered OTP: ${otp}`);
                 const { data: user, status } = await verifyOtp(otp);
                 if (status === 202) {
-                    sessionStorage.setItem('user', JSON.stringify(user));
+                    //sessionStorage.setItem('user', JSON.stringify(user));
+                    sessionStorage.setItem('role', user.data.role);
+                    sessionStorage.setItem('dp', user.data.profilePicture);
+                    if (user.data.superAdmin) {
+                        console.log("Super admin ayya")
+                        sessionStorage.setItem('role', "SUPER-ADMIN");
+                    }
                     onClose();
-                    navigate('/admin');
+                    console.log(user.data.role);
+
+                    navigate('/dashboard');
                 } else {
                     setError('Invalid OTP. Please try again.');
                 }

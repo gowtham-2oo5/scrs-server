@@ -17,7 +17,8 @@ public class AdminModel extends UserModel {
 
 	public AdminModel(String name, String username, String email, String password, String contact,
 			byte[] profilePicture, boolean isSuperAdmin) {
-		super(name, username, email, password, contact,UserRole.ADMIN, profilePicture); // Call to UserModel constructor
+		super(name, username, email, password, contact, UserRole.ADMIN, profilePicture); // Call to UserModel
+																							// constructor
 		this.isSuperAdmin = isSuperAdmin;
 	}
 
@@ -27,6 +28,11 @@ public class AdminModel extends UserModel {
 
 	public void setSuperAdmin(boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	@Override
+	public String toString() {
+		return "AdminModel:" + super.toString() + " [isSuperAdmin=" + isSuperAdmin + "]";
 	}
 
 }

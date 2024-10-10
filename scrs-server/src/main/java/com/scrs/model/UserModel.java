@@ -1,7 +1,5 @@
 package com.scrs.model;
 
-import java.util.Arrays;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -23,7 +21,7 @@ public abstract class UserModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	private String name;
 
@@ -35,7 +33,9 @@ public abstract class UserModel {
 	private String password;
 	private String contact;
 
+	// Change profilePicture to byte[] and add @Lob annotation
 	@Lob
+	@Column(columnDefinition = "LONGBLOB") // Ensure it's treated as LongBlob in the database
 	private byte[] profilePicture;
 
 	@Enumerated(EnumType.STRING)
@@ -46,7 +46,7 @@ public abstract class UserModel {
 	public UserModel() {
 	}
 
-	public UserModel(String name, String username, String email, String password, String contact,UserRole userRole,
+	public UserModel(String name, String username, String email, String password, String contact, UserRole userRole,
 			byte[] profilePicture) {
 		this.name = name;
 		this.username = username;
@@ -54,7 +54,7 @@ public abstract class UserModel {
 		this.password = password;
 		this.contact = contact;
 		this.userRole = userRole;
-		this.profilePicture = profilePicture;
+		this.profilePicture = profilePicture; // Store as byte array directly
 	}
 
 	public int getId() {
@@ -109,6 +109,7 @@ public abstract class UserModel {
 		return profilePicture;
 	}
 
+	// Setter accepts a byte array directly
 	public void setProfilePicture(byte[] profilePicture) {
 		this.profilePicture = profilePicture;
 	}
@@ -132,8 +133,6 @@ public abstract class UserModel {
 	@Override
 	public String toString() {
 		return "UserModel [id=" + id + ", name=" + name + ", username=" + username + ", email=" + email + ", password="
-				+ password + ", contact=" + contact + ", profilePicture=" + Arrays.toString(profilePicture)
-				+ ", userRole=" + userRole + ", isOnline=" + isOnline + "]";
+				+ password + ", contact=" + contact + ", userRole=" + userRole + ", isOnline=" + isOnline + "]";
 	}
-
 }

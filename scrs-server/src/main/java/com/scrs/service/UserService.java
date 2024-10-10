@@ -16,5 +16,5 @@ public interface UserService {
 	
 	public void sendOtp(String mail);
 	
-	public UserModel verifyOtp(String otp);
+	public Object verifyOtp(String otp);
 }
