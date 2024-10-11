@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
@@ -27,6 +26,8 @@ export default function LoginPage() {
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
     const [otpMessage, setOtpMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false); // Add loading state
+    const [image1Loaded, setImage1Loaded] = useState(false);
+    const [image2Loaded, setImage2Loaded] = useState(false);
 
     const { handleLoginForm, error } = useLoginForm();
 
@@ -55,19 +56,13 @@ export default function LoginPage() {
                     setGeneralError('An unexpected error occurred. Please try again.');
                 }
             } else {
-                // If credentials are correct, wait for the mail to be sent and then show the OTP modal
                 setOtpMessage(response.data);
                 setIsOtpModalOpen(true);
-                // Optionally, you can set isLoading to false after a short timeout if needed
-                // setTimeout(() => setIsLoading(false), 2000); // Wait for mail processing
-                // or if the mail sending is handled in `handleLoginForm`, 
-                // you might want to set loading state back to false here
             }
         } catch (error) {
             setGeneralError('An error occurred during login. Please try again.');
             console.error('Login error:', error);
         } finally {
-            // Ensure isLoading is false when finished
             setIsLoading(false);
         }
     };
@@ -80,96 +75,113 @@ export default function LoginPage() {
                         Access Your Dashboard – Log in Here
                     </h1>
                     <div className='w-full max-w-2xl flex justify-between items-center'>
-                        <img
-                            src={l2}
-                            alt="Decorative figure"
-                            className="w-1/5 h-auto hidden md:block"
-                        />
-                        <Card className="w-full max-w-sm bg-blue-100 shadow-lg mx-auto">
-                            <CardContent className="p-6">
-                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                                    <div className="space-y-2 text-start">
-                                        <label htmlFor="username" className="text-sm font-medium text-blue-800">
-                                            Username
-                                        </label>
+                        {/* Left image with lazy loading and skeleton loader */}
+                        <div className="w-1/5 h-auto hidden md:block">
+                            {!image2Loaded && (
+                                <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg"></div> // Skeleton loader
+                            )}
+                            <img
+                                src={l2}
+                                alt="Decorative figure"
+                                className={`w-full h-auto transition-opacity duration-500 ${image2Loaded ? 'opacity-100' : 'opacity-0'}`}
+                                onLoad={() => setImage2Loaded(true)}
+                                loading="lazy"
+                            />
+                        </div>
+
+                        {/* Login form */}
+                        <div className="w-full max-w-sm bg-blue-100 shadow-lg mx-auto p-6 rounded-lg">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                <div className="space-y-2 text-start">
+                                    <label htmlFor="username" className="text-sm font-medium text-blue-800">
+                                        Username
+                                    </label>
+                                    <Input
+                                        id="username"
+                                        placeholder="Enter Username"
+                                        className="bg-white"
+                                        {...register('username')}
+                                        disabled={isLoading}
+                                    />
+                                    {errors.username && (
+                                        <p className="text-red-500 text-sm font-medium mt-1">{errors.username.message}</p>
+                                    )}
+                                </div>
+                                <div className="space-y-2 text-start">
+                                    <label htmlFor="password" className="text-sm font-medium text-blue-800">
+                                        Password
+                                    </label>
+                                    <div className="relative">
                                         <Input
-                                            id="username"
-                                            placeholder="Enter Username"
-                                            className="bg-white"
-                                            {...register('username')}
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Enter your password"
+                                            className="bg-white pr-10"
+                                            {...register('password')}
                                             disabled={isLoading}
                                         />
-                                        {errors.username && (
-                                            <p className="text-red-500 text-sm font-medium mt-1">{errors.username.message}</p>
-                                        )}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                            onClick={togglePasswordVisibility}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                            disabled={isLoading}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOffIcon className="h-4 w-4 text-gray-400" />
+                                            ) : (
+                                                <EyeIcon className="h-4 w-4 text-gray-400" />
+                                            )}
+                                        </Button>
                                     </div>
-                                    <div className="space-y-2 text-start">
-                                        <label htmlFor="password" className="text-sm font-medium text-blue-800">
-                                            Password
-                                        </label>
-                                        <div className="relative">
-                                            <Input
-                                                id="password"
-                                                type={showPassword ? "text" : "password"}
-                                                placeholder="Enter your password"
-                                                className="bg-white pr-10"
-                                                {...register('password')}
-                                                disabled={isLoading}
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                                onClick={togglePasswordVisibility}
-                                                aria-label={showPassword ? "Hide password" : "Show password"}
-                                                disabled={isLoading}
-                                            >
-                                                {showPassword ? (
-                                                    <EyeOffIcon className="h-4 w-4 text-gray-400" />
-                                                ) : (
-                                                    <EyeIcon className="h-4 w-4 text-gray-400" />
-                                                )}
-                                            </Button>
-                                        </div>
-                                        {errors.password && (
-                                            <p className="text-red-500 text-sm font-medium mt-1">{errors.password.message}</p>
-                                        )}
-                                    </div>
-                                    <a href="#" className="text-sm text-blue-600 text-start hover:underline block">
-                                        Forgot password?
-                                    </a>
-                                    <Button
-                                        type="submit"
-                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Logging in...
-                                            </>
-                                        ) : (
-                                            'LOGIN'
-                                        )}
-                                    </Button>
-                                </form>
-                                {(generalError || error) && (
-                                    <Alert variant="destructive" className="mt-4">
-                                        <AlertDescription>{generalError || error}</AlertDescription>
-                                    </Alert>
-                                )}
-                                <a href="/" className="text-sm text-blue-600 hover:underline block mt-4 text-center">
-                                    Go back home
+                                    {errors.password && (
+                                        <p className="text-red-500 text-sm font-medium mt-1">{errors.password.message}</p>
+                                    )}
+                                </div>
+                                <a href="#" className="text-sm text-blue-600 text-start hover:underline block">
+                                    Forgot password?
                                 </a>
-                            </CardContent>
-                        </Card>
-                        <img
-                            src={l1}
-                            alt="Decorative figure"
-                            className="w-1/5 h-auto hidden md:block"
-                            style={{ marginTop: '11rem' }}
-                        />
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Logging in...
+                                        </>
+                                    ) : (
+                                        'LOGIN'
+                                    )}
+                                </Button>
+                            </form>
+                            {(generalError || error) && (
+                                <Alert variant="destructive" className="mt-4">
+                                    <AlertDescription>{generalError || error}</AlertDescription>
+                                </Alert>
+                            )}
+                            <a href="/" className="text-sm text-blue-600 hover:underline block mt-4 text-center">
+                                Go back home
+                            </a>
+                        </div>
+
+                        {/* Right image with lazy loading and skeleton loader */}
+                        <div className="w-1/5 h-auto hidden md:block">
+                            {!image1Loaded && (
+                                <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg"></div> // Skeleton loader
+                            )}
+                            <img
+                                src={l1}
+                                alt="Decorative figure"
+                                className={`w-full h-auto transition-opacity duration-500 ${image1Loaded ? 'opacity-100' : 'opacity-0'}`}
+                                onLoad={() => setImage1Loaded(true)}
+                                loading="lazy"
+                                style={{ marginTop: '11rem' }}
+                            />
+                        </div>
                     </div>
                 </div>
                 <OTPModal

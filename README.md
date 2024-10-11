@@ -81,6 +81,61 @@ During each semester's course registration process, students often face several 
 - Student Interface Access: Faculty can view which students from their counseling group are ready to submit their choices (needs clarification).
 - Course Management: Allows faculty to update course handouts for courses where they are the Course Coordinator.
 
+### Admin - Super Admin Role Responsibilities, Flow
+
+- **Super Admin**: Can add/manage admins and has access to all data.
+- **Admin**: 
+  - Can manage everything within the system, including departments, specializations, batches, student accounts, faculty accounts, courses, and registrations, regardless of who created them.
+  - Admins have full access to create, edit, and delete any data within the system, except for managing other admins (which is limited to Super Admins).
+
+---
+
+### Admin Responsibilities Before Initializing Registrations
+
+1. **Create/Initialize Departments, Specializations, Batches**  
+   Admins can create, edit, and manage departments, specializations, and batches for the academic year (Ex: Y22, Y23, Y24), with no restrictions based on who created the data.
+
+2. **Create Student Accounts**  
+   Admins can create student accounts and map them to specific batches, departments, and specializations.  
+   - Admins can also edit or delete any student account as needed.  
+   - **Bulk Upload**: Admins can bulk upload student data via CSV.
+
+3. **Create Faculty Accounts**  
+   Admins can create and manage faculty accounts, assigning them to departments.  
+   - Admins have full access to edit or delete any faculty account in the system, regardless of who initially created it.
+
+4. **Create Courses**  
+   Admins can create and manage courses, link them to departments, specializations, and prerequisites, and update course handouts (PDFs).
+
+5. **Assign Courses to Faculty**  
+   Admins can assign courses to faculty members for any department or specialization.
+
+6. **Manage Rooms for Classes**  
+   Admins can create, edit, and manage rooms for all courses, ensuring proper room allocation.
+
+---
+
+### Flow of Creation or Initialization of Registration
+
+1. **Registration Period Initialization**  
+   A registration must be initialized 2-3 days before the actual date. Admins are responsible for setting up registration configurations for the departments, batches, and students they manage.
+
+2. **Creating Clusters with Schedules**  
+   Admins can create clusters using schedule templates and define section limits for students. Admins can freely manage and edit these clusters as needed.
+
+3. **Assigning Components for Registration**  
+   Admins select and manage components (sections, rooms, faculty, timeslots) for the registration setup.
+
+---
+
+### Additional Considerations
+
+- **Audit Logs**: Include an audit log to track changes and updates made by each admin for accountability and transparency.
+- **Manual Adjustments**: Admins should have the ability to manually adjust room or faculty assignments in case of conflicts.
+- **Notifications**: Add notifications to alert admins about upcoming registration periods or missing data.
+- **Dashboard Analytics**: A dashboard showing key metrics like student registrations, course loads, and faculty assignments would be helpful.
+
+
 ## 6. Program Flow
 
 ### Student Registration:

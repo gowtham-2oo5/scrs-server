@@ -1,5 +1,11 @@
 package com.scrs.model;
 
+import java.sql.Date;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -10,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,8 +25,8 @@ import jakarta.persistence.Table;
 public abstract class UserModel {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 
 	private String name;
 
@@ -33,21 +38,26 @@ public abstract class UserModel {
 	private String password;
 	private String contact;
 
-	// Change profilePicture to byte[] and add @Lob annotation
-	@Lob
-	@Column(columnDefinition = "LONGBLOB") // Ensure it's treated as LongBlob in the database
-	private byte[] profilePicture;
+	private String profilePicture;
 
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 
 	private boolean isOnline;
 
+	@CreationTimestamp
+	@Column(updatable = false, name = "created_at")
+	private Date createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private Date updatedAt;
+
 	public UserModel() {
 	}
 
 	public UserModel(String name, String username, String email, String password, String contact, UserRole userRole,
-			byte[] profilePicture) {
+			String profilePicture) {
 		this.name = name;
 		this.username = username;
 		this.email = email;
@@ -57,11 +67,11 @@ public abstract class UserModel {
 		this.profilePicture = profilePicture; // Store as byte array directly
 	}
 
-	public int getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -105,12 +115,12 @@ public abstract class UserModel {
 		this.contact = contact;
 	}
 
-	public byte[] getProfilePicture() {
+	public String getProfilePicture() {
 		return profilePicture;
 	}
 
 	// Setter accepts a byte array directly
-	public void setProfilePicture(byte[] profilePicture) {
+	public void setProfilePicture(String profilePicture) {
 		this.profilePicture = profilePicture;
 	}
 

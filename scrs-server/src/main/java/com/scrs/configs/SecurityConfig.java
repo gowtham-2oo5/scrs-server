@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerJwtAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,34 +20,28 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	@Autowired
-    private UserConfigProperties userConfigProperties;
+	private UserConfigProperties userConfigProperties;
 
 	@Bean
 	UserDetailsService userDetailsService() {
 		List<UserDetails> userDetailsList = new ArrayList<>();
 
-        for (UserConfigProperties.UserProperty user : userConfigProperties.getUsers()) {
-            userDetailsList.add(
-                User.withUsername(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRole())
-                    .build()
-            );
-        }
+		for (UserConfigProperties.UserProperty user : userConfigProperties.getUsers()) {
+			userDetailsList.add(
+					User.withUsername(user.getUsername()).password(user.getPassword()).roles(user.getRole()).build());
+		}
 
-        return new InMemoryUserDetailsManager(userDetailsList);
+		return new InMemoryUserDetailsManager(userDetailsList);
 	}
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth
-						//.requestMatchers("/admin").hasRole("ADMIN")
-						.anyRequest().permitAll())
-				.httpBasic(httpSecurity -> httpSecurity.disable());
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				// .requestMatchers("/admin").hasRole("ADMIN")
+				.anyRequest().permitAll()).httpBasic(httpSecurity -> httpSecurity.disable());
 
 		return http.build();
 	}

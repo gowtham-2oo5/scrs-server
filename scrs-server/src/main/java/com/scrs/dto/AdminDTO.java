@@ -1,13 +1,14 @@
 package com.scrs.dto;
 
 import java.util.Base64;
+import java.util.UUID;
 
 import com.scrs.model.UserModel;
 import com.scrs.model.UserRole;
 
 public class AdminDTO {
 
-	private int id;
+	private UUID id;
 	private String name;
 	private String profilePicture;
 	private boolean isSuperAdmin;
@@ -16,16 +17,16 @@ public class AdminDTO {
 	public AdminDTO(UserModel user, boolean superAdmin) {
 		this.id = user.getId();
 		this.name = user.getName();
-		this.profilePicture = Base64.getEncoder().encodeToString(user.getProfilePicture());
+		this.profilePicture = user.getProfilePicture();
 		this.role = user.getUserRole();
 		this.isSuperAdmin = superAdmin;
 	}
 
-	public int getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 

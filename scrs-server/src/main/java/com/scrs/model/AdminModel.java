@@ -16,7 +16,7 @@ public class AdminModel extends UserModel {
 	}
 
 	public AdminModel(String name, String username, String email, String password, String contact,
-			byte[] profilePicture, boolean isSuperAdmin) {
+			String profilePicture, boolean isSuperAdmin) {
 		super(name, username, email, password, contact, UserRole.ADMIN, profilePicture); // Call to UserModel
 																							// constructor
 		this.isSuperAdmin = isSuperAdmin;

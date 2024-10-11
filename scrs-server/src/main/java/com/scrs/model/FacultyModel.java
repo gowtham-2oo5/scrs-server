@@ -3,6 +3,8 @@ package com.scrs.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,6 +19,9 @@ public class FacultyModel extends UserModel {
 
 	@Column(name = "instructing_course")
 	private String instructingCourse;
+
+	@Enumerated(EnumType.STRING)
+	private FacultyDesignation designation;
 
 	public String getEmpId() {
 		return empId;
@@ -52,6 +57,14 @@ public class FacultyModel extends UserModel {
 
 	public String getInstructingCourse() {
 		return instructingCourse;
+	}
+
+	public FacultyDesignation getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(FacultyDesignation designation) {
+		this.designation = designation;
 	}
 
 	public void setInstructingCourse(String instructingCourse) {

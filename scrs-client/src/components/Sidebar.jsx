@@ -72,7 +72,7 @@ const Sidebar = ({ className, sidebarItems, singleItems }) => {
                                 key={index}
                                 variant="ghost"
                                 className="w-full justify-start gap-2"
-                                asChild  // Enables the Link to be treated as the Button child
+                                asChild
                             >
                                 <Link to={item.path}>
                                     {React.createElement(item.icon, { className: "h-4 w-4" })}

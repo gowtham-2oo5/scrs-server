@@ -26,7 +26,7 @@ const RoleBasedRedirect = () => {
         }
     }, [userRole, navigate]);
 
-    return null; // This component does not render anything
+    return null; 
 };
 
 export default RoleBasedRedirect;

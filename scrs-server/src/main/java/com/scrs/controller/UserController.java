@@ -1,6 +1,7 @@
 package com.scrs.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +30,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/get-user/{id}")
-	public UserModel getUserById(@PathVariable int id) {
+	public UserModel getUserById(@PathVariable UUID id) {
 		return userService.getUserById(id);
 	}
 

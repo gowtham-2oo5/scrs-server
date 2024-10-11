@@ -1,12 +1,15 @@
 package com.scrs.service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.scrs.dto.AdminRegsDTO;
 import com.scrs.model.AdminModel;
 import com.scrs.repository.AdminRepo;
@@ -22,26 +25,34 @@ public class AdminServiceImpl implements AdminService {
 
 	private static final long MAX_SIZE = 5 * 1024 * 1024;
 
+	@Autowired
+	private Cloudinary cloudinary;
+
 	@Override
 	public AdminModel createAdmin(AdminRegsDTO adminDTO, MultipartFile profilePicture) throws IOException {
 		// Encrypt the password using BCryptPasswordEncoder
 		String encryptedPassword = passwordEncoder.encode(adminDTO.getPassword());
 
-		// Convert profile picture to byte[] (if it's provided)
-		byte[] profilePictureBytes = null;
-		if (profilePicture != null) {
+		// Cloudinary URL for the uploaded profile picture
+		String profilePictureUrl = null;
+
+		// Upload profile picture to Cloudinary (if it's provided)
+		if (profilePicture != null && !profilePicture.isEmpty()) {
 			if (profilePicture.getSize() > MAX_SIZE) {
 				throw new IllegalArgumentException("Profile picture is too large");
 			}
-			profilePictureBytes = profilePicture.getBytes();
+
+			// Upload to Cloudinary and get the URL
+			Map uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
+			profilePictureUrl = (String) uploadResult.get("url");
 		}
 
 		boolean isSuperAdmin = true; // Set default value for isSuperAdmin, adjust if necessary
 
-		// Create AdminModel entity with the provided DTO data
+		// Create AdminModel entity with the provided DTO data and Cloudinary URL
 		AdminModel admin = new AdminModel(adminDTO.getName(), adminDTO.getUsername(), adminDTO.getEmail(),
-				encryptedPassword, adminDTO.getContact(), profilePictureBytes, isSuperAdmin);
-
+				encryptedPassword, adminDTO.getContact(), profilePictureUrl, isSuperAdmin);
+		System.out.println("SAved admin: " + admin.toString());
 		// Save the admin entity to the database and return the saved entity
 		return adminRepository.save(admin);
 	}
