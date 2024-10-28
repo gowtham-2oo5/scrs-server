@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const backendUrl = "http://localhost:8080";
-
 console.log(backendUrl);
 
 export default async function getUsers() {
@@ -37,9 +36,9 @@ export const createAdmin = async (formData) => {
     return {
       data: response.data,
       status: response.status,
-    }; // Return the response data
+    };
   } catch (error) {
-    throw error.response ? error.response.data : error; // Handle and rethrow errors
+    throw error.response ? error.response.data : error;
   }
 };
 
@@ -52,5 +51,24 @@ export const verifyGivenOtp = async (otp) => {
     };
   } catch (error) {
     throw new Error(error.response?.data?.message || "OTP verification failed");
+  }
+};
+
+export const createStudent = async (formData) => {
+  try {
+    const res = await axios.post(`${backendUrl}/student/create`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
   }
 };

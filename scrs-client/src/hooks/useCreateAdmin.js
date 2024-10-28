@@ -12,13 +12,13 @@ const useCreateAdmin = () => {
     setSuccess(null);
 
     try {
-      const response = await createAdmin(formData); // Call the API function to create an admin
-      setSuccess(response.data); // Handle success case
+      const response = await createAdmin(formData);
+      setSuccess(response.data);
       return response.data;
     } catch (err) {
       console.error("Error creating admin:", err);
       setError(err.response ? err.response.data : err.message);
-      throw err; // Rethrow error so it can be caught in the component
+      throw err;
     } finally {
       setLoading(false);
     }
