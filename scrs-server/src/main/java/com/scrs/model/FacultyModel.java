@@ -1,10 +1,16 @@
 package com.scrs.model;
 
+import java.util.Date;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,15 +19,29 @@ import jakarta.persistence.Table;
 public class FacultyModel extends UserModel {
 
 	private String empId;
-	private String department;
-	private String joinedAt;
-	private int experience;
+
+	@ManyToOne
+	@JoinColumn(name = "department_id", nullable = false)
+	private DepartmentModel department;
+
+	private Date joinedAt;
+
+	public List<CourseModel> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(List<CourseModel> courses) {
+		this.courses = courses;
+	}
 
 	@Column(name = "instructing_course")
 	private String instructingCourse;
 
 	@Enumerated(EnumType.STRING)
 	private FacultyDesignation designation;
+
+	@OneToMany(mappedBy = "cc")
+	private List<CourseModel> courses;
 
 	public String getEmpId() {
 		return empId;
@@ -31,28 +51,20 @@ public class FacultyModel extends UserModel {
 		this.empId = empId;
 	}
 
-	public String getDepartment() {
+	public DepartmentModel getDepartment() {
 		return department;
 	}
 
-	public void setDepartment(String department) {
+	public void setDepartment(DepartmentModel department) {
 		this.department = department;
 	}
 
-	public String getJoinedAt() {
+	public Date getJoinedAt() {
 		return joinedAt;
 	}
 
-	public void setJoinedAt(String joinedAt) {
+	public void setJoinedAt(Date joinedAt) {
 		this.joinedAt = joinedAt;
-	}
-
-	public int getExperience() {
-		return experience;
-	}
-
-	public void setExperience(int experience) {
-		this.experience = experience;
 	}
 
 	public String getInstructingCourse() {

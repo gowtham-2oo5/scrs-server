@@ -33,17 +33,14 @@ public class AdminServiceImpl implements AdminService {
 		// Encrypt the password using BCryptPasswordEncoder
 		String encryptedPassword = passwordEncoder.encode(adminDTO.getPassword());
 
-		// Cloudinary URL for the uploaded profile picture
 		String profilePictureUrl = null;
 
-		// Upload profile picture to Cloudinary (if it's provided)
 		if (profilePicture != null && !profilePicture.isEmpty()) {
 			if (profilePicture.getSize() > MAX_SIZE) {
 				throw new IllegalArgumentException("Profile picture is too large");
 			}
 
-			// Upload to Cloudinary and get the URL
-			Map uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
+			Map<?, ?> uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
 			profilePictureUrl = (String) uploadResult.get("url");
 		}
 

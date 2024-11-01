@@ -1,9 +1,11 @@
 package com.scrs.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -12,10 +14,34 @@ import jakarta.persistence.Table;
 public class StudentModel extends UserModel {
 
 	private String regNum;
-	private String specialization;
+
+	@ManyToOne
+	@JoinColumn(name = "specialization_id", nullable = false)
+	private SpecializationModel specialization;
+
+	@ManyToOne
+	@JoinColumn(name = "department_id", nullable = false)
+	private DepartmentModel dept;
+
+	@ManyToOne
+	@JoinColumn(name = "batch_id", nullable = false)
+	private BatchModel batch;
 	private Date joinedAt;
-	private int year;
-	private int semester;
+
+	public StudentModel() {
+		super();
+	}
+
+	public StudentModel(String name, String username, String email, String password, String contact, UserRole userRole,
+			String profilePicture, String regNum, SpecializationModel specialization, DepartmentModel dept,
+			BatchModel batch, Date joinedAt) {
+		super(name, username, email, password, contact, userRole, profilePicture);
+		this.regNum = regNum;
+		this.specialization = specialization;
+		this.dept = dept;
+		this.batch = batch;
+		this.joinedAt = joinedAt;
+	}
 
 	public String getRegNum() {
 		return regNum;
@@ -25,12 +51,28 @@ public class StudentModel extends UserModel {
 		this.regNum = regNum;
 	}
 
-	public String getSpecialization() {
+	public SpecializationModel getSpecialization() {
 		return specialization;
 	}
 
-	public void setSpecialization(String specialization) {
+	public void setSpecialization(SpecializationModel specialization) {
 		this.specialization = specialization;
+	}
+
+	public DepartmentModel getDept() {
+		return dept;
+	}
+
+	public void setDept(DepartmentModel dept) {
+		this.dept = dept;
+	}
+
+	public BatchModel getBatch() {
+		return batch;
+	}
+
+	public void setBatch(BatchModel batch) {
+		this.batch = batch;
 	}
 
 	public Date getJoinedAt() {
@@ -39,22 +81,6 @@ public class StudentModel extends UserModel {
 
 	public void setJoinedAt(Date joinedAt) {
 		this.joinedAt = joinedAt;
-	}
-
-	public int getYear() {
-		return year;
-	}
-
-	public void setYear(int year) {
-		this.year = year;
-	}
-
-	public int getSemester() {
-		return semester;
-	}
-
-	public void setSemester(int semester) {
-		this.semester = semester;
 	}
 
 }

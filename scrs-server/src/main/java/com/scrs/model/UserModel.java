@@ -143,6 +143,8 @@ public abstract class UserModel {
 	@Override
 	public String toString() {
 		return "UserModel [id=" + id + ", name=" + name + ", username=" + username + ", email=" + email + ", password="
-				+ password + ", contact=" + contact + ", userRole=" + userRole + ", isOnline=" + isOnline + "]";
+				+ password + ", contact=" + contact + ", profilePicture=" + profilePicture + ", userRole=" + userRole
+				+ ", isOnline=" + isOnline + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
+
 }
