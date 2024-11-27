@@ -1,0 +1,28 @@
+AdminCreation JSON String:
+{
+  "name": "Gowtham",
+  "username": "gows",
+  "email": "gowtham.ala.2oo5@gmail.com",
+  "password": "Gowth$2k5",
+  "contact": "8298299998",
+  "dob": "2005-03-08"
+}
+
+Faculty JSON String:
+{
+  "name": "Faculty One",
+  "contact": "+9876543210",
+  "mail": "janesmith@example.com",
+  "empId": "EMP12345",
+  "dept": "CSE",
+  "dob": "1985-07-15",
+  "designation": "PROFESSOR",
+  "joined_at": "2015-06-01",
+  "exp": "8 years"
+}
+
+
+
+Student JSON String:
+
+

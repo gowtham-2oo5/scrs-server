@@ -22,7 +22,7 @@ import com.scrs.service.BatchService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/batch")
+@RequestMapping("/api/batch")
 public class BatchController {
 
 	@Autowired

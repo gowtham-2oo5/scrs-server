@@ -6,6 +6,8 @@ import AdminDashboard from "@/pages/Admin/AdminDashboard";
 import DepartmentManagement from "@/pages/Admin/ManageDepartments";
 import SpecializationManagement from "@/pages/Admin/ManageSpecializations";
 import BatchManagement from "@/pages/Admin/ManageBatches";
+import { ManageAdmins } from "@/pages/Admin/ManageAdmins";
+import ManageFaculty from "@/pages/Admin/ManageFaculty";
 
 const adminRoutes = [
   { path: "", element: <AdminDashboard /> },
@@ -34,21 +36,16 @@ const adminRoutes = [
     element: <div>Manage Time Slots Page (To be created)</div>,
   },
   {
-    path: "students/list",
-    element: <div>Student List Page (To be created)</div>,
+    path: "students/manage",
+    element: <div>Student manage Page (To be created)</div>,
   },
-  { path: "students/add", element: <CreateNewStudent /> },
   {
     path: "students/registrations",
     element: <div>Student Registrations Page (To be created)</div>,
   },
   {
-    path: "faculty/list",
-    element: <div>Faculty List Page (To be created)</div>,
-  },
-  {
-    path: "faculty/add",
-    element: <div>Add Faculty Page (To be created)</div>,
+    path: "faculty/manage",
+    element: <ManageFaculty />,
   },
   {
     path: "faculty/assign-courses",
@@ -113,6 +110,14 @@ const adminRoutes = [
     element: (
       <ProtectedRoute requiredRole={["SUPER-ADMIN"]}>
         <CreateNewAdmin />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "manage",
+    element: (
+      <ProtectedRoute requiredRole={["SUPER-ADMIN"]}>
+        <ManageAdmins />
       </ProtectedRoute>
     ),
   },

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,98 +8,93 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import AddDepartmentForm from "@/components/AddDepartmentForm";
-import BulkUpload from "@/components/BulkUploadDepts";
-import DepartmentTable from "@/components/DepartmentsTable";
-import { getDepts } from "@/api";
+import AddFacultyForm from "@/components/AddFacultyForm";
+import BulkUpload from "@/components/BulkUploadFaculty";
+import FacultyTable from "@/components/FacultyTable";
+import FacultyModal from "@/components/FacultyModal";
+import { getAllFaculties } from "@/api";
 
-export default function DepartmentManagement() {
-  const [departments, setDepartments] = useState([]);
-
-  useEffect(() => {
-    const fetchDepts = async () => {
-      try {
-        const response = await getDepts();
-        setDepartments(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching departments:", error);
-      }
-    };
-
-    fetchDepts();
-  }, []);
-
+export default function FacultyManagement() {
+  const [faculty, setFaculty] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState(null);
+  const [editingFaculty, setEditingFaculty] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
   const itemsPerPage = 5;
 
-  const handleAddDepartment = (newDepartment) => {
-    if (newDepartment.id) {
-      setDepartments((prev) =>
-        prev.map((dept) =>
-          dept.id === newDepartment.id ? newDepartment : dept
-        )
+  const fetchFaculty = async (page) => {
+    try {
+      console.log("Fetching faculty for page:", page);
+      const response = await getAllFaculties(page - 1, itemsPerPage);
+      console.log("API Response:", response.data.content);
+      setFaculty(response.data.content);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching faculty:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFaculty(currentPage);
+  }, [currentPage]);
+
+  const handleAddFaculty = (newFaculty) => {
+    if (newFaculty.id) {
+      setFaculty((prev) =>
+        prev.map((fac) => (fac.id === newFaculty.id ? newFaculty : fac))
       );
     } else {
-      setDepartments((prev) => [
-        ...prev,
-        { ...newDepartment, id: prev.length + 1 },
-      ]);
+      setFaculty((prev) => [...prev, { ...newFaculty, id: prev.length + 1 }]);
     }
     setIsAddModalOpen(false);
     setIsEditModalOpen(false);
+    fetchFaculty(currentPage); // Refresh the faculty list after adding
   };
 
-  const handleEditDepartment = (dept) => {
-    setEditingDepartment(dept);
+  const handleEditFaculty = (fac) => {
+    setEditingFaculty(fac);
     setIsEditModalOpen(true);
   };
 
-  const handleDeleteDepartment = (id) => {
-    setDepartments((prev) => prev.filter((dept) => dept.id !== id));
+  const handleDeleteFaculty = async (id) => {
+    // Implement delete API call here
+    // After successful deletion:
+    await fetchFaculty(currentPage);
   };
 
-  const handleBulkUpload = (csvData) => {
-    // Process CSV data and add to departments
-    // This is a placeholder implementation
-    const newDepartments = csvData
-      .split("\n")
-      .slice(1) // Skip header row
-      .map((row, index) => {
-        const [name, sn, hod] = row.split(",");
-        return { id: departments.length + index + 1, name, sn, hod };
-      });
-    setDepartments((prev) => [...prev, ...newDepartments]);
+  const handleLearnMore = (fac) => {
+    setSelectedFaculty(fac);
+  };
+
+  const handleBulkUpload = async (csvData) => {
+    // Implement bulk upload API call here
+    // After successful upload:
     setIsBulkUploadOpen(false);
+    await fetchFaculty(1); // Refresh and go to the first page
+    setCurrentPage(1);
   };
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = departments.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(departments.length / itemsPerPage);
 
   return (
     <div className="container p-4 mx-auto sm:p-6">
-      <h1 className="mb-6 text-2xl font-bold">Manage Departments</h1>
+      <h1 className="mb-6 text-2xl font-bold">Manage Faculty</h1>
 
       <div className="flex flex-col justify-end mb-6 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-700 sm:w-auto">
-              Add
+            <Button className="px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-700">
+              Add Faculty
             </Button>
           </DialogTrigger>
           <DialogContent className="border-2 shadow-lg rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
-                Add New Department
+                Add New Faculty
               </DialogTitle>
             </DialogHeader>
-            <AddDepartmentForm onAddDepartment={handleAddDepartment} />
+            <AddFacultyForm onAddFaculty={handleAddFaculty} />
           </DialogContent>
         </Dialog>
 
@@ -109,7 +102,7 @@ export default function DepartmentManagement() {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="w-full px-4 py-2 font-semibold text-gray-600 transition duration-300 ease-in-out border-2 rounded-lg shadow-md hover:bg-gray-100 sm:w-auto"
+              className="px-4 py-2 font-semibold text-gray-600 transition duration-300 ease-in-out border-2 rounded-lg shadow-md hover:bg-gray-100"
             >
               Bulk Upload
             </Button>
@@ -125,10 +118,11 @@ export default function DepartmentManagement() {
         </Dialog>
       </div>
 
-      <DepartmentTable
-        departments={currentItems}
-        onEdit={handleEditDepartment}
-        onDelete={handleDeleteDepartment}
+      <FacultyTable
+        faculty={faculty}
+        onEdit={handleEditFaculty}
+        onDelete={handleDeleteFaculty}
+        onLearnMore={handleLearnMore}
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
       />
@@ -161,16 +155,21 @@ export default function DepartmentManagement() {
         <DialogContent className="border-2 shadow-lg rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
-              Edit Department
+              Edit Faculty
             </DialogTitle>
           </DialogHeader>
-          <AddDepartmentForm
-            onAddDepartment={handleAddDepartment}
+          <AddFacultyForm
+            onAddFaculty={handleAddFaculty}
             isEdit={true}
-            initialDepartment={editingDepartment || undefined}
+            initialFaculty={editingFaculty}
           />
         </DialogContent>
       </Dialog>
+
+      <FacultyModal
+        faculty={selectedFaculty}
+        onClose={() => setSelectedFaculty(null)}
+      />
     </div>
   );
 }

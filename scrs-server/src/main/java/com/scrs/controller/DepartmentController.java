@@ -22,7 +22,7 @@ import com.scrs.service.DepartmentService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/dept")
+@RequestMapping("/api/dept")
 public class DepartmentController {
 
 	@Autowired

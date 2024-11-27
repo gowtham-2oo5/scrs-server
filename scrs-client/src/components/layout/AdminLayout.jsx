@@ -20,8 +20,8 @@ import {
   Users,
   Bell,
   User,
-  ShieldPlus,
   Building,
+  CogIcon,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -79,8 +79,7 @@ const AdminLayout = ({ children }) => {
       label: "Faculty",
       items: {
         // Manage faculty accounts and assign courses
-        "View All Faculty": "faculty/list", // Admin: View all faculty accounts
-        "Add New Faculty": "faculty/add", // Admin: Create new faculty accounts
+        "Manage Faculties": "faculty/manage", // Admin: View all faculty accounts
         "Assign Courses to Faculty": "faculty/assign-courses", // Admin: Assign courses to faculty members
       },
     },
@@ -114,7 +113,7 @@ const AdminLayout = ({ children }) => {
     { icon: HelpCircle, label: "Help & Support", path: "help" },
   ];
 
-  const [singleItems, setSingleItems] = useState(initialItems);
+  const [sidebarIts, setSidebarItems] = useState(sidebarItems);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [userRole, setUserRole] = useState("");
@@ -140,9 +139,17 @@ const AdminLayout = ({ children }) => {
         // Check if the "Create Admin" item has been added using the ref
         if (!hasAddedAdmin.current) {
           console.log("Adding 'Create Admin' to singleItems");
-          setSingleItems((prevItems) => [
+
+          setSidebarItems((prevItems) => [
             ...prevItems,
-            { icon: ShieldPlus, label: "Create Admin", path: "create" },
+            {
+              icon: CogIcon,
+              label: "Admin Ops",
+              items: {
+                "Create new Admin": "/admin/create",
+                "Manage Admins": "/admin/manage",
+              },
+            },
           ]);
           hasAddedAdmin.current = true; // Mark it as added
         } else {
@@ -153,20 +160,18 @@ const AdminLayout = ({ children }) => {
         console.log("Setting userRole to Admin");
       }
     }
-  }, []); // Empty dependency array to ensure this effect runs only once
-  // Empty dependency array to run only once
-
+  }, []);
   return (
-    <div className="flex h-screen bg-background bg-blue-50 text-blue-900 ">
+    <div className="flex h-screen bg-background ">
       {/* Sidebar for larger screens */}
       <Sidebar
-        className="hidden lg:block lg:w-64 w-[16rem] bg-blue-50 border-blue-200 border text-blue-800 font-semibold"
-        sidebarItems={sidebarItems}
-        singleItems={singleItems}
+        className="hidden lg:block lg:w-64 w-[16rem]  border font-semibold"
+        sidebarItems={sidebarIts}
+        singleItems={initialItems}
       />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4 border-b">
           <h1 className="text-3xl font-bold">{userRole} Dashboard</h1>
@@ -180,12 +185,12 @@ const AdminLayout = ({ children }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
+                  <User className="w-4 h-4 mr-2" />
                   <span>Manage Profile</span>
                 </DropdownMenuItem>
                 <Link to="/logout">
                   <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="w-4 h-4 mr-2" />
                     <span>Logout</span>
                   </DropdownMenuItem>
                 </Link>
@@ -195,11 +200,11 @@ const AdminLayout = ({ children }) => {
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="lg:hidden">
-                <Menu className="h-6 w-6" />
+                <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-64">
-              <Sidebar sidebarItems={sidebarItems} singleItems={singleItems} />
+            <SheetContent side="left" className="w-64 p-0">
+              <Sidebar sidebarItems={sidebarItems} singleItems={initialItems} />
             </SheetContent>
           </Sheet>
         </header>

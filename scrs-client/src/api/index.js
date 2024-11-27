@@ -1,15 +1,12 @@
 import axios from "axios";
 
-const backendUrl = "http://localhost:8080";
-console.log(backendUrl);
-
 export default async function getUsers() {
-  return axios.get(backendUrl + "/user/get-all");
+  return axios.get("/user/get-all");
 }
 
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post(`${backendUrl}/auth/login`, credentials);
+    const response = await axios.post(`/api/auth/login`, credentials);
     return {
       data: response.data,
       status: response.status,
@@ -28,7 +25,7 @@ export const loginUser = async (credentials) => {
 
 export const createAdmin = async (formData) => {
   try {
-    const response = await axios.post(`${backendUrl}/admin/create`, formData, {
+    const response = await axios.post(`/api/admin/create`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -44,7 +41,7 @@ export const createAdmin = async (formData) => {
 
 export const verifyGivenOtp = async (otp) => {
   try {
-    const response = await axios.post(`${backendUrl}/auth/verify-otp`, { otp });
+    const response = await axios.post(`/api/auth/verify-otp`, { otp });
     return {
       data: response.data,
       status: response.status,
@@ -56,11 +53,73 @@ export const verifyGivenOtp = async (otp) => {
 
 export const createStudent = async (formData) => {
   try {
-    const res = await axios.post(`${backendUrl}/student/create`, formData, {
+    const res = await axios.post(`/api/student/create`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+export const getDepts = async () => {
+  try {
+    const res = await axios.get("/api/dept/get-all");
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+export const addSingleDept = async (formData) => {
+  try {
+    const res = await axios.post("/api/dept/insert-one", formData);
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+export const bulkUploadDepts = async (file) => {
+  try {
+    const res = await axios.post("/api/dept/bulk-upload", file, {
+      headers: {},
+    });
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+export const getAllFaculties = async (page, size) => {
+  try {
+    const res = await axios.get(`/api/faculty?page=${page}&size=${size}`);
     return {
       data: res.data,
       status: res.status,

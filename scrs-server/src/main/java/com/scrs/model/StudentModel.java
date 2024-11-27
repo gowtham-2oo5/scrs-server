@@ -9,8 +9,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "students")
-@DiscriminatorValue("stud")
+@Table(name = "scrs_students")
+@DiscriminatorValue("ROLE_STUDENT")
 public class StudentModel extends UserModel {
 
 	private String regNum;
@@ -26,7 +26,6 @@ public class StudentModel extends UserModel {
 	@ManyToOne
 	@JoinColumn(name = "batch_id", nullable = false)
 	private BatchModel batch;
-	private Date joinedAt;
 
 	public StudentModel() {
 		super();
@@ -34,13 +33,12 @@ public class StudentModel extends UserModel {
 
 	public StudentModel(String name, String username, String email, String password, String contact, UserRole userRole,
 			String profilePicture, String regNum, SpecializationModel specialization, DepartmentModel dept,
-			BatchModel batch, Date joinedAt) {
-		super(name, username, email, password, contact, userRole, profilePicture);
+			BatchModel batch, Date joinedAt, Date dob) {
+		super(name, username, email, password, contact, userRole, profilePicture, dob);
 		this.regNum = regNum;
 		this.specialization = specialization;
 		this.dept = dept;
 		this.batch = batch;
-		this.joinedAt = joinedAt;
 	}
 
 	public String getRegNum() {
@@ -73,14 +71,6 @@ public class StudentModel extends UserModel {
 
 	public void setBatch(BatchModel batch) {
 		this.batch = batch;
-	}
-
-	public Date getJoinedAt() {
-		return joinedAt;
-	}
-
-	public void setJoinedAt(Date joinedAt) {
-		this.joinedAt = joinedAt;
 	}
 
 }

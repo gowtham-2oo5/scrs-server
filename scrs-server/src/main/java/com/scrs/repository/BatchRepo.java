@@ -16,4 +16,5 @@ public interface BatchRepo extends JpaRepository<BatchModel, UUID> {
 	@Query("SELECT b from BatchModel b WHERE b.name = ?1")
 	public BatchModel getBatchFromName(String name);
 
+	
 }

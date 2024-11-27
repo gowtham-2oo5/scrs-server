@@ -40,7 +40,7 @@ public class SecurityConfig{
 		
 
 		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				// .requestMatchers("/admin").hasRole("ADMIN")
+				//.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().permitAll()).httpBasic(httpSecurity -> httpSecurity.disable());
 
 		return http.build();
@@ -49,8 +49,6 @@ public class SecurityConfig{
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(12);
-	}
-	
-	
+	}	
 
 }

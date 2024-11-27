@@ -3,6 +3,8 @@ package com.scrs.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,15 +30,19 @@ public class DepartmentModel {
 
 	@ManyToOne
 	@JoinColumn(name = "hod_id", referencedColumnName = "id")
+	//@JsonIgnore
 	private FacultyModel hod;
 
 	@OneToMany(mappedBy = "dept")
+	@JsonIgnore
 	private List<CourseModel> courses;
 
 	@OneToMany(mappedBy = "dept")
+	@JsonIgnore
 	private List<SpecializationModel> specializations;
 
 	@OneToMany(mappedBy = "dept")
+	@JsonIgnore
 	private List<StudentModel> students;
 
 	public List<SpecializationModel> getSpecializations() {
@@ -98,6 +104,10 @@ public class DepartmentModel {
 	@Override
 	public String toString() {
 		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn + ", hod=" + hod + "]";
+	}
+
+	public boolean isEmpty() {
+		return this == null;
 	}
 
 }

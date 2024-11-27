@@ -5,37 +5,29 @@ import java.util.Date;
 public class FacultyRegsDTO {
 
 	private String name;
-	private String username;
 	private String contact;
-	private String pass;
 	private String mail;
 	private String empId;
 	private String dept;
-	private Date joiningDate;
+	private Date dob;
 	private String designation;
+	private Date joined_at;
+	private String exp;
 
-	public Date getJoiningDate() {
-		return joiningDate;
+	public Date getJoined_at() {
+		return joined_at;
 	}
 
-	public void setJoiningDate(Date joiningDate) {
-		this.joiningDate = joiningDate;
+	public void setJoined_at(Date joined_at) {
+		this.joined_at = joined_at;
 	}
 
-	public String getDesignation() {
-		return designation;
+	public String getExp() {
+		return exp;
 	}
 
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
-
-	public String getContact() {
-		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
+	public void setExp(String exp) {
+		this.exp = exp;
 	}
 
 	public String getName() {
@@ -46,20 +38,12 @@ public class FacultyRegsDTO {
 		this.name = name;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getContact() {
+		return contact;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPass() {
-		return pass;
-	}
-
-	public void setPass(String pass) {
-		this.pass = pass;
+	public void setContact(String contact) {
+		this.contact = contact;
 	}
 
 	public String getMail() {
@@ -86,19 +70,20 @@ public class FacultyRegsDTO {
 		this.dept = dept;
 	}
 
-	public Date getJoiningData() {
-		return joiningDate;
+	public Date getDob() {
+		return dob;
 	}
 
-	public void setJoiningData(Date joiningDate) {
-		this.joiningDate = joiningDate;
+	public void setDob(Date dob) {
+		this.dob = dob;
 	}
 
-	@Override
-	public String toString() {
-		return "FacultyRegsDTO [name=" + name + ", username=" + username + ", contact=" + contact + ", pass=" + pass
-				+ ", mail=" + mail + ", empId=" + empId + ", dept=" + dept + ", joiningDate=" + joiningDate
-				+ ", designation=" + designation + "]";
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.scrs.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "scrs_users")
-@DiscriminatorColumn(name = "user_type")
+@DiscriminatorColumn(name = "user_role")
 public abstract class UserModel {
 
 	@Id
@@ -41,9 +41,9 @@ public abstract class UserModel {
 	private String profilePicture;
 
 	@Enumerated(EnumType.STRING)
-	private UserRole userRole;
+	private UserRole role;
 
-	private boolean isOnline;
+	private Date dob;
 
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
@@ -57,14 +57,39 @@ public abstract class UserModel {
 	}
 
 	public UserModel(String name, String username, String email, String password, String contact, UserRole userRole,
-			String profilePicture) {
+			String profilePicture, Date dob) {
 		this.name = name;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.contact = contact;
-		this.userRole = userRole;
-		this.profilePicture = profilePicture; // Store as byte array directly
+		this.role = userRole;
+		this.profilePicture = profilePicture;
+		this.dob = dob;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public UUID getId() {
@@ -125,26 +150,18 @@ public abstract class UserModel {
 	}
 
 	public UserRole getUserRole() {
-		return userRole;
+		return role;
 	}
 
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
-	}
-
-	public boolean isOnline() {
-		return isOnline;
-	}
-
-	public void setOnline(boolean isOnline) {
-		this.isOnline = isOnline;
+	public void setUserRole(UserRole role) {
+		this.role = role;
 	}
 
 	@Override
 	public String toString() {
 		return "UserModel [id=" + id + ", name=" + name + ", username=" + username + ", email=" + email + ", password="
-				+ password + ", contact=" + contact + ", profilePicture=" + profilePicture + ", userRole=" + userRole
-				+ ", isOnline=" + isOnline + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+				+ password + ", contact=" + contact + ", profilePicture=" + profilePicture + ", userRole=" + role
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
 
 }

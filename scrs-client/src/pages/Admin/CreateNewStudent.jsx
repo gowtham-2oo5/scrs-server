@@ -78,7 +78,7 @@ export default function CreateNewStudent() {
         formData.append("profilePicture", data.profilePicture[0]);
       }
 
-      formData.append("profilePicture", data.profilePicture[0]);
+      // formData.append("profilePicture", data.profilePicture[0]);
       formData.append(
         "studentDetails",
         JSON.stringify({
@@ -109,7 +109,7 @@ export default function CreateNewStudent() {
   const prevStep = () => setCurrentStep((prev) => prev - 1);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-100">
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle>Student Registration</CardTitle>
@@ -128,7 +128,7 @@ export default function CreateNewStudent() {
             {currentStep === 0 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <Input
@@ -139,7 +139,7 @@ export default function CreateNewStudent() {
                       })}
                     />
                     {errors.name && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.name.message}
                       </p>
                     )}
@@ -159,7 +159,7 @@ export default function CreateNewStudent() {
                       })}
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.email.message}
                       </p>
                     )}
@@ -189,7 +189,7 @@ export default function CreateNewStudent() {
             {currentStep === 1 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Account Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input
@@ -200,7 +200,7 @@ export default function CreateNewStudent() {
                       })}
                     />
                     {errors.username && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.username.message}
                       </p>
                     )}
@@ -220,7 +220,7 @@ export default function CreateNewStudent() {
                       })}
                     />
                     {errors.password && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.password.message}
                       </p>
                     )}
@@ -232,7 +232,7 @@ export default function CreateNewStudent() {
             {currentStep === 2 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Academic Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="regNum">Registration Number</Label>
                     <Input
@@ -245,7 +245,7 @@ export default function CreateNewStudent() {
                       className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     {errors.regNum && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.regNum.message}
                       </p>
                     )}
@@ -280,7 +280,7 @@ export default function CreateNewStudent() {
                       )}
                     />
                     {errors.specialization && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.specialization.message}
                       </p>
                     )}
@@ -315,7 +315,7 @@ export default function CreateNewStudent() {
                       )}
                     />
                     {errors.specialization && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.specialization.message}
                       </p>
                     )}
@@ -335,7 +335,7 @@ export default function CreateNewStudent() {
                                 !field.value && "text-muted-foreground"
                               }`}
                             >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              <CalendarIcon className="w-4 h-4 mr-2" />
                               {field.value ? (
                                 format(new Date(field.value), "PPP")
                               ) : (
@@ -359,7 +359,7 @@ export default function CreateNewStudent() {
                       )}
                     />
                     {errors.joinedAt && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.joinedAt.message}
                       </p>
                     )}
@@ -390,7 +390,7 @@ export default function CreateNewStudent() {
                     />
 
                     {errors.year && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.year.message}
                       </p>
                     )}
@@ -420,7 +420,7 @@ export default function CreateNewStudent() {
                       )}
                     />
                     {errors.semester && (
-                      <p className="text-red-500 text-sm">
+                      <p className="text-sm text-red-500">
                         {errors.semester.message}
                       </p>
                     )}
@@ -450,14 +450,14 @@ export default function CreateNewStudent() {
         <CardFooter>
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="w-4 h-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
           {success && (
             <Alert>
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="w-4 h-4" />
               <AlertTitle>Success</AlertTitle>
               <AlertDescription>
                 Student has been successfully created!

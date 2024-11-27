@@ -12,7 +12,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import Forbidden from "./pages/Forbidden_403.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { Outlet } from "react-router-dom";
-import AdminLayout from "./components/layout/AdminLayout.jsx";  
+import AdminLayout from "./components/layout/AdminLayout.jsx";
 import RoleBasedRedirect from "./components/RoleBasedRedirect.jsx";
 import Logout from "./components/Logout.jsx";
 import adminRoutes from "./routes/adminRoutes.jsx";

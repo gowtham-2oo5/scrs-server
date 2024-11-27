@@ -13,16 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.scrs.dto.LoginDTO;
 import com.scrs.dto.OtpDTO;
 import com.scrs.dto.ResponseDTO;
-//import com.scrs.model.UserModel;
-import com.scrs.service.UserService;
+import com.scrs.service.AuthService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
 	@Autowired
-	private UserService userService;
+	private AuthService authService;
 
 	@GetMapping("")
 	public ResponseEntity<String> testinAuth() {
@@ -31,7 +30,7 @@ public class AuthController {
 
 	@PostMapping("login")
 	public ResponseEntity<String> loginUser(@RequestBody LoginDTO loginInfo) {
-		String msg = userService.authenticate(loginInfo.getUsername(), loginInfo.getPassword());
+		String msg = authService.authenticate(loginInfo.getUsername(), loginInfo.getPassword());
 
 		if (msg.startsWith("OTP has been sent")) {
 
@@ -47,14 +46,14 @@ public class AuthController {
 
 		} else {
 
-			return new ResponseEntity<String>("An error occurred", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 
 		}
 	}
 
 	@PostMapping("verify-otp")
 	public ResponseEntity<ResponseDTO> verifyOtp(@RequestBody OtpDTO otp) {
-		Object user = userService.verifyOtp(otp.getOtp());
+		Object user = authService.verifyOtp(otp.getOtp());
 		ResponseDTO response = null;
 		if (user != null) {
 			response = new ResponseDTO("OTP verified successfully", user, true);

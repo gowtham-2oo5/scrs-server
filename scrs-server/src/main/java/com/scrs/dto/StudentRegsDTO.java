@@ -5,29 +5,36 @@ import java.util.Date;
 public class StudentRegsDTO {
 
 	private String name;
-	private String username;
-	private String email;
-	private String password;
 	private String contact;
+	private String email;
 	private String regNum;
-	private String specialization;
-	private String department;
+	private String dept;
+	private String spec;
 	private String batch;
-	private Date joinedAt;
+	private Date dob;
 
-	public StudentRegsDTO(String name, String username, String email, String password, String contact, String regNum,
-			String specialization, String department, String batch, Date joinedAt) {
-		super();
-		this.name = name;
-		this.username = username;
-		this.email = email;
-		this.password = password;
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
 		this.contact = contact;
-		this.regNum = regNum;
-		this.specialization = specialization;
-		this.department = department;
-		this.batch = batch;
-		this.joinedAt = joinedAt;
+	}
+
+	public String getSpec() {
+		return spec;
+	}
+
+	public void setSpec(String spec) {
+		this.spec = spec;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
 	}
 
 	public String getName() {
@@ -38,36 +45,12 @@ public class StudentRegsDTO {
 		this.name = name;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public String getEmail() {
 		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getContact() {
-		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
 	}
 
 	public String getRegNum() {
@@ -78,20 +61,12 @@ public class StudentRegsDTO {
 		this.regNum = regNum;
 	}
 
-	public String getSpecialization() {
-		return specialization;
+	public String getDept() {
+		return dept;
 	}
 
-	public void setSpecialization(String specialization) {
-		this.specialization = specialization;
-	}
-
-	public String getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(String department) {
-		this.department = department;
+	public void setDept(String dept) {
+		this.dept = dept;
 	}
 
 	public String getBatch() {
@@ -102,16 +77,10 @@ public class StudentRegsDTO {
 		this.batch = batch;
 	}
 
-	public StudentRegsDTO() {
-		super();
-	}
-
-	public Date getJoinedAt() {
-		return joinedAt;
-	}
-
-	public void setJoinedAt(Date joinedAt) {
-		this.joinedAt = joinedAt;
+	@Override
+	public String toString() {
+		return "StudentRegsDTO [name=" + name + ", email=" + email + ", regNum=" + regNum + ", dept=" + dept
+				+ ", batch=" + batch + "]";
 	}
 
 }

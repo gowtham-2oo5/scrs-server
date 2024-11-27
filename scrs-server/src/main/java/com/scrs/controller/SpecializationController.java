@@ -20,7 +20,7 @@ import com.scrs.service.SpecializationService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/spec")
+@RequestMapping("/api/spec")
 public class SpecializationController {
 	@Autowired
 	private SpecializationService specService;

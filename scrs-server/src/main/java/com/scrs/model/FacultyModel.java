@@ -3,6 +3,8 @@ package com.scrs.model;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -14,27 +16,20 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "faculty")
-@DiscriminatorValue("fac")
+@Table(name = "scrs_faculty")
+@DiscriminatorValue("ROLE_FACULTY")
 public class FacultyModel extends UserModel {
 
+	@Column(unique = true)
 	private String empId;
 
 	@ManyToOne
 	@JoinColumn(name = "department_id", nullable = false)
+	@JsonIgnore
 	private DepartmentModel department;
 
-	private Date joinedAt;
-
-	public List<CourseModel> getCourses() {
-		return courses;
-	}
-
-	public void setCourses(List<CourseModel> courses) {
-		this.courses = courses;
-	}
-
 	@Column(name = "instructing_course")
+	@JsonIgnore
 	private String instructingCourse;
 
 	@Enumerated(EnumType.STRING)
@@ -42,6 +37,12 @@ public class FacultyModel extends UserModel {
 
 	@OneToMany(mappedBy = "cc")
 	private List<CourseModel> courses;
+
+	private Date joined_at;
+	private String exp;
+
+	public FacultyModel() {
+	}
 
 	public String getEmpId() {
 		return empId;
@@ -59,16 +60,12 @@ public class FacultyModel extends UserModel {
 		this.department = department;
 	}
 
-	public Date getJoinedAt() {
-		return joinedAt;
-	}
-
-	public void setJoinedAt(Date joinedAt) {
-		this.joinedAt = joinedAt;
-	}
-
 	public String getInstructingCourse() {
 		return instructingCourse;
+	}
+
+	public void setInstructingCourse(String instructingCourse) {
+		this.instructingCourse = instructingCourse;
 	}
 
 	public FacultyDesignation getDesignation() {
@@ -79,8 +76,35 @@ public class FacultyModel extends UserModel {
 		this.designation = designation;
 	}
 
-	public void setInstructingCourse(String instructingCourse) {
-		this.instructingCourse = instructingCourse;
+	public List<CourseModel> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(List<CourseModel> courses) {
+		this.courses = courses;
+	}
+
+	public Date getJoined_at() {
+		return joined_at;
+	}
+
+	public void setJoined_at(Date joined_at) {
+		this.joined_at = joined_at;
+	}
+
+	public String getExp() {
+		return exp;
+	}
+
+	public void setExp(String exp) {
+		this.exp = exp;
+	}
+
+	@Override
+	public String toString() {
+		return "FacultyModel [empId=" + empId + ", department=" + department + ", instructingCourse="
+				+ instructingCourse + ", designation=" + designation + ", courses=" + courses + ", joined_at="
+				+ joined_at + ", exp=" + exp + "]";
 	}
 
 }

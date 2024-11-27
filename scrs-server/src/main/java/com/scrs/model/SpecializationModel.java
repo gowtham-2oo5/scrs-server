@@ -3,6 +3,8 @@ package com.scrs.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +33,7 @@ public class SpecializationModel {
 	private DepartmentModel dept;
 
 	@OneToMany(mappedBy = "specialization")
+	@JsonIgnore
 	private List<StudentModel> students;
 
 	@OneToMany(mappedBy = "spec")

@@ -3,6 +3,8 @@ package com.scrs.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +29,7 @@ public class BatchModel {
 	private boolean eligibleForNextRegs;
 
 	@OneToMany(mappedBy = "batch")
+	@JsonIgnore
 	private List<StudentModel> students;
 
 	public SemesterEnum getCurrentSem() {

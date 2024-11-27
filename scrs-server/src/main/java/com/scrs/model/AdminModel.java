@@ -1,12 +1,14 @@
 package com.scrs.model;
 
+import java.util.Date;
+
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "admins")
-@DiscriminatorValue("admin")
+@Table(name = "scrs_admins")
+@DiscriminatorValue("ROLE_ADMIN")
 public class AdminModel extends UserModel {
 
 	private boolean isSuperAdmin;
@@ -16,8 +18,8 @@ public class AdminModel extends UserModel {
 	}
 
 	public AdminModel(String name, String username, String email, String password, String contact,
-			String profilePicture, boolean isSuperAdmin) {
-		super(name, username, email, password, contact, UserRole.ADMIN, profilePicture); // Call to UserModel
+			String profilePicture, boolean isSuperAdmin, Date dob) {
+		super(name, username, email, password, contact, UserRole.ADMIN, profilePicture, dob); // Call to UserModel
 																							// constructor
 		this.isSuperAdmin = isSuperAdmin;
 	}

@@ -52,7 +52,6 @@ public class SpecializationServiceImpl implements SpecializationService {
 				specs.add(spec);
 			}
 			specs.remove(0);
-			// Pass the entities list to the repository layer for saving
 			saveSpecs(specs);
 			csvParser.close();
 		}

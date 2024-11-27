@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { Home } from "lucide-react";
 
 const Sidebar = ({ className, sidebarItems, singleItems }) => {
   const [openItem, setOpenItem] = useState(null); // Track which accordion item is open
@@ -41,8 +42,8 @@ const Sidebar = ({ className, sidebarItems, singleItems }) => {
             justifyContent: "center",
           }}
         >
-          <Link to="">
-            <div className="h-10 w-10 bg-blue-gray-200 self-center rounded-sm"></div>
+          <Link to="/admin">
+            <Home />
           </Link>
         </CardTitle>
       </CardHeader>
@@ -64,7 +65,7 @@ const Sidebar = ({ className, sidebarItems, singleItems }) => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex flex-col space-y-2 pl-6">
+                  <div className="flex flex-col pl-6 space-y-2">
                     {Object.entries(item.items).map(
                       ([subItemLabel, subItemPath], subIndex) => (
                         <Button
@@ -90,7 +91,7 @@ const Sidebar = ({ className, sidebarItems, singleItems }) => {
               <Button
                 key={index}
                 variant="ghost"
-                className="w-full justify-start gap-2"
+                className="justify-start w-full gap-2"
                 asChild
               >
                 <Link to={item.path}>
