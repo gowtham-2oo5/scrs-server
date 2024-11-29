@@ -24,6 +24,7 @@ import {
   CogIcon,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getSessionItem } from "@/utils/sessionStorageManager";
 
 import Sidebar from "../Sidebar";
 
@@ -115,14 +116,16 @@ const AdminLayout = ({ children }) => {
 
   const [sidebarIts, setSidebarItems] = useState(sidebarItems);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminName, setAdminName] = useState("");
 
   const [userRole, setUserRole] = useState("");
 
   const hasAddedAdmin = useRef(false); // Ref to track if "Create Admin" is added
 
   useEffect(() => {
-    const role = sessionStorage.getItem("role");
-    const userProfile = sessionStorage.getItem("dp");
+    const role = getSessionItem("role");
+    const userProfile = getSessionItem("dp");
+    setAdminName(getSessionItem("name"));
 
     console.log("Current role from sessionStorage:", role);
     console.log("Current userProfile from sessionStorage:", userProfile);
@@ -162,11 +165,11 @@ const AdminLayout = ({ children }) => {
     }
   }, []);
   return (
-    <div className="flex h-screen bg-background ">
+    <div className="flex h-screen text-blue-900 bg-background ">
       {/* Sidebar for larger screens */}
       <Sidebar
-        className="hidden lg:block lg:w-64 w-[16rem]  border font-semibold"
-        sidebarItems={sidebarIts}
+        className="hidden lg:block lg:w-64 w-[16rem]  border-blue-200 border text-blue-800 font-semibold"
+        sidebarItems={sidebarItems}
         singleItems={initialItems}
       />
 
@@ -174,7 +177,9 @@ const AdminLayout = ({ children }) => {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4 border-b">
-          <h1 className="text-3xl font-bold">{userRole} Dashboard</h1>
+          <h1 className="text-3xl font-bold">
+            Hi {adminName}, Welcome to {userRole} Dashboard
+          </h1>
           <div className="self-end hidden lg:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

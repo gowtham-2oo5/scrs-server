@@ -1,7 +1,19 @@
 import axios from "axios";
+import { getSessionItem } from "@/utils/sessionStorageManager";
 
-export default async function getUsers() {
-  return axios.get("/user/get-all");
+// Utility function to get the token
+function getToken() {
+  return getSessionItem("token");
+}
+
+// API functions with token included in each request
+
+export async function getUsers() {
+  return axios.get("/user/get-all", {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
 }
 
 export const loginUser = async (credentials) => {
@@ -27,6 +39,7 @@ export const createAdmin = async (formData) => {
   try {
     const response = await axios.post(`/api/admin/create`, formData, {
       headers: {
+        Authorization: `Bearer ${getToken()}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -41,7 +54,15 @@ export const createAdmin = async (formData) => {
 
 export const verifyGivenOtp = async (otp) => {
   try {
-    const response = await axios.post(`/api/auth/verify-otp`, { otp });
+    const response = await axios.post(
+      `/api/auth/verify-otp`,
+      { otp },
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      }
+    );
     return {
       data: response.data,
       status: response.status,
@@ -55,6 +76,7 @@ export const createStudent = async (formData) => {
   try {
     const res = await axios.post(`/api/student/create`, formData, {
       headers: {
+        Authorization: `Bearer ${getToken()}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -72,7 +94,11 @@ export const createStudent = async (formData) => {
 
 export const getDepts = async () => {
   try {
-    const res = await axios.get("/api/dept/get-all");
+    const res = await axios.get("/api/dept/get-all", {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
     return {
       data: res.data,
       status: res.status,
@@ -87,7 +113,11 @@ export const getDepts = async () => {
 
 export const addSingleDept = async (formData) => {
   try {
-    const res = await axios.post("/api/dept/insert-one", formData);
+    const res = await axios.post("/api/dept/insert-one", formData, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
     return {
       data: res.data,
       status: res.status,
@@ -103,7 +133,10 @@ export const addSingleDept = async (formData) => {
 export const bulkUploadDepts = async (file) => {
   try {
     const res = await axios.post("/api/dept/bulk-upload", file, {
-      headers: {},
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": "multipart/form-data",
+      },
     });
     return {
       data: res.data,
@@ -119,7 +152,11 @@ export const bulkUploadDepts = async (file) => {
 
 export const getAllFaculties = async (page, size) => {
   try {
-    const res = await axios.get(`/api/faculty?page=${page}&size=${size}`);
+    const res = await axios.get(`/api/faculty?page=${page}&size=${size}`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
     return {
       data: res.data,
       status: res.status,

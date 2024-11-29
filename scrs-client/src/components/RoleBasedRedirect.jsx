@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { getSessionItem } from "@/utils/sessionStorageManager";
 const RoleBasedRedirect = () => {
   const navigate = useNavigate();
-  const userRole = sessionStorage.getItem("role");
+  const userRole = getSessionItem("role");
 
   useEffect(() => {
     console.log("Current user role:", userRole);

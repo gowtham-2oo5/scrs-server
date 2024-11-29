@@ -42,14 +42,14 @@ export default function BulkUpload({ onUpload }) {
         type="file"
         accept=".csv"
         onChange={handleFileUpload}
-        className="rounded-lg focus:border-blue-500"
+        className="rounded-lg focus:border-gray-500"
       />
       {isReviewOpen && csvData && (
         <div className="mt-4">
           <CsvTable csvData={csvData} />
           <Button
             onClick={handleUpload}
-            className="px-6 py-2 mt-4 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-700"
+            className="px-6 py-2 mt-4 font-semibold text-white transition duration-300 ease-in-out bg-gray-600 rounded-lg shadow-md hover:bg-gray-700"
           >
             Upload Data
           </Button>

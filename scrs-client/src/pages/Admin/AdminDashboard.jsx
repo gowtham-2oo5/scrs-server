@@ -29,11 +29,11 @@ import {
 
 // Sample data for charts and tables
 const enrollmentData = [
-  { name: "CSE", students: 120 },
-  { name: "ECE", students: 98 },
-  { name: "EEE", students: 110 },
-  { name: "Civil", students: 85 },
-  { name: "Mechanical", students: 75 },
+  { name: "CSE", Students: 120 },
+  { name: "ECE", Students: 98 },
+  { name: "EEE", Students: 110 },
+  { name: "Civil", Students: 85 },
+  { name: "Mechanical", Students: 75 },
 ];
 
 const recentActivities = [
@@ -44,70 +44,109 @@ const recentActivities = [
   { id: 5, action: "System maintenance completed", timestamp: "1 day ago" },
 ];
 
+const notifications = [
+  {
+    id: 1,
+    title: "Registration Opening Soon",
+    description:
+      "Registration for Fall 2023 opens in 2 days. Prepare your course selections.",
+    action: "View Details",
+  },
+  {
+    id: 2,
+    title: "Scheduled Maintenance",
+    description:
+      "System maintenance scheduled for next weekend. Plan accordingly.",
+    action: "Learn More",
+  },
+  {
+    id: 3,
+    title: "New Faculty Member Added",
+    description:
+      "Dr. Jane Doe has joined the Computer Science department. Welcome her on board!",
+    action: "View Profile",
+  },
+  {
+    id: 4,
+    title: "Course Schedule Updated",
+    description:
+      "The schedule for Spring 2024 courses has been updated. Check out the changes.",
+    action: "View Updates",
+  },
+  {
+    id: 5,
+    title: "Exam Results Released",
+    description:
+      "Results for the recent semester exams are now available. Check your grades.",
+    action: "View Results",
+  },
+];
+
 export default function AdminDashboard() {
   return (
     <div className="p-6 space-y-6">
+      {/* Summary Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
+        <Card className="rounded-lg shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-semibold text-gray-700">
               Total Students
             </CardTitle>
-            <GraduationCap className="w-4 h-4 text-muted-foreground" />
+            <GraduationCap className="w-5 h-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">
-              +15% from last month
-            </p>
+            <div className="text-3xl font-bold text-blue-700">1,234</div>
+            <p className="text-sm text-gray-500">+15% from last month</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="rounded-lg shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-semibold text-gray-700">
               Active Courses
             </CardTitle>
-            <BookOpen className="w-4 h-4 text-muted-foreground" />
+            <BookOpen className="w-5 h-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">86</div>
-            <p className="text-xs text-muted-foreground">
-              +3 new this semester
-            </p>
+            <div className="text-3xl font-bold text-blue-700">86</div>
+            <p className="text-sm text-gray-500">+3 new this semester</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="rounded-lg shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-semibold text-gray-700">
               Faculty Members
             </CardTitle>
-            <Users className="w-4 h-4 text-muted-foreground" />
+            <Users className="w-5 h-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">72</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            <div className="text-3xl font-bold text-blue-700">72</div>
+            <p className="text-sm text-gray-500">+2 from last month</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="rounded-lg shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-semibold text-gray-700">
               Upcoming Events
             </CardTitle>
-            <Calendar className="w-4 h-4 text-muted-foreground" />
+            <Calendar className="w-5 h-5 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              Next: Faculty Meeting
-            </p>
+            <div className="text-3xl font-bold text-blue-700">3</div>
+            <p className="text-sm text-gray-500">Next: Faculty Meeting</p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Charts and Recent Activities */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-lg shadow-lg">
           <CardHeader>
-            <CardTitle>Enrollment by Department</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              Enrollment by Department
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -116,15 +155,17 @@ export default function AdminDashboard() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="students" fill="#8884d8" />
+                <Bar dataKey="Students" fill="#3b82f6" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg shadow-lg">
           <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              Recent Activities
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[300px]">
@@ -139,7 +180,9 @@ export default function AdminDashboard() {
                   {recentActivities.map((activity) => (
                     <TableRow key={activity.id}>
                       <TableCell>{activity.action}</TableCell>
-                      <TableCell>{activity.timestamp}</TableCell>
+                      <TableCell className="text-gray-500">
+                        {activity.timestamp}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -149,51 +192,85 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      {/* Quick Actions and Notifications */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="rounded-lg shadow-lg">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              Quick Actions
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Button className="w-full">Add New Student</Button>
-            <Button className="w-full">Add New Faculty</Button>
-            <Button className="w-full">Create Course</Button>
-            <Button className="w-full">Manage Schedule</Button>
-            <Button className="w-full">Manage Notifications</Button>
+          <CardContent className="space-y-3">
+            <Button className="w-full text-white bg-blue-600 hover:bg-blue-700">
+              Add New Student
+            </Button>
+            <Button className="w-full text-white bg-blue-600 hover:bg-blue-700">
+              Add New Faculty
+            </Button>
+            <Button className="w-full text-white bg-blue-600 hover:bg-blue-700">
+              Create Course
+            </Button>
+            <Button className="w-full text-white bg-blue-600 hover:bg-blue-700">
+              Manage Schedule
+            </Button>
+            <Button className="w-full text-white bg-blue-600 hover:bg-blue-700">
+              Manage Notifications
+            </Button>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
+        <Card className="rounded-lg shadow-lg md:col-span-2">
           <CardHeader>
-            <CardTitle>System Notifications</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              System Notifications
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center p-2 bg-yellow-100 rounded">
-                <AlertCircle className="w-4 h-4 mr-2 text-yellow-600" />
-                <span className="text-sm">
-                  Registration for Fall 2023 opens in 2 days
-                </span>
-              </div>
-              <div className="flex items-center p-2 bg-blue-100 rounded">
-                <AlertCircle className="w-4 h-4 mr-2 text-blue-600" />
-                <span className="text-sm">
-                  System maintenance scheduled for next weekend
-                </span>
-              </div>
+          <CardContent className="overflow-y-auto max-h-96">
+            <div className="space-y-4">
+              {notifications.map((notification, index) => (
+                <div
+                  key={index}
+                  className="flex items-start p-4 space-x-4 border border-blue-200 rounded-lg bg-blue-50"
+                >
+                  <AlertCircle className="w-6 h-6 text-blue-600" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-blue-800">
+                      {notification.title}
+                    </h4>
+                    <p className="mt-1 text-sm text-blue-600">
+                      {notification.description}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 text-blue-600 border-blue-300 hover:bg-blue-100"
+                    >
+                      {notification.action}
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg shadow-lg">
           <CardHeader>
-            <CardTitle>Support</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              Support
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Button className="w-full" variant="outline">
+          <CardContent className="space-y-3">
+            <Button
+              variant="outline"
+              className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+            >
               View Help Docs
             </Button>
-            <Button className="w-full" variant="outline">
+            <Button
+              variant="outline"
+              className="w-full text-blue-600 border-blue-300 hover:bg-blue-50"
+            >
               Contact Support
             </Button>
           </CardContent>

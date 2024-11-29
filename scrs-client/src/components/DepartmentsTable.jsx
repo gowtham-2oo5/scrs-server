@@ -17,15 +17,25 @@ export default function DepartmentTable({
   itemsPerPage,
 }) {
   return (
-    <div className="overflow-hidden border rounded-lg shadow-md">
-      <Table className="min-w-full divide-y">
-        <TableHeader className="font-bold">
+    <div className="overflow-hidden border border-gray-300 rounded-lg shadow-md">
+      <Table className="min-w-full divide-y divide-gray-200">
+        <TableHeader>
           <TableRow>
-            <TableCell className="px-4 py-2">ID</TableCell>
-            <TableCell className="px-4 py-2">Name</TableCell>
-            <TableCell className="px-4 py-2">SN</TableCell>
-            <TableCell className="px-4 py-2">HOD</TableCell>
-            <TableCell className="px-4 py-2">Actions</TableCell>
+            <TableCell className="px-4 py-2 text-sm font-semibold tracking-wider uppercase">
+              ID
+            </TableCell>
+            <TableCell className="px-4 py-2 text-sm font-semibold tracking-wider uppercase">
+              Name
+            </TableCell>
+            <TableCell className="px-4 py-2 text-sm font-semibold tracking-wider uppercase">
+              SN
+            </TableCell>
+            <TableCell className="px-4 py-2 text-sm font-semibold tracking-wider uppercase">
+              HOD
+            </TableCell>
+            <TableCell className="px-4 py-2 text-sm font-semibold tracking-wider uppercase">
+              Actions
+            </TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -34,29 +44,43 @@ export default function DepartmentTable({
             return (
               <TableRow
                 key={dept.id}
-                className="font-medium transition-colors duration-200 hover:bg-gray-100"
+                className={`${index % 2 === 0 ? "" : "bg-white"} hover:`}
               >
-                <TableCell className="px-4 py-2">{dynamicIndex}</TableCell>
-                <TableCell className="px-4 py-2">{dept.deptName}</TableCell>
-                <TableCell className="px-4 py-2">{dept.sn}</TableCell>
+                <TableCell className="px-4 py-2 text-sm ">
+                  {dynamicIndex}
+                </TableCell>
+                <TableCell className="px-4 py-2 text-sm ">
+                  {dept.deptName}
+                </TableCell>
+                <TableCell className="px-4 py-2 text-sm ">{dept.sn}</TableCell>
                 <TableCell className="px-4 py-2">
-                  {dept.hod == null ? "Didn't set yet" : dept.hod.name}
+                  <span
+                    className={`px-2 py-1 text-sm rounded-md ${
+                      dept.hod
+                        ? "bg-green-200 text-green-800"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {dept.hod ? dept.hod.name : "Not Set"}
+                  </span>
                 </TableCell>
                 <TableCell className="px-4 py-2">
                   <div className="flex space-x-2">
                     <Button
                       onClick={() => onEdit(dept)}
-                      className="flex items-center px-3 py-2 space-x-1 text-white transition-all duration-150 ease-in-out rounded-lg hover:bg-gray-600"
+                      className="flex items-center px-3 py-1 text-sm text-white bg-gray-800 rounded-md hover:bg-gray-700"
+                      title="Edit Department"
                     >
-                      <Pencil className="w-4 h-4" />
-                      <span>Edit</span>
+                      <Pencil className="w-4 h-4 mr-1" />
+                      Edit
                     </Button>
                     <Button
                       onClick={() => onDelete(dept.id)}
-                      className="flex items-center px-3 py-2 space-x-1 text-white transition-all duration-150 ease-in-out bg-red-500 rounded-lg hover:bg-red-600"
+                      className="flex items-center px-3 py-1 text-sm text-white bg-red-500 rounded-md hover:bg-red-600"
+                      title="Delete Department"
                     >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Delete</span>
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
                 </TableCell>

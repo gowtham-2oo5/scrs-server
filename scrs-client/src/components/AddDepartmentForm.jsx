@@ -41,7 +41,7 @@ export default function AddDepartmentForm({
       <div className="grid items-center grid-cols-4 gap-4">
         <Label
           htmlFor="name"
-          className="font-semibold text-right text-blue-800"
+          className="font-semibold text-right text-gray-800"
         >
           Name
         </Label>
@@ -49,34 +49,34 @@ export default function AddDepartmentForm({
           id="name"
           value={newDepartment.name}
           onChange={handleInputChange}
-          className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500"
+          className="col-span-3 border-gray-300 rounded-lg focus:border-gray-500"
         />
       </div>
       <div className="grid items-center grid-cols-4 gap-4">
-        <Label htmlFor="sn" className="font-semibold text-right text-blue-800">
+        <Label htmlFor="sn" className="font-semibold text-right text-gray-800">
           SN
         </Label>
         <Input
           id="sn"
           value={newDepartment.sn}
           onChange={handleInputChange}
-          className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500"
+          className="col-span-3 border-gray-300 rounded-lg focus:border-gray-500"
         />
       </div>
       <div className="grid items-center grid-cols-4 gap-4">
-        <Label htmlFor="hod" className="font-semibold text-right text-blue-800">
+        <Label htmlFor="hod" className="font-semibold text-right text-gray-800">
           HOD
         </Label>
         <Select onValueChange={handleHodChange} value={newDepartment.hod}>
-          <SelectTrigger className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500">
+          <SelectTrigger className="col-span-3 border-gray-300 rounded-lg focus:border-gray-500">
             <SelectValue placeholder="Select HOD" />
           </SelectTrigger>
-          <SelectContent className="border-blue-200 bg-blue-50">
+          <SelectContent className="border-gray-200 bg-gray-50">
             {hodOptions.map((option) => (
               <SelectItem
                 key={option.value}
                 value={option.value}
-                className="text-blue-800 hover:bg-blue-100"
+                className="text-gray-800 hover:bg-gray-100"
               >
                 {option.label}
               </SelectItem>
@@ -86,7 +86,7 @@ export default function AddDepartmentForm({
       </div>
       <Button
         onClick={handleSubmit}
-        className="px-6 py-2 font-semibold text-white transition duration-300 ease-in-out bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
+        className="px-6 py-2 font-semibold text-white transition duration-300 ease-in-out bg-gray-600 rounded-lg shadow-md hover:bg-gray-700"
       >
         {isEdit ? "Update Department" : "Add Department"}
       </Button>
