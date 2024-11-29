@@ -1,16 +1,10 @@
 package com.scrs.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,11 +39,16 @@ public class StudentServiceImpl implements StudentService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	private PasswordService passService;
+
+	@Autowired
+	private CsvService csvService;
+
 	@Override
 	public StudentModel createStudent(StudentRegsDTO dto, MultipartFile profilePicture) throws IOException {
 		String encryptedPassword = passwordEncoder.encode(dateString(dto.getDob()));
 		System.out.println("Is null at service ?" + profilePicture.isEmpty());
-		// photoService.savePic(profilePicture);
 
 		System.out.println("Going to create new Student");
 		StudentModel student = new StudentModel();
@@ -86,21 +85,7 @@ public class StudentServiceImpl implements StudentService {
 			return null;
 		}
 		student.setDob(dto.getDob());
-		/*
-		 * student.setName(studentDTO.getName());
-		 * student.setUsername(studentDTO.getUsername());
-		 * student.setEmail(studentDTO.getEmail());
-		 * student.setContact(studentDTO.getContact());
-		 * student.setPassword(encryptedPassword);
-		 * student.setUserRole(UserRole.STUDENT);
-		 * student.setProfilePicture(profilePictureUrl);
-		 * student.setRegNum(studentDTO.getRegNum());
-		 * student.setSpecialization(getSpecialization(studentDTO.getSpecialization()));
-		 * student.setDept(getDept(studentDTO.getDepartment()));
-		 * student.setBatch(getBatch(studentDTO.getYear(), studentDTO.getSemester()));
-		 * student.setJoinedAt(studentDTO.getJoinedAt());
-		 */
-		// studentRepo.save(student);
+
 		System.out.println("Got Student: " + student.toString());
 		studentRepo.save(student);
 		return student;
@@ -116,7 +101,11 @@ public class StudentServiceImpl implements StudentService {
 
 	private BatchModel getBatch(String name) {
 		try {
-			return bRepo.getBatchFromName(name);
+			BatchModel batch = bRepo.getBatchFromName(name);
+			System.out.println("Searching for batch with name: " + name);
+			System.out.println("FOr testing" + bRepo.findAll().get(0).getName());
+			System.out.println("Got batch: " + batch.getName());
+			return batch;
 		} catch (Exception e) {
 			System.err.println("Error while fetching batch: " + e.getLocalizedMessage());
 			return null;
@@ -147,20 +136,20 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public void bulkInsertDepts(MultipartFile file) throws IOException{
-		
+	public void bulkInsertDepts(MultipartFile file) throws IOException {
 		System.out.println("Entered service");
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-				CSVParser csvParser = new CSVParser(reader,
-						CSVFormat.EXCEL.builder()
-						.setHeader("name","contact","email","regNum","dept","spec","batch","dob")
-						.setSkipHeaderRecord(true).build())) {
-			List<StudentModel> students = new ArrayList<>();
-			for (CSVRecord record : csvParser) {
-				String encryptedPassword = passwordEncoder.encode(parseDateString(parseDate(record.get("dob"))));
 
+		// Define the expected CSV headers
+		String[] headers = { "name", "contact", "email", "regNum", "dept", "spec", "batch", "dob" };
+
+		// Use CsvService to parse the CSV file and map records to StudentModel
+		List<StudentModel> students = csvService.parseCsv(file, headers, record -> {
+			try {
+				// Generate encrypted password for each student
+				String encryptedPassword = passwordEncoder.encode(passService.generatePassword(8));
+
+				// Map record fields to StudentModel
 				StudentModel student = new StudentModel();
-				
 				student.setName(record.get("name"));
 				student.setUsername(record.get("regNum"));
 				student.setEmail(record.get("email"));
@@ -173,27 +162,26 @@ public class StudentServiceImpl implements StudentService {
 				student.setSpecialization(getSpecialization(record.get("spec")));
 				student.setDept(getDept(record.get("dept")));
 				student.setBatch(getBatch(record.get("batch")));
-				
-				students.add(student);
-			}
-			saveStudents(students);
-		}
 
+				return student;
+			} catch (Exception e) {
+				System.err.println("Error processing record: " + record + " - " + e.getMessage());
+				return null; // Skip records that cause exceptions
+			}
+		});
+
+		// Remove null entries from the list (skipped rows)
+		students.removeIf(student -> student == null);
+
+		// Save valid student records
+		saveStudents(students);
 	}
 
 	private void saveStudents(List<StudentModel> students) {
-		for(StudentModel student : students) {
+		for (StudentModel student : students) {
 			studentRepo.save(student);
-			System.out.println("Saving student with ID: "+ student.getId());
+			System.out.println("Saving student with ID: " + student.getId());
 		}
-	}
-
-	private String parseDateString(Date dob) {
-		if (dob == null) {
-			return null;
-		}
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		return dateFormat.format(dob);
 	}
 
 	public Date parseDate(String string) {
@@ -206,4 +194,5 @@ public class StudentServiceImpl implements StudentService {
 			return null;
 		}
 	}
+
 }

@@ -1,54 +1,78 @@
 package com.scrs.configs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig{
-
-	@Autowired
-	private UserConfigProperties userConfigProperties;
-
-	@Bean
-	UserDetailsService userDetailsService() {
-		List<UserDetails> userDetailsList = new ArrayList<>();
-
-		for (UserConfigProperties.UserProperty user : userConfigProperties.getUsers()) {
-			userDetailsList.add(
-					User.withUsername(user.getUsername()).password(user.getPassword()).roles(user.getRole()).build());
-		}
-
-		return new InMemoryUserDetailsManager(userDetailsList);
-	}
+@EnableMethodSecurity(prePostEnabled = true)
+public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
+		http.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add this line
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(
+								"/",
+								"/api/user/test/roles",
+								"/api/auth/*",
+								"/api/admin/create",
+								"/swagger-ui/**",
+								"/v3/api-docs/**",
+								"/swagger-resources/**",
+								"/api-docs/**",
+								"/webjars/**",
+								"/api-docs")
+						.permitAll() // Permit all necessary Swagger and API documentation routes
+						.anyRequest().authenticated() // Secure all other endpoints
+				);
 
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				//.requestMatchers("/admin").hasRole("ADMIN")
-				.anyRequest().permitAll()).httpBasic(httpSecurity -> httpSecurity.disable());
+		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
 
 	@Bean
+	JwtAuthFilter jwtAuthenticationFilter() {
+		return new JwtAuthFilter();
+	}
+
+	@Bean
+	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
+
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Frontend URL
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed methods
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*")); // Allowed headers
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration); // Apply CORS configuration globally
+		return source;
+	}
+
+	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(12);
-	}	
+	}
 
 }

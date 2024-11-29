@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,8 @@ import com.scrs.dto.FacultyRegsDTO;
 import com.scrs.model.FacultyModel;
 import com.scrs.service.FacultyService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/faculty")
@@ -31,6 +34,8 @@ public class FacultyController {
 	private FacultyService facService;
 
 	@GetMapping
+    @SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllFac(
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
@@ -42,6 +47,8 @@ public class FacultyController {
 	}
 
 	@PostMapping("/single-insert")
+	@SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<String> testInsert(@RequestBody FacultyRegsDTO facDTO) {
 		try {
 			UUID id = facService.createSingleFaculty(facDTO);

@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.scrs.model.UserModel;
+import com.scrs.model.UserPrincipal;
 import com.scrs.repository.UserRepo;
 
 @Service
@@ -32,6 +34,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserModel getUserById(UUID id) {
 		return userRepo.findById(id).get();
+	}
+
+	@Override
+	public UserDetails getByUsername(String username) throws Exception{
+		UserModel user = userRepo.findByUsername(username);
+
+		if (user != null) {
+			return new UserPrincipal(user);
+		} else {
+			throw new Exception("user not found");
+		}
 	}
 
 }

@@ -25,4 +25,14 @@ Faculty JSON String:
 
 Student JSON String:
 
+{
+  "name": "StudentOne",
+  "contact": "1234567809",
+  "email": "student_one@gmail.com",
+  "regNum": "2200031641",
+  "dept": "CSE",
+  "spec": "DS",
+  "batch": "Y22",
+  "dob": "2005-03-08T21:48:40.293Z"
+}
 

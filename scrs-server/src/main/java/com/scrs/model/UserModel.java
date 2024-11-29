@@ -53,6 +53,25 @@ public abstract class UserModel {
 	@Column(name = "updated_at")
 	private Date updatedAt;
 
+	@Column(name = "user_role", insertable = false, updatable = false)
+	private String discriminator;
+
+	public UserRole getRole() {
+		return role;
+	}
+
+	public void setRole(UserRole role) {
+		this.role = role;
+	}
+
+	public void setUserRole(String discriminator) {
+		this.discriminator = discriminator;
+	}
+	
+	public String getDisciminatorVal() {
+		return discriminator;
+	}
+
 	public UserModel() {
 	}
 

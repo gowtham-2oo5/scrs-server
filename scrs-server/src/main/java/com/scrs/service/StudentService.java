@@ -9,6 +9,7 @@ import com.scrs.dto.StudentRegsDTO;
 import com.scrs.model.StudentModel;
 
 public interface StudentService {
+	
 
 	final String profilePictureUrl = "http://res.cloudinary.com/scrs-user-profile-pictures/image/upload/v1732555250/ay8jqjqva1rlhsqpdhmb.png";
 

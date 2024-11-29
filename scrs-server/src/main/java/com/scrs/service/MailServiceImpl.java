@@ -43,7 +43,7 @@ public class MailServiceImpl implements MailService {
 
             helper.setText(emailContent, true);
 
-            mailSender.send(message);
+           // mailSender.send(message);
 
             System.out.println("OTP sent to: " + mail);
             System.out.println("OTP is: " + otp);

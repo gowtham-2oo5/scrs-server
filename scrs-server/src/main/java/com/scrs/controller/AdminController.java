@@ -39,7 +39,7 @@ public class AdminController {
 
 	@PostMapping(value = "/create", consumes = "multipart/form-data")
 	public ResponseEntity<String> createAdmin(@RequestPart("profilePicture") MultipartFile profilePicture,
-			@RequestPart("adminDetails") String adminDetailsJson, @RequestParam() Boolean isSuperAdmin)
+			@RequestPart("adminDetails") String adminDetailsJson, @RequestParam(defaultValue = "false") Boolean isSuperAdmin)
 			throws JsonProcessingException {
 
 		ObjectMapper objectMapper = new ObjectMapper();

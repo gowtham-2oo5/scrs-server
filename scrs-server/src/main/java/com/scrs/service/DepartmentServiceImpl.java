@@ -1,14 +1,8 @@
 package com.scrs.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +22,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Autowired
 	private FacultyService facSer;
+
+	@Autowired
+	private CsvService csvService;
 
 	@Override
 	public List<DepartmentModel> getAll() {
@@ -57,32 +54,20 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public void bulkInsertDepts(MultipartFile file) throws IOException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-			CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL.builder().setHeader("Name", "SN").build());
-			List<DepartmentModel> depts = new ArrayList<>();
+		String[] headers = { "Name", "SN" };
+		List<DepartmentModel> depts = csvService.parseCsv(file, headers, record -> {
+			DepartmentModel dept = new DepartmentModel();
+			dept.setDeptName(record.get("Name"));
+			dept.setSn(record.get("SN"));
+			return dept;
+		});
 
-			for (CSVRecord record : csvParser) {
-				/*
-				 * MyEntity entity = new MyEntity(); entity.setField1(csvRecord.get("Field1"));
-				 * entity.setField2(csvRecord.get("Field2")); // Set other fields as necessary
-				 * entities.add(entity);
-				 */
-				DepartmentModel dept = new DepartmentModel();
-				dept.setDeptName(record.get("Name"));
-				dept.setSn(record.get("SN"));
-				System.out.println(dept.toString());
-				depts.add(dept);
-			}
-			depts.remove(0);
-			// Pass the entities list to the repository layer for saving
-			saveDepts(depts);
-			csvParser.close();
-		}
+		saveDepts(depts);
 	}
 
 	private void saveDepts(List<DepartmentModel> depts) {
 		for (DepartmentModel dept : depts) {
-		
+
 			deptRepo.save(dept);
 			System.out.println("Saved Dept with ID: " + dept.getId());
 		}

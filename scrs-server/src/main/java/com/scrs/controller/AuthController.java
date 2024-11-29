@@ -23,7 +23,7 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<String> testinAuth() {
 		return new ResponseEntity<>("Path working bro, all good", HttpStatus.OK);
 	}

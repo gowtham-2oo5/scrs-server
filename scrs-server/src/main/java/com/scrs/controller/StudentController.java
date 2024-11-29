@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +22,13 @@ import com.scrs.dto.StudentRegsDTO;
 import com.scrs.model.StudentModel;
 import com.scrs.service.StudentService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/student")
+
+@SecurityRequirement(name = "bearerAuth")
 public class StudentController {
 
 	@Autowired
@@ -39,6 +44,8 @@ public class StudentController {
 	}
 
 	@PostMapping(value = "/bulk-upload", consumes = "multipart/form-data")
+	@PreAuthorize("hasRole('ADMIN')")
+
 	public ResponseEntity<String> uploadCsvFile(@RequestPart("csv_file") MultipartFile file) {
 		System.out.println("In controller");
 		if (file.isEmpty()) {
@@ -54,8 +61,10 @@ public class StudentController {
 					.body("Error processing file: " + e.getMessage());
 		}
 	}
-	
+
 	@PostMapping(value = "/create", consumes = "multipart/form-data")
+	@PreAuthorize("hasRole('ADMIN')")
+
 	public ResponseEntity<String> createStudent(@RequestPart("profilePicture") MultipartFile profilePicture,
 			@RequestPart("studentDetails") String stuDetails) throws JsonProcessingException {
 
@@ -63,7 +72,7 @@ public class StudentController {
 		StudentRegsDTO studDetails = objectMapper.readValue(stuDetails, StudentRegsDTO.class);
 
 		System.out.println("Received Student details from client: " + studDetails);
-		System.out.println("Profile picture: " + profilePicture.getOriginalFilename()+"\n Checking if null");
+		System.out.println("Profile picture: " + profilePicture.getOriginalFilename() + "\n Checking if null");
 		System.out.println(profilePicture == null);
 		try {
 			StudentModel createdStudent = studService.createStudent(studDetails, profilePicture);
@@ -76,6 +85,7 @@ public class StudentController {
 	}
 
 	@PostMapping("test-insert")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<String> createTest(@RequestBody StudentRegsDTO studentDTO) throws IOException {
 
 		return new ResponseEntity<>(studService.createStudent(studentDTO, null).toString(), HttpStatus.OK);

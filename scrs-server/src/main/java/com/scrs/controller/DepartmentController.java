@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,15 +21,19 @@ import com.scrs.dto.DeptRegsDTO;
 import com.scrs.model.DepartmentModel;
 import com.scrs.service.DepartmentService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/dept")
+@SecurityRequirement(name = "bearerAuth")
 public class DepartmentController {
 
 	@Autowired
 	private DepartmentService deptService;
 
 	@PostMapping(value = "/bulk-upload", consumes = "multipart/form-data")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<String> uploadCsvFile(@RequestPart("csv_file") MultipartFile file) {
 		if (file.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
@@ -58,9 +63,9 @@ public class DepartmentController {
 	public List<DepartmentModel> getAllDepts() {
 		return deptService.getAll();
 	}
-	
+
 	@PutMapping("/set-hod/{sn}")
-	public ResponseEntity<String> setHod(String sn,@RequestParam String uname){
+	public ResponseEntity<String> setHod(String sn, @RequestParam String uname) {
 		try {
 			deptService.setHOD(sn, uname);
 			return ResponseEntity.status(HttpStatus.OK).body("Updated HOD");

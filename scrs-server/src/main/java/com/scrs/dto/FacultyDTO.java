@@ -2,6 +2,9 @@ package com.scrs.dto;
 
 import java.util.Date;
 
+import com.scrs.model.FacultyModel;
+import com.scrs.model.UserModel;
+
 public class FacultyDTO {
 	private String name;
 	private String email;
@@ -12,6 +15,22 @@ public class FacultyDTO {
 	private String department;
 	private String designation;
 	private String exp;
+
+	public FacultyDTO(UserModel user, FacultyModel facultyModel) {
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.contact = user.getContact();
+		this.profilePicture = user.getProfilePicture();
+		this.dob = user.getDob();
+		this.empId = facultyModel.getEmpId();
+		this.department = facultyModel.getDepartment().getDeptName();
+		this.designation = facultyModel.getDesignation().name();
+		this.exp = facultyModel.getExp();
+	}
+
+	public FacultyDTO() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public String getName() {
 		return name;

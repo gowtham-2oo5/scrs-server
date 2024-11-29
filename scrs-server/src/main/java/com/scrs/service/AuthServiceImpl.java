@@ -7,7 +7,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scrs.dto.AdminDTO;
+import com.scrs.dto.AuthResponse;
+import com.scrs.dto.FacultyDTO;
+import com.scrs.dto.StudentDTO;
 import com.scrs.model.AdminModel;
+import com.scrs.model.FacultyModel;
+import com.scrs.model.StudentModel;
 import com.scrs.model.UserModel;
 import com.scrs.model.UserRole;
 import com.scrs.repository.UserRepo;
@@ -20,6 +25,9 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private JwtService jwtService;
 
 	@Autowired
 	private MailService mailService;
@@ -61,37 +69,68 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public Object verifyOtp(String otp) {
-		long currentTime = System.currentTimeMillis();
-
-		if (generatedOtp != null && generatedOtp.equals(otp) && (currentTime - otpGeneratedTime < otpValidity)) {
-			System.out.println("OTP Verified");
-			UserModel user = userRepo.findByUsername(username);
-
-			generatedOtp = null;
-			otpGeneratedTime = null;
-
-			UserRole userRole = user.getUserRole();
-
-			// TODO: Modify these return statements for jwt support
-			switch (userRole) {
-			case ADMIN:
-				AdminModel adminModel = (AdminModel) user;
-				AdminDTO admin = new AdminDTO(user, adminModel.isSuperAdmin());
-				return admin;
-
-			case FACULTY:
-				return null;
-
-			case STUDENT:
-
-				return null;
-
-			default:
-				throw new IllegalArgumentException("Invalid user role: " + userRole);
-			}
-		} else {
+		if (isOtpInvalid(otp)) {
 			return "Invalid or Expired OTP";
 		}
+
+		UserModel user = userRepo.findByUsername(username);
+		generatedOtp = null;
+		otpGeneratedTime = null;
+
+		AuthResponse response = createAuthResponseForUser(user);
+		if (response != null) {
+			String token = jwtService.generateToken(response);
+			response.setToken(token);
+		}
+		return response;
+	}
+
+	private boolean isOtpInvalid(String otp) {
+		long currentTime = System.currentTimeMillis();
+		return generatedOtp == null || !generatedOtp.equals(otp) || (currentTime - otpGeneratedTime >= otpValidity);
+	}
+
+	private AuthResponse createAuthResponseForUser(UserModel user) {
+		UserRole userRole = user.getUserRole();
+		AuthResponse response = new AuthResponse();
+
+		switch (userRole) {
+		case ADMIN:
+			return buildAdminResponse(user, response);
+		case FACULTY:
+			return buildFacultyResponse(user, response);
+		case STUDENT:
+			return buildStudentResponse(user, response);
+		default:
+			throw new IllegalArgumentException("Invalid user role: " + userRole);
+		}
+	}
+
+	private AuthResponse buildAdminResponse(UserModel user, AuthResponse response) {
+		AdminModel adminModel = (AdminModel) user;
+		AdminDTO adminDTO = new AdminDTO(user, adminModel.isSuperAdmin());
+		response.setData(adminDTO);
+		response.setUsername(adminModel.getUsername());
+		response.setRole(adminModel.getUserRole().name());
+		return response;
+	}
+
+	private AuthResponse buildFacultyResponse(UserModel user, AuthResponse response) {
+		FacultyModel facultyModel = (FacultyModel) user;
+		FacultyDTO facultyDTO = new FacultyDTO(user, facultyModel);
+		response.setData(facultyDTO);
+		response.setUsername(facultyModel.getUsername());
+		response.setRole(facultyModel.getUserRole().name());
+		return response;
+	}
+
+	private AuthResponse buildStudentResponse(UserModel user, AuthResponse response) {
+		StudentModel studentModel = (StudentModel) user;
+		StudentDTO studentDTO = new StudentDTO(user, studentModel.getRegNum());
+		response.setData(studentDTO);
+		response.setUsername(studentModel.getUsername());
+		response.setRole(studentDTO.getRole().name());
+		return response;
 	}
 
 	@Override
