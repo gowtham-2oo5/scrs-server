@@ -3,7 +3,7 @@ package com.scrs.dto;
 public class BatchRegsDTO {
 
 	private String name;
-	private String currYr;
+	private String currentYear;
 
 	public String getName() {
 		return name;
@@ -13,12 +13,14 @@ public class BatchRegsDTO {
 		this.name = name;
 	}
 
-	public String getCurrYr() {
-		return currYr;
+	public String getCurrentYear() {
+		return currentYear;
 	}
 
-	public void setCurrYr(String currYr) {
-		this.currYr = currYr;
+	public void setCurrentYear(String currentYear) {
+		this.currentYear = currentYear;
 	}
+
+	
 
 }

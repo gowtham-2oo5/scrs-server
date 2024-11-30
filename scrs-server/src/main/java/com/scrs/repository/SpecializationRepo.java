@@ -10,4 +10,7 @@ import com.scrs.model.SpecializationModel;
 public interface SpecializationRepo extends JpaRepository<SpecializationModel, UUID> {
 	@Query("SELECT spec FROM SpecializationModel spec WHERE spec.sn = ?1")
 	SpecializationModel findBySN(String sn);
+
+	@Query("SELECT spec FROM SpecializationModel spec WHERE spec.id = ?1")
+	SpecializationModel findByID(UUID specId);
 }

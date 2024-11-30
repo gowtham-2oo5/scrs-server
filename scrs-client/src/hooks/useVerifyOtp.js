@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { verifyGivenOtp } from "../api/index";
+import { verifyGivenOtp } from "@/api/auth";
 
 const useVerifyOtp = () => {
   const [isLoading, setIsLoading] = useState(false);

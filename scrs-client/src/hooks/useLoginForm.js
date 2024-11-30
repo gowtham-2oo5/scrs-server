@@ -1,6 +1,6 @@
 // hooks/useLoginForm.js
 import { useState } from "react";
-import { loginUser } from "../api"; // Adjust the path if necessary
+import { loginUser } from "@/api/auth"; // Adjust the path if necessary
 
 const useLoginForm = () => {
   const [loading, setLoading] = useState(false);

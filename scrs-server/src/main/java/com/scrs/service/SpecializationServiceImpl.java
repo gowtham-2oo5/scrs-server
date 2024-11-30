@@ -1,14 +1,9 @@
 package com.scrs.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.scrs.dto.SpcRegsDTO;
 import com.scrs.model.DepartmentModel;
 import com.scrs.model.SpecializationModel;
-import com.scrs.repository.DepartmentRepo;
 import com.scrs.repository.SpecializationRepo;
 
 @Service
@@ -26,7 +20,10 @@ public class SpecializationServiceImpl implements SpecializationService {
 	private SpecializationRepo specRepo;
 
 	@Autowired
-	private DepartmentRepo deptRepo;
+	private DepartmentService deptService;
+
+	@Autowired
+	private CsvService csvService;
 
 	@Override
 	public List<SpecializationModel> getAll() {
@@ -36,25 +33,17 @@ public class SpecializationServiceImpl implements SpecializationService {
 	@Override
 	public void bulkInsertSpecs(MultipartFile file) throws IOException {
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-			CSVParser csvParser = new CSVParser(reader,
-					CSVFormat.EXCEL.builder().setHeader("Name", "SN", "Dept").build());
-			List<SpecializationModel> specs = new ArrayList<>();
+		String[] headers = { "Name", "SN", "Dept" };
+		List<SpecializationModel> specs = csvService.parseCsv(file, headers, record -> {
+			SpecializationModel spec = new SpecializationModel();
 
-			for (CSVRecord record : csvParser) {
-				SpecializationModel spec = new SpecializationModel();
+			spec.setSpecName(record.get("Name"));
+			spec.setSn(record.get("SN"));
+			spec.setDept(getDept(record.get("Dept")));
+			return spec;
+		});
 
-				spec.setSpecName(record.get("Name"));
-				spec.setSn(record.get("SN"));
-				spec.setDept(getDept(record.get("Dept")));
-
-				System.out.println(spec.toString());
-				specs.add(spec);
-			}
-			specs.remove(0);
-			saveSpecs(specs);
-			csvParser.close();
-		}
+		saveSpecs(specs);
 
 	}
 
@@ -80,12 +69,70 @@ public class SpecializationServiceImpl implements SpecializationService {
 	}
 
 	private DepartmentModel getDept(String dept) {
-		return deptRepo.findBySN(dept);
+		System.out.println("Fetching department: " + dept);
+		try {
+			DepartmentModel department = deptService.getDept(dept);
+			System.out.println("Fetched department: " + department);
+			return department;
+		} catch (Exception e) {
+			System.err.println("Error fetching department: " + dept + ", Error: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
 	public SpecializationModel getSpec(String sn) {
-		return specRepo.findBySN(sn);
+		System.out.println("Fetching specialization with SN: " + sn);
+		try {
+			SpecializationModel spec = specRepo.findBySN(sn);
+			System.out.println("Fetched specialization: " + spec);
+			return spec;
+		} catch (Exception e) {
+			System.err.println("Error fetching specialization with SN: " + sn + ", Error: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 
+	@Override
+	public String updateSpec(String sn, String deptSn) {
+		System.out.println("Updating specialization with SN: " + sn);
+		try {
+			SpecializationModel spec = getSpec(sn);
+			if (spec == null) {
+				System.err.println("Specialization not found for SN: " + sn);
+				return "Specialization not found";
+			}
+			DepartmentModel dept = deptService.getDept(deptSn);
+			spec.setDept(dept);
+			specRepo.save(spec);
+			System.out.println("Updated specialization: " + spec);
+			return "Updated Specialization";
+		} catch (Exception e) {
+			System.err.println("Error updating specialization: " + e.getMessage());
+			e.printStackTrace();
+			return "Error updating specialization";
+		}
+	}
+
+	@Override
+	public String deleteSpec(String id) {
+		System.out.println("Deleting specialization with ID: " + id);
+		try {
+			UUID specId = UUID.fromString(id);
+			SpecializationModel spec = specRepo.findByID(specId);
+			if (spec == null) {
+				System.err.println("Specialization not found for ID: " + id);
+				return "Specialization not found";
+			}
+			specRepo.delete(spec);
+			System.out.println("Deleted specialization: " + spec);
+			return "Deleted successfully";
+		} catch (Exception e) {
+			System.err.println("Error deleting specialization: " + e.getMessage());
+			e.printStackTrace();
+			return "Error deleting specialization";
+		}
+	}
 }

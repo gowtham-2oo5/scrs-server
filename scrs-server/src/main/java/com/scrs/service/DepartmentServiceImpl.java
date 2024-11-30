@@ -51,7 +51,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public DepartmentModel getDept(String sn) {
-		return deptRepo.findBySN(sn);
+		System.out.println("Fetching DEPT with SN: "+ sn);
+		DepartmentModel dept = deptRepo.findBySN(sn);
+		System.out.println("Received dept: "+ dept.getDeptName());
+		return dept;
 	}
 
 	@Override

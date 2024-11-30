@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -22,165 +23,237 @@ import com.scrs.repository.BatchRepo;
 @Service
 public class BatchServiceImpl implements BatchService {
 
-	@Autowired
-	private BatchRepo bRepo;
+    @Autowired
+    private BatchRepo bRepo;
 
-	@Override
-	public void insertOne(BatchRegsDTO bDTO) {
-		BatchModel batch = new BatchModel();
-		batch.setName(bDTO.getName());
-		batch.setCurrentYear(getCurrentYear(bDTO.getCurrYr()));
-		bRepo.save(batch);
-	}
+    @Override
+    public void insertOne(BatchRegsDTO bDTO) {
+        System.out.println("Inserting a single batch...");
+        try {
+            BatchModel batch = new BatchModel();
+            batch.setName(bDTO.getName());
+            batch.setCurrentYear(getCurrentYear(bDTO.getCurrentYear()));
+            batch.setCurrentSem(getSemester("Odd"));
+            batch.setEligibleForNextRegs(true);
+            bRepo.save(batch);
+            System.out.println("Batch inserted successfully: " + batch.getName());
+        } catch (Exception e) {
+            System.err.println("Error inserting batch: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-	private YearEnum getCurrentYear(String currYr) {
-		switch (currYr) {
-		case "1":
-			return YearEnum.FIRST;
-		case "2":
-			return YearEnum.SECOND;
-		case "3":
-			return YearEnum.THIRD;
-		case "4":
-			return YearEnum.FOURTH;
-		}
-		return null;
-	}
+    private YearEnum getCurrentYear(String currYr) {
+        System.out.println("Resolving current year from value: " + currYr);
+        switch (currYr) {
+            case "1":
+                return YearEnum.FIRST;
+            case "2":
+                return YearEnum.SECOND;
+            case "3":
+                return YearEnum.THIRD;
+            case "4":
+                return YearEnum.FOURTH;
+            default:
+                System.err.println("Invalid year provided: " + currYr);
+                return null;
+        }
+    }
 
-	@Override
-	public void bulkUpload(MultipartFile file) throws IOException {
+    @Override
+    public void bulkUpload(MultipartFile file) throws IOException {
+        System.out.println("Starting bulk upload of batches...");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            CSVParser csvParser = new CSVParser(reader,
+                    CSVFormat.EXCEL.builder().setHeader("Name", "Current Year", "Current Semester", "eligible")
+                            .setSkipHeaderRecord(true).build());
+            List<BatchModel> batches = new ArrayList<>();
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-			CSVParser csvParser = new CSVParser(reader,
-					CSVFormat.EXCEL.builder().setHeader("Name", "Current Year", "Current Semester", "eligible")
-							.setSkipHeaderRecord(true).build());
-			List<BatchModel> batches = new ArrayList<>();
+            for (CSVRecord record : csvParser) {
+                try {
+                    BatchModel batch = new BatchModel();
+                    batch.setName(record.get("Name"));
+                    batch.setCurrentYear(getCurrentYear(record.get("Current Year")));
+                    batch.setCurrentSem(getSemester(record.get("Current Semester")));
+                    batch.setEligibleForNextRegs(check(record.get("eligible")));
+                    System.out.println("Parsed batch: " + batch);
+                    batches.add(batch);
+                } catch (Exception e) {
+                    System.err.println("Error parsing record: " + record + ", Error: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            saveBs(batches);
+            csvParser.close();
+        } catch (Exception e) {
+            System.err.println("Error in bulk upload: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-			for (CSVRecord record : csvParser) {
-				BatchModel batch = new BatchModel();
+    private boolean check(String string) {
+        System.out.println("Checking eligibility value: " + string);
+        return string.equalsIgnoreCase("Y");
+    }
 
-				batch.setName(record.get("Name"));
-				batch.setCurrentYear(getCurrentYear(record.get("Current Year")));
-				batch.setCurrentSem(getSemester(record.get("Current Semester")));
-				batch.setEligibleForNextRegs(check(record.get("eligible")));
-				batches.add(batch);
-			}
-			saveBs(batches);
-			csvParser.close();
-		}
+    private SemesterEnum getSemester(String string) {
+        System.out.println("Resolving semester from value: " + string);
+        try {
+            return SemesterEnum.valueOf(string.toUpperCase());
+        } catch (Exception e) {
+            System.err.println("Invalid semester value: " + string);
+            return null;
+        }
+    }
 
-	}
+    private void saveBs(List<BatchModel> batches) {
+        System.out.println("Saving batches...");
+        for (BatchModel batch : batches) {
+            try {
+                bRepo.save(batch);
+                System.out.println("Saved batch: " + batch.getName() + " " + batch.getId());
+            } catch (Exception e) {
+                System.err.println("Error saving batch: " + batch.getName() + ", Error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
 
-	private boolean check(String string) {
-		return string.equalsIgnoreCase("Y");
-	}
+    @Override
+    public List<BatchModel> getAll() {
+        System.out.println("Fetching all batches...");
+        try {
+            List<BatchModel> batches = bRepo.findAll();
+            System.out.println("Fetched batches count: " + batches.size());
+            return batches;
+        } catch (Exception e) {
+            System.err.println("Error fetching batches: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
-	private SemesterEnum getSemester(String string) {
-		return SemesterEnum.valueOf(string.toUpperCase());
-	}
+    @Override
+    public void delAll() {
+        System.out.println("Deleting all batches...");
+        try {
+            for (BatchModel b : getAll()) {
+                bRepo.delete(b);
+                System.out.println("Deleted batch: " + b.getName());
+            }
+        } catch (Exception e) {
+            System.err.println("Error deleting all batches: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-	private void saveBs(List<BatchModel> batches) {
-		for (BatchModel batch : batches) {
-			bRepo.save(batch);
-			System.out.println("Saved batch: " + batch.getName() + " " + batch.getId());
-		}
+    @Override
+    public void updateSems(String name) {
+        System.out.println("Updating semesters for batch: " + name);
+        try {
+            BatchModel batch = bRepo.getBatchFromName(name);
 
-	}
+            if (batch == null) {
+                System.err.println("Batch not found: " + name);
+                return;
+            }
 
-	@Override
-	public List<BatchModel> getAll() {
-		return bRepo.findAll();
-	}
+            System.out.println("Current state of batch: " + batch);
 
-	@Override
-	public void delAll() {
-		for (BatchModel b : getAll()) {
-			bRepo.delete(b);
-		}
-	}
+            switch (batch.getCurrentYear()) {
+                case FIRST:
+                    switch (batch.getCurrentSem()) {
+                        case ODD:
+                            batch.setCurrentSem(SemesterEnum.EVEN);
+                            break;
+                        case EVEN:
+                            batch.setCurrentSem(SemesterEnum.SUMMER);
+                            break;
+                        case SUMMER:
+                            batch.setCurrentSem(SemesterEnum.ODD);
+                            batch.setCurrentYear(YearEnum.SECOND);
+                            break;
+                    }
+                    break;
 
-	@Override
-	public void updateSems(String name) {
-		// Retrieve the batch by name
-		BatchModel batch = bRepo.getBatchFromName(name);
+                case SECOND:
+                    switch (batch.getCurrentSem()) {
+                        case ODD:
+                            batch.setCurrentSem(SemesterEnum.EVEN);
+                            break;
+                        case EVEN:
+                            batch.setCurrentSem(SemesterEnum.SUMMER);
+                            break;
+                        case SUMMER:
+                            batch.setCurrentSem(SemesterEnum.ODD);
+                            batch.setCurrentYear(YearEnum.THIRD);
+                            break;
+                    }
+                    break;
 
-		// Check the current year and perform updates based on the semester rules
-		switch (batch.getCurrentYear()) {
-		case FIRST: {
-			// Transition for FIRST year
-			switch (batch.getCurrentSem()) {
-			case ODD:
-				batch.setCurrentSem(SemesterEnum.EVEN);
-				break;
-			case EVEN:
-				batch.setCurrentSem(SemesterEnum.SUMMER);
-				break;
-			case SUMMER:
-				batch.setCurrentSem(SemesterEnum.ODD);
-				batch.setCurrentYear(YearEnum.SECOND); // Move to SECOND year
-				break;
-			}
-			batch.setEligibleForNextRegs(true); // Eligible for next registration
-			break;
-		}
+                case THIRD:
+                    switch (batch.getCurrentSem()) {
+                        case ODD:
+                            batch.setCurrentSem(SemesterEnum.EVEN);
+                            break;
+                        case EVEN:
+                            batch.setCurrentSem(SemesterEnum.SUMMER);
+                            break;
+                        case SUMMER:
+                            batch.setCurrentSem(SemesterEnum.ODD);
+                            batch.setCurrentYear(YearEnum.FOURTH);
+                            break;
+                    }
+                    break;
 
-		case SECOND: {
-			// Transition for SECOND year
-			switch (batch.getCurrentSem()) {
-			case ODD:
-				batch.setCurrentSem(SemesterEnum.EVEN);
-				break;
-			case EVEN:
-				batch.setCurrentSem(SemesterEnum.SUMMER);
-				break;
-			case SUMMER:
-				batch.setCurrentSem(SemesterEnum.ODD);
-				batch.setCurrentYear(YearEnum.THIRD); // Move to THIRD year
-				break;
-			}
-			batch.setEligibleForNextRegs(true); // Eligible for next registration
-			break;
-		}
+                case FOURTH:
+                    switch (batch.getCurrentSem()) {
+                        case ODD:
+                            batch.setCurrentSem(SemesterEnum.EVEN);
+                            break;
+                        case EVEN:
+                            batch.setCurrentSem(SemesterEnum.SUMMER);
+                            batch.setEligibleForNextRegs(false); // Graduation check
+                            break;
+                        case SUMMER:
+                            batch.setEligibleForNextRegs(false);
+                            break;
+                    }
+                    break;
 
-		case THIRD: {
-			// Transition for THIRD year
-			switch (batch.getCurrentSem()) {
-			case ODD:
-				batch.setCurrentSem(SemesterEnum.EVEN);
-				break;
-			case EVEN:
-				batch.setCurrentSem(SemesterEnum.SUMMER);
-				break;
-			case SUMMER:
-				batch.setCurrentSem(SemesterEnum.ODD);
-				batch.setCurrentYear(YearEnum.FOURTH); // Move to FOURTH year
-				break;
-			}
-			batch.setEligibleForNextRegs(true); // Eligible for next registration
-			break;
-		}
+                default:
+                    System.err.println("Invalid current year: " + batch.getCurrentYear());
+                    return;
+            }
 
-		case FOURTH: {
-			// Transition for FOURTH year
-			switch (batch.getCurrentSem()) {
-			case ODD:
-				batch.setCurrentSem(SemesterEnum.EVEN);
-				batch.setEligibleForNextRegs(true); // Eligible for EVEN semester
-				break;
-			case EVEN:
-				batch.setCurrentSem(SemesterEnum.SUMMER);
-				batch.setEligibleForNextRegs(false); // Ineligible in SUMMER semester
-				break;
-			case SUMMER:
-				batch.setEligibleForNextRegs(false); // Ineligible if already in SUMMER
-				break;
-			}
-			break;
-		}
-		}
+            batch.setEligibleForNextRegs(true);
+            bRepo.save(batch);
+            System.out.println("Updated batch: " + batch);
+        } catch (Exception e) {
+            System.err.println("Error updating semesters for batch: " + name + ", Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-		// Save the updated batch back to the repository if needed
-		bRepo.save(batch);
-	}
+    @Override
+    public String deleteBatch(String id) {
+        System.out.println("Deleting batch with ID: " + id);
+        try {
+            UUID bId = UUID.fromString(id);
+            BatchModel batch = bRepo.findBatchById(bId);
 
+            if (batch == null) {
+                System.err.println("Batch not found for ID: " + id);
+                return "Batch not found";
+            }
+
+            bRepo.delete(batch);
+            System.out.println("Deleted batch: " + batch.getName());
+            return "Batch deleted successfully";
+        } catch (Exception e) {
+            System.err.println("Error deleting batch: " + e.getMessage());
+            e.printStackTrace();
+            return "Error deleting batch";
+        }
+    }
 }

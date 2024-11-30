@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createAdmin } from "../api"; // Import the API call for creating admin
+import { createAdmin } from "@/api/admin"; // Import the API call for creating admin
 
 const useCreateAdmin = () => {
   const [loading, setLoading] = useState(false);

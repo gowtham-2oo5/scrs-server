@@ -17,6 +17,8 @@ public interface BatchService {
 	public List<BatchModel> getAll();
 
 	public void delAll();
+	
+	public String deleteBatch(String id);
 
 	public void updateSems(String name);
 

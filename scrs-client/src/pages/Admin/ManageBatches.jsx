@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,67 +26,93 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, Pen } from "lucide-react";
+import {
+  getAllBatches,
+  addSingleBatch,
+  bulkUploadBatches,
+  deleteAllBatches,
+  deleteBatchById,
+  updateBatchSem,
+} from "@/api/batches";
 
 export default function BatchManagement() {
-  const [batches, setBatches] = useState([
-    { id: 1, name: "Batch 2023", currentYear: 1, totalStrength: 150 },
-    { id: 2, name: "Batch 2022", currentYear: 2, totalStrength: 140 },
-    { id: 3, name: "Batch 2021", currentYear: 3, totalStrength: 135 },
-    { id: 4, name: "Batch 2020", currentYear: 4, totalStrength: 130 },
-    { id: 5, name: "Batch 2019", currentYear: 5, totalStrength: 125 },
-  ]);
+  const [batches, setBatches] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [csvData, setCsvData] = useState(null);
   const [newBatch, setNewBatch] = useState({
-    id: null,
     name: "",
-    currentYear: 1,
-    totalStrength: 0,
+    currentYear: "FIRST",
+    currentSem: "FALL",
+    eligibleForNextRegs: false,
+    studentsCount: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  useEffect(() => {
+    fetchBatches();
+  }, []);
+
+  const fetchBatches = async () => {
+    const response = await getAllBatches();
+    if (response.data) {
+      setBatches(response.data);
+    }
+  };
+
   const yearOptions = [
-    { value: "1", label: "1st Year" },
-    { value: "2", label: "2nd Year" },
-    { value: "3", label: "3rd Year" },
-    { value: "4", label: "4th Year" },
-    { value: "5", label: "5th Year" },
+    { value: "FIRST", label: "1st Year" },
+    { value: "SECOND", label: "2nd Year" },
+    { value: "THIRD", label: "3rd Year" },
+    { value: "FOURTH", label: "4th Year" },
+  ];
+
+  const semesterOptions = [
+    { value: "ODD", label: "Odd" },
+    { value: "EVEN", label: "Even" },
+    { value: "SUMMER", label: "Summer" },
   ];
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setNewBatch((prev) => ({ ...prev, [id]: value }));
+    const { id, value, type, checked } = e.target;
+    setNewBatch((prev) => ({
+      ...prev,
+      [id]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleYearChange = (value) => {
-    setNewBatch((prev) => ({ ...prev, currentYear: parseInt(value) }));
+    setNewBatch((prev) => ({ ...prev, currentYear: value }));
   };
 
-  const handleAddBatch = () => {
-    if (newBatch.id) {
-      setBatches((prev) =>
-        prev.map((batch) => (batch.id === newBatch.id ? newBatch : batch))
-      );
-    } else {
-      setBatches((prev) => [...prev, { ...newBatch, id: prev.length + 1 }]);
-    }
-    setNewBatch({ id: null, name: "", currentYear: 1, totalStrength: 0 });
+  const handleSemChange = (value) => {
+    setNewBatch((prev) => ({ ...prev, currentSem: value }));
+  };
+
+  const handleAddBatch = async () => {
+    await addSingleBatch(newBatch);
+    fetchBatches();
+    setNewBatch({
+      name: "",
+      currentYear: "FIRST",
+      currentSem: "FALL",
+      eligibleForNextRegs: false,
+      studentsCount: 0,
+    });
     setIsAddModalOpen(false);
-    setIsEditModalOpen(false);
   };
 
-  const handleEditBatch = (batch) => {
-    setNewBatch(batch);
-    setIsEditModalOpen(true);
+  const handleDeleteBatch = async (id) => {
+    await deleteBatchById(id);
+    fetchBatches();
   };
 
-  const handleDeleteBatch = (id) => {
-    setBatches((prev) => prev.filter((batch) => batch.id !== id));
+  const handleUpdateBatch = async (name) => {
+    await updateBatchSem(name);
+    fetchBatches();
   };
 
   const handleFileUpload = (event) => {
@@ -103,12 +129,24 @@ export default function BatchManagement() {
     }
   };
 
+  const handleBulkUpload = async () => {
+    const formData = new FormData();
+    formData.append(
+      "file",
+      new Blob([csvData], { type: "text/csv" }),
+      "batches.csv"
+    );
+    await bulkUploadBatches(formData);
+    setIsReviewOpen(false);
+    fetchBatches();
+  };
+
   const BatchForm = ({ isEdit = false }) => (
     <div className="grid gap-6 py-4">
-      <div className="grid grid-cols-4 items-center gap-4">
+      <div className="grid items-center grid-cols-4 gap-4">
         <Label
           htmlFor="name"
-          className="text-right text-blue-800 font-semibold"
+          className="font-semibold text-right text-blue-800"
         >
           Name
         </Label>
@@ -116,54 +154,36 @@ export default function BatchManagement() {
           id="name"
           value={newBatch.name}
           onChange={handleInputChange}
-          className="col-span-3 border-blue-300 focus:border-blue-500 rounded-lg"
+          className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500"
         />
       </div>
-      <div className="grid grid-cols-4 items-center gap-4">
+      <div className="grid items-center grid-cols-4 gap-4">
         <Label
           htmlFor="currentYear"
-          className="text-right text-blue-800 font-semibold"
+          className="font-semibold text-right text-blue-800"
         >
-          Current Year
+          Year
         </Label>
-        <Select
-          onValueChange={handleYearChange}
-          value={newBatch.currentYear.toString()}
-        >
-          <SelectTrigger className="col-span-3 border-blue-300 focus:border-blue-500 rounded-lg">
+        <Select onValueChange={handleYearChange} value={newBatch.currentYear}>
+          <SelectTrigger className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500">
             <SelectValue placeholder="Select Year" />
           </SelectTrigger>
-          <SelectContent className="bg-blue-50 border-blue-200">
-            {yearOptions.map((option) => (
+          <SelectContent className="border-blue-200 bg-blue-50">
+            {[1, 2, 3, 4].map((year) => (
               <SelectItem
-                key={option.value}
-                value={option.value}
+                key={year}
+                value={year}
                 className="text-blue-800 hover:bg-blue-100"
               >
-                {option.label}
+                {year}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label
-          htmlFor="totalStrength"
-          className="text-right text-blue-800 font-semibold"
-        >
-          Total Strength
-        </Label>
-        <Input
-          id="totalStrength"
-          type="number"
-          value={newBatch.totalStrength}
-          onChange={handleInputChange}
-          className="col-span-3 border-blue-300 focus:border-blue-500 rounded-lg"
-        />
-      </div>
       <Button
         onClick={handleAddBatch}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+        className="px-6 py-2 font-semibold text-white transition duration-300 ease-in-out bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
       >
         {isEdit ? "Update Batch" : "Add Batch"}
       </Button>
@@ -176,17 +196,17 @@ export default function BatchManagement() {
   const totalPages = Math.ceil(batches.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl font-bold mb-6">Manage Batches</h1>
+    <div className="container p-4 mx-auto sm:p-6">
+      <h1 className="mb-6 text-2xl font-bold">Manage Batches</h1>
 
-      <div className="flex flex-col sm:flex-row justify-end mb-6 space-y-2 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-col justify-end mb-6 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
-            <Button className="hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out w-full sm:w-auto">
+            <Button className="w-full px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-700 sm:w-auto">
               Add
             </Button>
           </DialogTrigger>
-          <DialogContent className="border-2 rounded-xl shadow-lg">
+          <DialogContent className="border-2 shadow-lg rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 Add New Batch
@@ -200,12 +220,12 @@ export default function BatchManagement() {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="border-2 text-gray-600 hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out w-full sm:w-auto"
+              className="w-full px-4 py-2 font-semibold text-gray-600 transition duration-300 ease-in-out border-2 rounded-lg shadow-md hover:bg-gray-100 sm:w-auto"
             >
               Bulk Upload
             </Button>
           </DialogTrigger>
-          <DialogContent className="border-2 rounded-xl shadow-lg">
+          <DialogContent className="border-2 shadow-lg rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 Upload CSV File
@@ -221,60 +241,74 @@ export default function BatchManagement() {
         </Dialog>
       </div>
 
-      <div className="shadow-md rounded-lg border overflow-hidden">
+      <div className="overflow-hidden border rounded-lg shadow-md">
         <Table className="min-w-full divide-y">
           <TableHeader className="font-bold">
             <TableRow>
-              <TableCell className="px-4 py-2">ID</TableCell>
+              <TableCell className="px-4 py-2">Id</TableCell>
               <TableCell className="px-4 py-2">Name</TableCell>
-              <TableCell className="px-4 py-2">Current Year of Batch</TableCell>
-              <TableCell className="px-4 py-2">Total Strength</TableCell>
+              <TableCell className="px-4 py-2">Current Year</TableCell>
+              <TableCell className="px-4 py-2">Current Semester</TableCell>
+              <TableCell className="px-4 py-2">
+                Eligible for Next Registrations
+              </TableCell>
+              <TableCell className="px-4 py-2">Students Count</TableCell>
               <TableCell className="px-4 py-2">Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentItems.map((batch) => (
-              <TableRow
-                key={batch.id}
-                className="transition-colors duration-200 hover:bg-gray-100 font-medium"
-              >
-                <TableCell className="px-4 py-2">{batch.id}</TableCell>
-                <TableCell className="px-4 py-2">{batch.name}</TableCell>
-                <TableCell className="px-4 py-2">{batch.currentYear}</TableCell>
-                <TableCell className="px-4 py-2">
-                  {batch.totalStrength}
-                </TableCell>
-                <TableCell className="px-4 py-2">
-                  <div className="flex space-x-2">
+            {currentItems.map((batch, index) => {
+              const dynamicIndex = (currentPage - 1) * itemsPerPage + index + 1;
+
+              return (
+                <TableRow
+                  key={batch.name}
+                  className="font-medium transition-colors duration-200 hover:bg-gray-100"
+                >
+                  <TableCell className="px-4 py-2">{dynamicIndex}</TableCell>
+                  <TableCell className="px-4 py-2">{batch.name}</TableCell>
+                  <TableCell className="px-4 py-2">
+                    {batch.currentYear}
+                  </TableCell>
+                  <TableCell className="px-4 py-2">
+                    {batch.currentSem}
+                  </TableCell>
+                  <TableCell className="px-4 py-2">
+                    {batch.eligibleForNextRegs ? "Yes" : "No"}
+                  </TableCell>
+                  <TableCell className="px-4 py-2">
+                    {batch.studentsCount == null ? 0 : batch.studentsCount}
+                  </TableCell>
+                  <TableCell className="flex items-start gap-3 px-4 py-2 align-middle">
                     <Button
-                      onClick={() => handleEditBatch(batch)}
-                      className="flex items-center space-x-1 hover:bg-gray-600 text-white py-2 px-3 rounded-lg transition-all duration-150 ease-in-out"
+                      onClick={() => handleUpdateBatch(batch.name)}
+                      className="flex items-center px-3 py-2 space-x-1 text-white transition-all duration-150 ease-in-out rounded-lg "
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pen className="w-4 h-4" />
                       <span>Edit</span>
                     </Button>
                     <Button
                       onClick={() => handleDeleteBatch(batch.id)}
-                      className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg transition-all duration-150 ease-in-out"
+                      className="flex items-center px-3 py-2 space-x-1 text-white transition-all duration-150 ease-in-out bg-red-500 rounded-lg hover:bg-red-600"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="w-4 h-4" />
                       <span>Delete</span>
                     </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex items-center justify-between mt-4">
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+          className="px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-600"
         >
-          <ChevronLeft className="h-4 w-4 mr-2" />
+          <ChevronLeft className="w-4 h-4 mr-2" />
           Previous
         </Button>
         <span>
@@ -285,24 +319,15 @@ export default function BatchManagement() {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
           disabled={currentPage === totalPages}
-          className="hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+          className="px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-600"
         >
           Next
-          <ChevronRight className="h-4 w-4 ml-2" />
+          <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
 
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="border-2 rounded-xl shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Edit Batch</DialogTitle>
-          </DialogHeader>
-          <BatchForm isEdit={true} />
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-        <DialogContent className="border-2 rounded-xl shadow-lg">
+        <DialogContent className="border-2 shadow-lg rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               Review CSV Data
@@ -310,13 +335,13 @@ export default function BatchManagement() {
           </DialogHeader>
           <div className="mt-4">
             <p className="font-semibold">Review the data from the CSV file:</p>
-            <pre className="p-4 rounded-lg mt-2 max-h-60 overflow-auto font-mono text-sm">
+            <pre className="p-4 mt-2 overflow-auto font-mono text-sm rounded-lg max-h-60">
               {csvData}
             </pre>
           </div>
           <Button
-            onClick={() => setIsReviewOpen(false)}
-            className="hover:bg-gray-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+            onClick={handleBulkUpload}
+            className="px-6 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-700"
           >
             Upload Data
           </Button>
