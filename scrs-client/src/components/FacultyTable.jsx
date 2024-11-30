@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Info } from "lucide-react";
+import { Pencil, Trash2, Info, ChevronLeft, ChevronRight } from "lucide-react";
 
 const designationOrder = {
   HOD: 1,
@@ -25,28 +25,32 @@ const designationOrder = {
 };
 
 export default function FacultyTable({
-  faculty,
+  faculty = [],
   onEdit,
   onDelete,
   onLearnMore,
-  currentPage,
-  itemsPerPage,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
+  // Extract unique departments for the filter dropdown
   const departments = useMemo(() => {
     return ["all", ...new Set(faculty.map((fac) => fac.department))];
   }, [faculty]);
 
+  // Filter and sort faculty based on search term, department, and designation order
   const filteredAndSortedFaculty = useMemo(() => {
     return faculty
-      .filter(
-        (fac) =>
-          (fac.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            fac.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (departmentFilter === "all" || fac.department === departmentFilter)
-      )
+      .filter((fac) => {
+        const matchesSearch =
+          fac.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fac.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDepartment =
+          departmentFilter === "all" || fac.department === departmentFilter;
+        return matchesSearch && matchesDepartment;
+      })
       .sort((a, b) => {
         const orderA = designationOrder[a.designation] || Infinity;
         const orderB = designationOrder[b.designation] || Infinity;
@@ -54,8 +58,16 @@ export default function FacultyTable({
       });
   }, [faculty, searchTerm, departmentFilter]);
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredAndSortedFaculty.length / itemsPerPage);
+  const paginatedFaculty = filteredAndSortedFaculty.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="space-y-4">
+      {/* Filters: Search and Department */}
       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
         <Input
           placeholder="Search by name or email"
@@ -79,6 +91,8 @@ export default function FacultyTable({
           </SelectContent>
         </Select>
       </div>
+
+      {/* Faculty Table */}
       <div className="overflow-x-auto border rounded-lg shadow-md">
         <Table>
           <TableHeader>
@@ -93,16 +107,16 @@ export default function FacultyTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAndSortedFaculty.length === 0 ? (
+            {paginatedFaculty.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             ) : (
-              filteredAndSortedFaculty.map((fac, ind) => (
-                <TableRow key={ind}>
-                  <TableCell className="font-medium">
+              paginatedFaculty.map((fac) => (
+                <TableRow key={fac.id}>
+                  <TableCell>
                     <img
                       src={fac.profilePicture || "/placeholder.svg"}
                       alt={`${fac.name}'s profile`}
@@ -149,6 +163,31 @@ export default function FacultyTable({
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between mt-4">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-600"
+        >
+          <ChevronLeft className="w-4 h-4 mr-2" />
+          Previous
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 font-semibold text-white transition duration-300 ease-in-out rounded-lg shadow-md hover:bg-gray-600"
+        >
+          Next
+          <ChevronRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
     </div>
   );

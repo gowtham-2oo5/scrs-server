@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CsvTable from "@/components/CsvTable";
-import { bulkUploadDepts } from "@/api";
+import { bulkUploadDepts } from "@/api/dept";
 
 export default function BulkUpload({ onUpload }) {
   const [csvData, setCsvData] = useState(null);
@@ -26,12 +26,12 @@ export default function BulkUpload({ onUpload }) {
   const handleUpload = async () => {
     if (csvData) {
       onUpload(csvData);
-      console.log("Sending dataaa");
+      // console.log("Sending dataaa");
       const formData = new FormData();
       formData.append("csv_file", csvFile);
-      console.log(csvFile.name);
+      // console.log(csvFile.name);
       const res = await bulkUploadDepts(formData);
-      console.log(res.status);
+      // console.log(res.status);
       setIsReviewOpen(false);
     }
   };

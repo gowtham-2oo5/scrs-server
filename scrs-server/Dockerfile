@@ -14,7 +14,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # docker build -t scrs-server .
-# docker run -p 8080:8080 scrs-server
+# docker run -p 2000:8080 scrs-server
 # docker tag scrs-server gowtham2oo5/scrs-server
 # docker push gowtham2oo5/scrs-server
 

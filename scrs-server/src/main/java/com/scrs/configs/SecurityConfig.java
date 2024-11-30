@@ -32,7 +32,8 @@ public class SecurityConfig {
 						.requestMatchers(
 								"/",
 								"/api/user/test/roles",
-								"/api/auth/*",
+								"/api/auth/login",
+								"/api/auth/verify-otp",
 								"/api/admin/create",
 								"/swagger-ui/**",
 								"/v3/api-docs/**",
@@ -61,14 +62,16 @@ public class SecurityConfig {
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Frontend URL
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed methods
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*")); // Allowed headers
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration); // Apply CORS configuration globally
-		return source;
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.addAllowedOriginPattern("*"); // Allow all origins for testing
+	    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*"));
+	    configuration.setAllowCredentials(true); // Allow credentials (if needed)
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
 	}
+
 
 	@Bean
 	PasswordEncoder passwordEncoder() {

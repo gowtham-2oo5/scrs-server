@@ -11,4 +11,7 @@ public interface DepartmentRepo extends JpaRepository<DepartmentModel, UUID> {
 	@Query("SELECT d FROM DepartmentModel d WHERE d.sn = ?1")
 	DepartmentModel findBySN(String sn);
 
+	@Query("SELECT d FROM DepartmentModel d WHERE d.id=?1")
+	DepartmentModel findDeptById(UUID originalId);
+
 }

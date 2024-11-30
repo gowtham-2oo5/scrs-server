@@ -102,7 +102,7 @@ public class FacultyModel extends UserModel {
 
 	@Override
 	public String toString() {
-		return "FacultyModel [empId=" + empId + ", department=" + department + ", instructingCourse="
+		return "FacultyModel [empId=" + empId  + ", instructingCourse="
 				+ instructingCourse + ", designation=" + designation + ", courses=" + courses + ", joined_at="
 				+ joined_at + ", exp=" + exp + "]";
 	}

@@ -40,18 +40,14 @@ export default function OTPModal({ message, isOpen, onClose }) {
     if (otp.length === 6) {
       setError(null);
       try {
-        console.log(`Entered OTP: ${otp}`);
-        const { data: user, status } = await verifyOtp(otp);
-        if (status === 202) {
-          //
-          setItems(user.data);
+        // console.log(`Entered OTP: ${otp}`);
+        const { data: token, status } = await verifyOtp(otp);
+        // console.log(status);
+        if (status < 300 && status >= 200) {
+          setItems(token);
 
-          //sessionStorage.setItem('user', JSON.stringify(user));
-          // sessionStorage.setItem('role', user.data.role);
-          // sessionStorage.setItem('dp', user.data.profilePicture);
-          // 
           onClose();
-          console.log(user);
+          // console.log(token);
 
           navigate("/dashboard");
         } else {

@@ -1,10 +1,9 @@
 package com.scrs.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scrs.dto.FacultyDTO;
@@ -17,16 +16,21 @@ public interface FacultyService {
 
 	public void addFaculty(FacultyRegsDTO fac);
 
-	public FacultyModel findByUsername(String uname);
-
 	public FacultyModel createFaculty(FacultyRegsDTO facDetails, MultipartFile profilePicture);
 
 	public void delFac(String uname);
 
-	public Page<FacultyDTO> getAll(Pageable pageRequest);
+	public List<FacultyDTO> getAll();
 
 	public UUID createSingleFaculty(FacultyRegsDTO facDTO);
 
 	public void bulkInsertDepts(MultipartFile file) throws IOException;
+
+	List<FacultyDTO> getFacultiesByDept(String sn);
+
+	FacultyModel findByUsername(String uname);
+
+
+	FacultyModel getFacById(String hodId);
 
 }

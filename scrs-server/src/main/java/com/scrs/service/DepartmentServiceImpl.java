@@ -2,6 +2,7 @@ package com.scrs.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 			d.setCourses(null);
 			d.setDeptName(dept.getName());
-			d.setHod(facSer.findByUsername(dept.getHodId()));
+			d.setHod(facSer.getFacById(dept.getHodId()));
 			d.setSn(dept.getSn());
-
+			
+			System.out.println(d.toString());
 			deptRepo.save(d);
 		} catch (Exception err) {
 			err.printStackTrace();
@@ -74,18 +76,59 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public void setHOD(String sn, String uname) {
-		DepartmentModel dept = deptRepo.findBySN(sn);
-		if (dept != null) {
-			dept.setHod(getHod(uname));
-			deptRepo.save(dept);
-		} else {
-			throw new EntityNotFoundException("Department with SN " + sn + " not found.");
-		}
+	public void setHOD(String sn, String hodId) {
+	    System.out.println("Setting HOD with ID: " + hodId + " for department with SN: " + sn);
+
+	    // Validate inputs
+	    if (sn == null || sn.isEmpty()) {
+	        throw new IllegalArgumentException("Department SN cannot be null or empty.");
+	    }
+	    if (hodId == null || hodId.isEmpty()) {
+	        throw new IllegalArgumentException("HOD ID cannot be null or empty.");
+	    }
+
+	    // Retrieve department
+	    DepartmentModel department = deptRepo.findBySN(sn);
+	    if (department == null) {
+	        System.out.println("Department not found with SN: " + sn);
+	        throw new EntityNotFoundException("Department with SN " + sn + " not found.");
+	    }
+
+	    // Retrieve and set HOD
+	    FacultyModel hod = getHod(hodId);
+	    if (hod == null) {
+	        System.out.println("Faculty not found with ID: " + hodId);
+	        throw new EntityNotFoundException("Faculty with ID " + hodId + " not found.");
+	    }
+
+	    department.setHod(hod);
+	    deptRepo.save(department);
+	    System.out.println("HOD updated for department SN: " + sn + ". New HOD: " + hod);
 	}
 
-	private FacultyModel getHod(String uname) {
-		return facSer.findByUsername(uname);
+	private FacultyModel getHod(String id) {
+	    System.out.println("Fetching HOD details for ID: " + id);
+
+	    if (id == null || id.isEmpty()) {
+	        throw new IllegalArgumentException("HOD ID cannot be null or empty.");
+	    }
+
+	    FacultyModel faculty = facSer.getFacById(id);
+	    if (faculty == null) {
+	        System.out.println("No faculty found with ID: " + id);
+	        throw new EntityNotFoundException("Faculty with ID " + id + " not found.");
+	    }
+
+	    System.out.println("Successfully retrieved HOD details: " + faculty);
+	    return faculty;
+	}
+
+	@Override
+	public void deleteDept(String id) {
+		UUID originalId = UUID.fromString(id);
+		DepartmentModel dept = deptRepo.findDeptById(originalId);
+		deptRepo.delete(dept);
+		
 	}
 
 }

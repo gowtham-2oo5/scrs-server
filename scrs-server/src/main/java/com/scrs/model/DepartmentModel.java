@@ -103,7 +103,7 @@ public class DepartmentModel {
 
 	@Override
 	public String toString() {
-		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn + ", hod=" + hod + "]";
+		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn  + "]";
 	}
 
 	public boolean isEmpty() {

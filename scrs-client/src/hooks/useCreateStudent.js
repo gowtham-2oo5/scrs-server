@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStudent } from "@/api";
+import { createStudent } from "@/api/student";
 
 const useCreateStudent = () => {
   const [loading, setLoading] = useState(false);

@@ -151,7 +151,7 @@ export default function SpecializationManagement() {
 
   const handleFileSubmit = async () => {
     try {
-      console.log(csvData);
+      // console.log(csvData);
       // await axios.post("http://localhost:8080/dept/bulk-upload", csvData, {
       //   headers: {
       //     "Content-Type": "multipart/form-data",
@@ -167,34 +167,34 @@ export default function SpecializationManagement() {
 
   const SpecializationForm = ({ isEdit = false }) => (
     <div className="grid gap-6 py-4">
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="name" className="text-right font-semibold">
+      <div className="grid items-center grid-cols-4 gap-4">
+        <Label htmlFor="name" className="font-semibold text-right">
           Name
         </Label>
         <Input
           id="name"
           value={newSpecialization.name}
           onChange={handleInputChange}
-          className="col-span-3   rounded-lg"
+          className="col-span-3 rounded-lg"
         />
       </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="sn" className="text-right font-semibold">
+      <div className="grid items-center grid-cols-4 gap-4">
+        <Label htmlFor="sn" className="font-semibold text-right">
           SN
         </Label>
         <Input
           id="sn"
           value={newSpecialization.sn}
           onChange={handleInputChange}
-          className="col-span-3   rounded-lg"
+          className="col-span-3 rounded-lg"
         />
       </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="dept" className="text-right font-semibold">
+      <div className="grid items-center grid-cols-4 gap-4">
+        <Label htmlFor="dept" className="font-semibold text-right">
           Department
         </Label>
         <Select onValueChange={handleDeptChange} value={newSpecialization.dept}>
-          <SelectTrigger className="col-span-3   rounded-lg">
+          <SelectTrigger className="col-span-3 rounded-lg">
             <SelectValue placeholder="Select Department" />
           </SelectTrigger>
           <SelectContent className="bg-blue-50 ">
@@ -212,7 +212,7 @@ export default function SpecializationManagement() {
       </div>
       <Button
         onClick={handleAddSpecialization}
-        className=" font-semibold px-6 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+        className="px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md "
       >
         {isEdit ? "Update Specialization" : "Add Specialization"}
       </Button>
@@ -225,17 +225,17 @@ export default function SpecializationManagement() {
   const totalPages = Math.ceil(specializations.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 ">
-      <h1 className="text-2xl font-bold mb-6 ">Manage Specializations</h1>
+    <div className="container p-4 mx-auto sm:p-6 ">
+      <h1 className="mb-6 text-2xl font-bold ">Manage Specializations</h1>
 
-      <div className="flex flex-col sm:flex-row justify-end mb-6 space-y-2 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-col justify-end mb-6 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
-            <Button className=" font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out w-full sm:w-auto">
+            <Button className="w-full px-4 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md  sm:w-auto">
               Add
             </Button>
           </DialogTrigger>
-          <DialogContent className=" border-2 rounded-xl shadow-lg">
+          <DialogContent className="border-2 shadow-lg  rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold ">
                 Add New Specialization
@@ -249,12 +249,12 @@ export default function SpecializationManagement() {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="border-2  font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out w-full sm:w-auto"
+              className="w-full px-4 py-2 font-semibold transition duration-300 ease-in-out border-2 rounded-lg shadow-md sm:w-auto"
             >
               Bulk Upload
             </Button>
           </DialogTrigger>
-          <DialogContent className=" border-2 rounded-xl shadow-lg">
+          <DialogContent className="border-2 shadow-lg  rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold ">
                 Upload CSV File
@@ -264,15 +264,15 @@ export default function SpecializationManagement() {
               type="file"
               accept=".csv"
               onChange={handleFileUpload}
-              className="  rounded-lg"
+              className="rounded-lg "
             />
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="shadow-md rounded-lg border overflow-hidden">
+      <div className="overflow-hidden border rounded-lg shadow-md">
         <Table className="min-w-full divide-y">
-          <TableHeader className=" font-bold">
+          <TableHeader className="font-bold ">
             <TableRow>
               <TableCell className="px-4 py-2 ">ID</TableCell>
               <TableCell className="px-4 py-2 ">Name</TableCell>
@@ -299,18 +299,18 @@ export default function SpecializationManagement() {
                   <div className="flex space-x-2">
                     <Button
                       onClick={() => handleEditSpecialization(spec)}
-                      className="flex items-center space-x-1  py-2 px-3 rounded-lg transition-all duration-150 ease-in-out"
+                      className="flex items-center px-3 py-2 space-x-1 transition-all duration-150 ease-in-out rounded-lg"
                       variant="outline"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="w-4 h-4" />
                       <span>Edit</span>
                     </Button>
                     <Button
                       onClick={() => handleDeleteSpecialization(spec.id)}
                       variant="destructive"
-                      className="flex items-center space-x-1 py-2 px-3 rounded-lg transition-all duration-150 ease-in-out"
+                      className="flex items-center px-3 py-2 space-x-1 transition-all duration-150 ease-in-out rounded-lg"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="w-4 h-4" />
                       <span>Delete</span>
                     </Button>
                   </div>
@@ -321,13 +321,13 @@ export default function SpecializationManagement() {
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex items-center justify-between mt-4">
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className=" font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+          className="px-4 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md "
         >
-          <ChevronLeft className="h-4 w-4 mr-2" />
+          <ChevronLeft className="w-4 h-4 mr-2" />
           Previous
         </Button>
         <span>
@@ -338,15 +338,15 @@ export default function SpecializationManagement() {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
           disabled={currentPage === totalPages}
-          className=" font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+          className="px-4 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md "
         >
           Next
-          <ChevronRight className="h-4 w-4 ml-2" />
+          <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="bg-blue-50 border-2 rounded-xl shadow-lg">
+        <DialogContent className="border-2 shadow-lg bg-blue-50 rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold ">
               Edit Specialization
@@ -357,21 +357,21 @@ export default function SpecializationManagement() {
       </Dialog>
 
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-        <DialogContent className="border-2 rounded-xl shadow-lg">
+        <DialogContent className="border-2 shadow-lg rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               Review CSV Data
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4 overflow-scroll">
-            <p className=" font-semibold">Review the data from the CSV file:</p>
-            <pre className=" p-4 rounded-lg mt-2 max-h-60 overflow-auto font-mono text-sm">
+            <p className="font-semibold ">Review the data from the CSV file:</p>
+            <pre className="p-4 mt-2 overflow-auto font-mono text-sm rounded-lg  max-h-60">
               <CsvTable csvData={csvData} />
             </pre>
           </div>
           <Button
             onClick={() => handleFileSubmit()}
-            className="font-semibold px-6 py-2 rounded-lg shadow-md transition duration-300 ease-in-out"
+            className="px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md"
           >
             Upload Data
           </Button>

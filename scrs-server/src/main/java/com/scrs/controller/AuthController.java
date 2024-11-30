@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.scrs.dto.LoginDTO;
 import com.scrs.dto.OtpDTO;
-import com.scrs.dto.ResponseDTO;
 import com.scrs.service.AuthService;
 
 @RestController
@@ -52,15 +51,14 @@ public class AuthController {
 	}
 
 	@PostMapping("verify-otp")
-	public ResponseEntity<ResponseDTO> verifyOtp(@RequestBody OtpDTO otp) {
-		Object user = authService.verifyOtp(otp.getOtp());
-		ResponseDTO response = null;
-		if (user != null) {
-			response = new ResponseDTO("OTP verified successfully", user, true);
-			return new ResponseEntity<ResponseDTO>(response, HttpStatus.ACCEPTED);
+	public ResponseEntity<?> verifyOtp(@RequestBody OtpDTO otp) {
+		String res = authService.verifyOtp(otp.getOtp()).toString();
+		System.out.println("RES: "+ res);
+		if (!res.startsWith("Invalid")) {
+			System.out.println("OKAY OKAY");
+			return ResponseEntity.ok().body(res);
 		} else {
-			response = new ResponseDTO("You have entered wrong OTP. Try again", user, false);
-			return new ResponseEntity<ResponseDTO>(response, HttpStatus.NOT_ACCEPTABLE);
+			return ResponseEntity.badRequest().body(res);
 		}
 	}
 

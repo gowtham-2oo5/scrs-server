@@ -30,4 +30,10 @@ public class DeptRegsDTO {
 		this.hodId = hodId;
 	}
 
+	@Override
+	public String toString() {
+		return "DeptRegsDTO [name=" + name + ", sn=" + sn + ", hodId=" + hodId + ", getName()=" + getName()
+				+ ", getSn()=" + getSn() + ", getHodId()=" + getHodId() + "]";
+	}
+
 }

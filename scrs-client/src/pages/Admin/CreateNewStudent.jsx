@@ -86,7 +86,7 @@ export default function CreateNewStudent() {
           profilePicture: undefined,
         })
       );
-      console.log(formData);
+      // console.log(formData);
       await handleCreateStudent(formData);
     } catch (err) {
       console.error("Error creating student:", err);

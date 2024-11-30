@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
 			String token = jwtService.generateToken(response);
 			response.setToken(token);
 		}
-		return response;
+		return response.getToken();
 	}
 
 	private boolean isOtpInvalid(String otp) {

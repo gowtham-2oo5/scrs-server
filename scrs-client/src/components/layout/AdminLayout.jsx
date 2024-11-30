@@ -127,12 +127,12 @@ const AdminLayout = ({ children }) => {
     const userProfile = getSessionItem("dp");
     setAdminName(getSessionItem("name"));
 
-    console.log("Current role from sessionStorage:", role);
-    console.log("Current userProfile from sessionStorage:", userProfile);
+    // console.log("Current role from sessionStorage:", role);
+    // console.log("Current userProfile from sessionStorage:", userProfile);
 
     if (userProfile) {
       setActiveUserProfile(userProfile);
-      console.log("Setting activeUserProfile to:", userProfile);
+      // console.log("Setting activeUserProfile to:", userProfile);
     }
 
     if (role) {
@@ -141,7 +141,7 @@ const AdminLayout = ({ children }) => {
 
         // Check if the "Create Admin" item has been added using the ref
         if (!hasAddedAdmin.current) {
-          console.log("Adding 'Create Admin' to singleItems");
+          // console.log("Adding 'Create Admin' to singleItems");
 
           setSidebarItems((prevItems) => [
             ...prevItems,
@@ -156,11 +156,11 @@ const AdminLayout = ({ children }) => {
           ]);
           hasAddedAdmin.current = true; // Mark it as added
         } else {
-          console.log("'Create Admin' already added, skipping.");
+          // console.log("'Create Admin' already added, skipping.");
         }
       } else if (role === "ADMIN") {
         setUserRole("Admin");
-        console.log("Setting userRole to Admin");
+        // console.log("Setting userRole to Admin");
       }
     }
   }, []);

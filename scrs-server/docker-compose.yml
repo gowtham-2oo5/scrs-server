@@ -1,14 +1,33 @@
-version: "3.8"
-
 services:
-  app:
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_DATABASE: scrs
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_PASSWORD: 1234
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234"]
+      timeout: 20s
+      retries: 10
+
+
+  springboot-app:
+    container_name: spring-app
+    image: springboot-app
+    restart: on-failure
     build: .
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/scrs
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=1234
-
-volumes:
-  mysql_data:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1234
+      MYSQL_PORT: 3306    # we are in same network so we connect internally.
+    depends_on:
+      mysqldb:
+        condition: service_healthy

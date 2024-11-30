@@ -1,11 +1,11 @@
 import { encodeToken, decodeToken } from "./EncodeDecode";
+import { getTokenData } from "./tokenHandling";
 
-const setItems = (data) => {
-  console.log(`Received data: ${data}`);
-  console.log(`Received data of Data: ${data.data}`);
-  sessionStorage.setItem("token", encodeToken(data.token));
+const setItems = (token) => {
+  const data = getTokenData(token);
+  sessionStorage.setItem("token", encodeToken(token));
   if (data.data.superAdmin) {
-    console.log("Super Admin");
+    // console.log("Super Admin");
     sessionStorage.setItem("role", encodeToken("SUPER-ADMIN"));
   } else sessionStorage.setItem("role", encodeToken(data.role));
   sessionStorage.setItem("dp", encodeToken(data.data.profilePicture));
@@ -17,9 +17,9 @@ const clearItems = () => {
 };
 
 const getSessionItem = (itemName) => {
-  console.log(`Getting item: ${itemName}`);
+  // console.log(`Getting item: ${itemName}`);
   const res = decodeToken(sessionStorage.getItem(itemName));
-  console.log(`Got string: ${res}`);
+  // console.log(`Got string: ${res}`);
   return res;
 };
 

@@ -2,13 +2,13 @@ package com.scrs.service;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +21,8 @@ import com.scrs.model.FacultyModel;
 import com.scrs.model.UserRole;
 import com.scrs.repository.DepartmentRepo;
 import com.scrs.repository.FacultyRepo;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -45,7 +47,6 @@ public class FacultyServiceImpl implements FacultyService {
 	public void addFaculty(FacultyRegsDTO fac) {
 		try {
 			FacultyModel faculty = new FacultyModel();
-
 			facRepo.save(faculty);
 			System.out.println("Saved Faculty: " + faculty.toString());
 		} catch (Exception e) {
@@ -53,31 +54,25 @@ public class FacultyServiceImpl implements FacultyService {
 		}
 	}
 
-	private DepartmentModel getDept(String dept) {
-		return deptRepo.findBySN(dept);
-	}
-
 	@Override
 	public FacultyModel findByUsername(String uname) {
-		FacultyModel faculty = null;
 		try {
-			System.out.println(facRepo.getByUsername(uname).toString());
-			faculty = facRepo.getByUsername(uname);
+			FacultyModel faculty = facRepo.getByUsername(uname);
+			System.out.println(faculty.toString());
+			return faculty;
 		} catch (Exception e) {
-			System.out.println("Cant find faculty with username, " + e.getLocalizedMessage());
+			System.out.println("Can't find faculty with username: " + e.getLocalizedMessage());
+			return null;
 		}
-		return faculty;
-
 	}
 
 	@Override
 	public FacultyModel createFaculty(FacultyRegsDTO facDetails, MultipartFile profilePicture) {
 		String encryptedPassword = passwordEncoder.encode("test");
-
 		DepartmentModel facDept = getDept(facDetails.getDept());
 
-		FacultyModel faculty = new FacultyModel();
-		if (!facDept.isEmpty()) {
+		if (facDept != null) {
+			FacultyModel faculty = new FacultyModel();
 			faculty.setName(facDetails.getName());
 			faculty.setUsername(facDetails.getEmpId());
 			faculty.setEmail(facDetails.getMail());
@@ -90,17 +85,44 @@ public class FacultyServiceImpl implements FacultyService {
 			faculty.setEmpId(facDetails.getEmpId());
 			faculty.setDob(facDetails.getDob());
 			facRepo.save(faculty);
+			return faculty;
 		} else {
-			System.out.println("Error Adding Faculty, Invalid Dept");
+			System.out.println("Error Adding Faculty, Invalid Department");
+			return null;
 		}
-		return faculty;
 	}
 
-	private FacultyDesignation getDesignation(String designation) {
+	@Override
+	public UUID createSingleFaculty(FacultyRegsDTO facDetails) {
 		try {
-			return FacultyDesignation.valueOf(designation);
-		} catch (IllegalArgumentException | NullPointerException e) {
-			return FacultyDesignation.PROFESSOR;
+			String plainPass = parseDateString(facDetails.getDob());
+			String encryptedPassword = passwordEncoder.encode(plainPass);
+			DepartmentModel facDept = getDept(facDetails.getDept());
+
+			if (facDept != null) {
+				FacultyModel faculty = new FacultyModel();
+				faculty.setName(facDetails.getName());
+				faculty.setUsername(facDetails.getEmpId());
+				faculty.setEmail(facDetails.getMail());
+				faculty.setPassword(encryptedPassword);
+				faculty.setContact(facDetails.getContact());
+				faculty.setProfilePicture(profilePictureUrl);
+				faculty.setUserRole(UserRole.FACULTY);
+				faculty.setDesignation(getDesignation(facDetails.getDesignation()));
+				faculty.setDepartment(facDept);
+				faculty.setEmpId(facDetails.getEmpId());
+				faculty.setDob(facDetails.getDob());
+				faculty.setExp(facDetails.getExp());
+				faculty.setJoined_at(facDetails.getJoined_at());
+				facRepo.save(faculty);
+				return faculty.getId();
+			} else {
+				System.out.println("Error Adding Faculty, Invalid Department");
+				return null;
+			}
+		} catch (Exception e) {
+			System.out.println("Error creating single faculty: " + e.getMessage());
+			return null;
 		}
 	}
 
@@ -110,75 +132,46 @@ public class FacultyServiceImpl implements FacultyService {
 			FacultyModel targetFac = facRepo.getByUsername(uname);
 			facRepo.delete(targetFac);
 		} catch (Exception e) {
-			System.err.println("error deleting faculty, " + e.getLocalizedMessage());
+			System.err.println("Error deleting faculty: " + e.getLocalizedMessage());
 		}
 	}
 
 	@Override
-	public Page<FacultyDTO> getAll(Pageable pageable) {
+	public List<FacultyDTO> getAll() {
+		List<FacultyModel> facList = facRepo.findAll();
+		List<FacultyDTO> facultyList = new ArrayList<>();
 
-		System.out.println("Requested Page: " + pageable.getPageNumber());
-		System.out.println("Requested Size: " + pageable.getPageSize());
-		Page<FacultyModel> facultyPage = facRepo.findAll(pageable);
-		System.out.println("Total Elements: " + facultyPage.getTotalElements());
-		System.out.println("Total Pages: " + facultyPage.getTotalPages());
-		System.out.println("Current Page Content: " + facultyPage.getContent());
-
-		// Map FacultyModel to FacultyDTO
-		Page<FacultyDTO> facultyDTOPage = facultyPage.map(faculty -> {
-			FacultyDTO fac = new FacultyDTO();
-			fac.setName(faculty.getName());
-			fac.setEmail(faculty.getEmail());
-			fac.setContact(faculty.getContact());
-			fac.setDepartment(faculty.getDepartment().getDeptName());
-			fac.setDesignation(faculty.getDesignation().toString());
-			fac.setDob(faculty.getDob());
-			fac.setEmpId(faculty.getEmpId());
-			fac.setExp(faculty.getExp());
-			fac.setProfilePicture(faculty.getProfilePicture());
-			return fac;
-		});
-
-		return facultyDTOPage;
+		for (FacultyModel faculty : facList) {
+			FacultyDTO fac = mapToDTO(faculty);
+			facultyList.add(fac);
+		}
+		return facultyList;
 	}
 
 	@Override
-	public UUID createSingleFaculty(FacultyRegsDTO facDetails) {
-		System.out.println("Entered create s fac");
-		String plainPass = parseDateString(facDetails.getDob());
-		System.out.println("Plain Fac Pass: " + plainPass);
-		String encryptedPassword = passwordEncoder.encode(plainPass);
-
-		DepartmentModel facDept = getDept(facDetails.getDept());
-
-		FacultyModel faculty = new FacultyModel();
-		if (facDept != null) {
-			System.out.println("Creating fac");
-			faculty.setName(facDetails.getName());
-			faculty.setUsername(facDetails.getEmpId());
-			faculty.setEmail(facDetails.getMail());
-			faculty.setPassword(encryptedPassword);
-			faculty.setContact(facDetails.getContact());
-			faculty.setProfilePicture(profilePictureUrl);
-			faculty.setUserRole(UserRole.FACULTY);
-			faculty.setDesignation(getDesignation(facDetails.getDesignation()));
-			faculty.setDepartment(facDept);
-			faculty.setEmpId(facDetails.getEmpId());
-			faculty.setDob(facDetails.getDob());
-			faculty.setExp(facDetails.getExp());
-			faculty.setJoined_at(facDetails.getJoined_at());
-			facRepo.save(faculty);
-
-			System.out.println("DOB of faculty: " + faculty.getDob());
-		} else {
-			System.out.println("Error Adding Faculty, Invalid Dept");
+	public List<FacultyDTO> getFacultiesByDept(String sn) {
+		System.out.println("Searching SN : " + sn);
+		DepartmentModel department = getDept(sn);
+		System.out.println("received dept: " + department);
+		if (department == null) {
+			throw new IllegalArgumentException("Department not found with SN: " + sn);
 		}
-		return faculty.getId();
+
+		List<FacultyModel> facList = facRepo.getFacultiesByDept(department);
+		if (facList == null || facList.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<FacultyDTO> facultyList = new ArrayList<>();
+		for (FacultyModel faculty : facList) {
+			FacultyDTO fac = mapToDTO(faculty);
+			facultyList.add(fac);
+		}
+		return facultyList;
 	}
 
 	@Override
 	public void bulkInsertDepts(MultipartFile file) throws IOException {
-		System.out.println("Entered service");
 		String[] headers = { "name", "contact", "email", "empId", "dept", "dob", "designation", "joined_at", "exp" };
 
 		List<FacultyModel> facs = csvService.parseCsv(file, headers, record -> {
@@ -201,7 +194,6 @@ public class FacultyServiceImpl implements FacultyService {
 				fac.setDesignation(getDesignation(record.get("designation")));
 				fac.setJoined_at(parseDate(record.get("joined_at")));
 				fac.setExp(record.get("exp"));
-
 				return fac;
 			} catch (Exception e) {
 				System.err.println("Error processing record: " + record + " - " + e.getMessage());
@@ -209,11 +201,22 @@ public class FacultyServiceImpl implements FacultyService {
 			}
 		});
 
-		// Remove null entries from the list (skipped rows)
 		facs.removeIf(fac -> fac == null);
-
-		// Save faculty records
 		saveFacs(facs);
+	}
+
+	private FacultyDTO mapToDTO(FacultyModel faculty) {
+		FacultyDTO fac = new FacultyDTO();
+		fac.setName(faculty.getName());
+		fac.setEmail(faculty.getEmail());
+		fac.setContact(faculty.getContact());
+		fac.setDepartment(faculty.getDepartment().getDeptName());
+		fac.setDesignation(faculty.getDesignation().toString());
+		fac.setDob(faculty.getDob());
+		fac.setEmpId(faculty.getEmpId());
+		fac.setExp(faculty.getExp());
+		fac.setProfilePicture(faculty.getProfilePicture());
+		return fac;
 	}
 
 	private String parseDateString(Date dob) {
@@ -224,22 +227,51 @@ public class FacultyServiceImpl implements FacultyService {
 		return dateFormat.format(dob);
 	}
 
-	private void saveFacs(List<FacultyModel> facs) {
-		for (FacultyModel fac : facs) {
-			facRepo.save(fac);
-			System.out.println("Saved fac of eid: " + fac.getEmpId() + " , id: " + fac.getId());
-		}
-	}
-
-	public Date parseDate(String string) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
+	private Date parseDate(String string) {
 		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 			return sdf.parse(string);
 		} catch (Exception e) {
 			System.out.println("Invalid date format: " + string);
 			return null;
 		}
+	}
+
+	private void saveFacs(List<FacultyModel> facs) {
+		for (FacultyModel fac : facs) {
+			facRepo.save(fac);
+			System.out.println("Saved faculty with empId: " + fac.getEmpId() + " , id: " + fac.getId());
+		}
+	}
+
+	private DepartmentModel getDept(String dept) {
+		return deptRepo.findBySN(dept);
+	}
+
+	private FacultyDesignation getDesignation(String designation) {
+		try {
+			return FacultyDesignation.valueOf(designation);
+		} catch (IllegalArgumentException | NullPointerException e) {
+			return FacultyDesignation.PROFESSOR;
+		}
+	}
+
+	@Override
+	public FacultyModel getFacById(String hodId) {
+	    System.out.println("Retrieving faculty details for ID: " + hodId);
+
+	    if (hodId == null || hodId.isEmpty()) {
+	        throw new IllegalArgumentException("HOD ID cannot be null or empty.");
+	    }
+
+	    FacultyModel faculty = facRepo.findByEmpId(hodId);
+	    if (faculty == null) {
+	        System.out.println("Faculty not found with ID: " + hodId);
+	        throw new EntityNotFoundException("Faculty with ID " + hodId + " not found.");
+	    }
+
+	    System.out.println("Successfully retrieved faculty details for ID: " + hodId);
+	    return faculty;
 	}
 
 }

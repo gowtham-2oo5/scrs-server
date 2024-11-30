@@ -44,15 +44,17 @@ export default function DepartmentTable({
             return (
               <TableRow
                 key={dept.id}
-                className={`${index % 2 === 0 ? "" : "bg-white"} hover:`}
+                className={`${
+                  index % 2 === 0 ? "" : "bg-white"
+                } hover:bg-gray-50`}
               >
-                <TableCell className="px-4 py-2 text-sm ">
+                <TableCell className="px-4 py-2 text-sm">
                   {dynamicIndex}
                 </TableCell>
-                <TableCell className="px-4 py-2 text-sm ">
+                <TableCell className="px-4 py-2 text-sm">
                   {dept.deptName}
                 </TableCell>
-                <TableCell className="px-4 py-2 text-sm ">{dept.sn}</TableCell>
+                <TableCell className="px-4 py-2 text-sm">{dept.sn}</TableCell>
                 <TableCell className="px-4 py-2">
                   <span
                     className={`px-2 py-1 text-sm rounded-md ${

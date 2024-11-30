@@ -1,9 +1,9 @@
 package com.scrs.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,15 +34,28 @@ public class FacultyController {
 	private FacultyService facService;
 
 	@GetMapping
-    @SecurityRequirement(name = "bearerAuth")
+	@SecurityRequirement(name = "bearerAuth")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getAllFac(
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
+	public ResponseEntity<?> getAllFac() {
 		try {
-			return ResponseEntity.ok().body(facService.getAll(PageRequest.of(page, size)));
+			return ResponseEntity.ok().body(facService.getAll());
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	@SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/get-by-dept")
+	public ResponseEntity<?> getMethodName(@RequestParam String sn) {
+		System.out.println("SN: "+ sn);
+		System.out.println("In getting fac by dept");
+		try {
+			List<?> res = facService.getFacultiesByDept(sn);
+			System.out.println(res);
+			return ResponseEntity.ok().body(res);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Didnt get faculty ra lafoot");
 		}
 	}
 

@@ -18,6 +18,8 @@ public interface DepartmentService {
 
 	DepartmentModel getDept(String sn);
 
-	public void setHOD(String sn, String uname);
+	public void setHOD(String sn, String hodId);
+	
+	public void deleteDept(String id);
 
 }

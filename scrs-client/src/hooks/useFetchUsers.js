@@ -10,9 +10,9 @@ const useFetchusers = () => {
     const fetchusers = async () => {
       try {
         const response = await getUsers();
-        console.log("API Response:", response); // Log the full response
+        // console.log("API Response:", response); // Log the full response
         const data = await response.data; // Ensure the data is accessed correctly
-        console.log("Fetched Data:", data); // Log the data
+        // console.log("Fetched Data:", data); // Log the data
         setUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);

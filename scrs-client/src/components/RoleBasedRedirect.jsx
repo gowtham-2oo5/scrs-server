@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getSessionItem } from "@/utils/sessionStorageManager";
+import { getTokenData } from "@/utils/tokenHandling";
 const RoleBasedRedirect = () => {
   const navigate = useNavigate();
   const userRole = getSessionItem("role");
+  // console.log(getTokenData(getSessionItem("token")));
 
   useEffect(() => {
-    console.log("Current user role:", userRole);
+    // console.log("Current user role:", userRole);
 
     switch (userRole) {
       case "ADMIN":
