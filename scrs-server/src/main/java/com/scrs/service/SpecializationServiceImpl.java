@@ -49,6 +49,7 @@ public class SpecializationServiceImpl implements SpecializationService {
 
 	private void saveSpecs(List<SpecializationModel> specs) {
 		for (SpecializationModel spec : specs) {
+			spec.setStudentCount((long)0);
 			specRepo.save(spec);
 		}
 	}

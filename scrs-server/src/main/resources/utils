@@ -36,3 +36,9 @@ Student JSON String:
   "dob": "2005-03-08T21:48:40.293Z"
 }
 
+Login JSON String:
+{
+  "username": "gows",
+  "password": "Gowth$2k5"
+}
+

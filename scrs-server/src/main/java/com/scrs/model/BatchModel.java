@@ -32,6 +32,16 @@ public class BatchModel {
 	@JsonIgnore
 	private List<StudentModel> students;
 
+	private Long studentCount;
+
+	public Long getStudentCount() {
+		return studentCount;
+	}
+
+	public void setStudentCount(Long studentCount) {
+		this.studentCount = studentCount;
+	}
+
 	public SemesterEnum getCurrentSem() {
 		return currentSem;
 	}

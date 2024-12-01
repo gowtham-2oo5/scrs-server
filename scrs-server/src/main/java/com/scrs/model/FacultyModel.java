@@ -10,6 +10,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -35,7 +36,8 @@ public class FacultyModel extends UserModel {
 	@Enumerated(EnumType.STRING)
 	private FacultyDesignation designation;
 
-	@OneToMany(mappedBy = "cc")
+	@OneToMany(mappedBy = "incharge", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<CourseModel> courses;
 
 	private Date joined_at;
@@ -102,9 +104,8 @@ public class FacultyModel extends UserModel {
 
 	@Override
 	public String toString() {
-		return "FacultyModel [empId=" + empId  + ", instructingCourse="
-				+ instructingCourse + ", designation=" + designation + ", courses=" + courses + ", joined_at="
-				+ joined_at + ", exp=" + exp + "]";
+		return "FacultyModel [empId=" + empId + ", instructingCourse=" + instructingCourse + ", designation="
+				+ designation + ", courses=" + courses + ", joined_at=" + joined_at + ", exp=" + exp + "]";
 	}
 
 }

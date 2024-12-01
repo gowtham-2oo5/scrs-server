@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,7 +24,7 @@ public class DepartmentModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
-	
+
 	private String deptName;
 
 	@Column(unique = true)
@@ -30,10 +32,10 @@ public class DepartmentModel {
 
 	@ManyToOne
 	@JoinColumn(name = "hod_id", referencedColumnName = "id")
-	//@JsonIgnore
+	// @JsonIgnore
 	private FacultyModel hod;
-
-	@OneToMany(mappedBy = "dept")
+	
+	@OneToMany(mappedBy = "offeringDept", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<CourseModel> courses;
 
@@ -44,6 +46,24 @@ public class DepartmentModel {
 	@OneToMany(mappedBy = "dept")
 	@JsonIgnore
 	private List<StudentModel> students;
+
+	@Column(name = "student_count", nullable = false)
+	private Long studentCount;
+
+	@PrePersist
+	public void prePersist() {
+		if (this.studentCount == null) {
+			this.studentCount = 0L; // Set default value
+		}
+	}
+
+	public Long getStudentCount() {
+		return studentCount;
+	}
+
+	public void setStudentCount(Long studentCount) {
+		this.studentCount = studentCount;
+	}
 
 	public List<SpecializationModel> getSpecializations() {
 		return specializations;
@@ -103,7 +123,7 @@ public class DepartmentModel {
 
 	@Override
 	public String toString() {
-		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn  + "]";
+		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn + "]";
 	}
 
 	public boolean isEmpty() {

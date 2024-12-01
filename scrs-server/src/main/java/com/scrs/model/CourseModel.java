@@ -3,10 +3,13 @@ package com.scrs.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,70 +22,50 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "scrs_courses")
 public class CourseModel {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
-	private String courseCode;
-	private String title;
-	@Column(name = "description")
-	private String desc;
 
-	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, unique = true)
+	private String courseCode;
+
+	@Column(nullable = false)
+	private String courseTitle;
+
+	@Column(length = 500)
+	private String courseDesc;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id", nullable = false)
 	private CourseCategory category;
 
 	@ManyToOne
 	@JoinColumn(name = "cc_id", referencedColumnName = "id")
-	private FacultyModel cc;
+	private FacultyModel incharge;
 
 	@ManyToOne
 	@JoinColumn(name = "dept_id", referencedColumnName = "id")
-	private DepartmentModel dept; // Parent department
+	private DepartmentModel offeringDept;
 
 	@ManyToMany
 	@JoinTable(name = "course_target_depts", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "dept_id"))
-	private List<DepartmentModel> targetDepts; // Open for students of these departments
+	private List<DepartmentModel> targetDepts;
 
-	@ManyToOne
-	@JoinColumn(name = "spec_id", referencedColumnName = "id")
-	private SpecializationModel spec;
+	@ManyToMany
+	@JoinTable(name = "course_target_specs", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "spec_id"))
+	private List<SpecializationModel> targetSpecializations;
 
-	private boolean openForAll; // For common courses
+	@Column(name = "open_for_all", nullable = false)
+	private boolean openForAll;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private YearEnum year;
 
-	public YearEnum getYear() {
-		return year;
-	}
-
-	public void setYear(YearEnum year) {
-		this.year = year;
-	}
-
-	public List<DepartmentModel> getTargetDepts() {
-		return targetDepts;
-	}
-
-	public void setTargetDepts(List<DepartmentModel> targetDepts) {
-		this.targetDepts = targetDepts;
-	}
-
-	public SpecializationModel getSpec() {
-		return spec;
-	}
-
-	public void setSpec(SpecializationModel spec) {
-		this.spec = spec;
-	}
-
-	public boolean isOpenForAll() {
-		return openForAll;
-	}
-
-	public void setOpenForAll(boolean openForAll) {
-		this.openForAll = openForAll;
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "prereq_course_id")
+	private CourseModel preReqCourse;
 
 	private Double L, T, P, S;
 
@@ -106,20 +89,20 @@ public class CourseModel {
 		this.courseCode = courseCode;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getCourseTitle() {
+		return courseTitle;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setCourseTitle(String courseTitle) {
+		this.courseTitle = courseTitle;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getCourseDesc() {
+		return courseDesc;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setCourseDesc(String courseDesc) {
+		this.courseDesc = courseDesc;
 	}
 
 	public CourseCategory getCategory() {
@@ -130,20 +113,60 @@ public class CourseModel {
 		this.category = category;
 	}
 
-	public FacultyModel getCc() {
-		return cc;
+	public FacultyModel getIncharge() {
+		return incharge;
 	}
 
-	public void setCc(FacultyModel cc) {
-		this.cc = cc;
+	public void setIncharge(FacultyModel incharge) {
+		this.incharge = incharge;
 	}
 
-	public DepartmentModel getDept() {
-		return dept;
+	public DepartmentModel getOfferingDept() {
+		return offeringDept;
 	}
 
-	public void setDept(DepartmentModel dept) {
-		this.dept = dept;
+	public void setOfferingDept(DepartmentModel offeringDept) {
+		this.offeringDept = offeringDept;
+	}
+
+	public List<DepartmentModel> getTargetDepts() {
+		return targetDepts;
+	}
+
+	public void setTargetDepts(List<DepartmentModel> targetDepts) {
+		this.targetDepts = targetDepts;
+	}
+
+	public List<SpecializationModel> getTargetSpecializations() {
+		return targetSpecializations;
+	}
+
+	public void setTargetSpecializations(List<SpecializationModel> targetSpecializations) {
+		this.targetSpecializations = targetSpecializations;
+	}
+
+	public boolean isOpenForAll() {
+		return openForAll;
+	}
+
+	public void setOpenForAll(boolean openForAll) {
+		this.openForAll = openForAll;
+	}
+
+	public YearEnum getYear() {
+		return year;
+	}
+
+	public void setYear(YearEnum year) {
+		this.year = year;
+	}
+
+	public CourseModel getPreReqCourse() {
+		return preReqCourse;
+	}
+
+	public void setPreReqCourse(CourseModel preReqCourse) {
+		this.preReqCourse = preReqCourse;
 	}
 
 	public Double getL() {
@@ -180,9 +203,7 @@ public class CourseModel {
 
 	@Override
 	public String toString() {
-		return "CourseModel [id=" + id + ", courseCode=" + courseCode + ", title=" + title + ", desc=" + desc
-				+ ", category=" + category + ", cc=" + cc + ", dept=" + dept + ", L=" + L + ", T=" + T + ", P=" + P
-				+ ", S=" + S + "]";
+		return "SAVED WITH ID: " + id+" TITLE: "+ courseTitle+" CREDITS: "+ getCredits();
 	}
 
 }

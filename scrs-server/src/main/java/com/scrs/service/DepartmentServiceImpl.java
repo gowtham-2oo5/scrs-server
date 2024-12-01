@@ -72,7 +72,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	private void saveDepts(List<DepartmentModel> depts) {
 		for (DepartmentModel dept : depts) {
-
+			dept.setStudentCount((long)0);
 			deptRepo.save(dept);
 			System.out.println("Saved Dept with ID: " + dept.getId());
 		}

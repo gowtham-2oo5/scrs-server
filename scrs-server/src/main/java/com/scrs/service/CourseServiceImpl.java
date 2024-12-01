@@ -1,0 +1,200 @@
+package com.scrs.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.scrs.dto.CourseCreationDTO;
+import com.scrs.model.CourseCategory;
+import com.scrs.model.CourseModel;
+import com.scrs.model.DepartmentModel;
+import com.scrs.model.SpecializationModel;
+import com.scrs.repository.CourseRepo;
+
+@Service
+public class CourseServiceImpl implements CourseService {
+
+	@Autowired
+	private CourseRepo cRepo;
+
+	@Autowired
+	private CsvService csvService;
+
+	@Autowired
+	private CourseCategoryService ccService;
+
+	@Autowired
+	private DepartmentService deptService;
+
+	@Autowired
+	private SpecializationService specService;
+
+	@Autowired
+	private FacultyService facService;
+
+	@Autowired
+	private BatchServiceImpl batchService;
+
+	@Override
+	public CourseModel singleCreate(CourseCreationDTO dto) {
+		try {
+			CourseModel course = new CourseModel();
+
+			course.setCourseCode(dto.getCourseCode());
+			course.setCourseTitle(dto.getCourseTitle());
+			course.setCourseDesc(dto.getCourseDesc());
+			CourseCategory category = ccService.getCcByTitle(dto.getCourseCategory());
+			course.setCategory(category);
+			course.setIncharge(facService.getFacById(dto.getCourseIncharge()));
+			course.setOfferingDept(deptService.getDept(dto.getOfferingDept()));
+			Boolean openForAll = dto.getIsOpenForAll();
+			if (!openForAll) {
+				course.setTargetDepts(getDepartments(dto.getTargetDepts()));
+				course.setTargetSpecializations(getSpecializations(dto.getTargetSpec()));
+			} else {
+				course.setTargetDepts(null);
+				course.setTargetSpecializations(null);
+			}
+			course.setOpenForAll(openForAll);
+			course.setYear(batchService.getCurrentYear(dto.getForStudentsOfYear()));
+
+			CourseModel preReq = cRepo.getCourseByCode(dto.getPreReqCourse());
+			course.setPreReqCourse(preReq);
+
+			course.setL(dto.getL());
+			course.setP(dto.getP());
+			course.setT(dto.getT());
+			course.setS(dto.getS());
+
+			// Save the course and update the category
+			cRepo.save(course);
+			ccService.updateCC(category, course);
+
+			return course;
+		} catch (Exception e) {
+			System.out.println("Error adding course: " + e.getLocalizedMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private List<SpecializationModel> getSpecializations(List<String> targetSpecs) {
+		List<SpecializationModel> res = new ArrayList<>();
+		for (String sn : targetSpecs) {
+			res.add(specService.getSpec(sn));
+		}
+		return res;
+	}
+
+	private List<DepartmentModel> getDepartments(List<String> targetDepts) {
+		List<DepartmentModel> res = new ArrayList<>();
+		for (String sn : targetDepts) {
+			res.add(deptService.getDept(sn));
+		}
+		return res;
+	}
+
+	@Override
+	public String bulkUploadCourses(MultipartFile file) {
+		String[] headers = { "courseCode", "courseTitle", "courseDesc", "courseCategory", "courseIncharge",
+				"offeringDept", "targetDepts", "targetSpecs", "isOpenForAll", "forStudentsOfYear", "L", "T", "P", "S",
+				"preReqCourse" };
+
+		try {
+			List<CourseModel> courses = csvService.parseCsv(file, headers, record -> {
+				CourseModel course = new CourseModel();
+
+				course.setCourseCode(record.get("courseCode"));
+				course.setCourseTitle(record.get("courseTitle"));
+				course.setCourseDesc(record.get("courseDesc"));
+
+				CourseCategory category = ccService.getCcByTitle(record.get("courseCategory"));
+				course.setCategory(category);
+
+				course.setIncharge(facService.getFacById(record.get("courseIncharge")));
+				course.setOfferingDept(deptService.getDept(record.get("offeringDept")));
+
+				Boolean isOpenForAll = Boolean.parseBoolean(record.get("isOpenForAll"));
+				course.setOpenForAll(isOpenForAll);
+
+				if (!isOpenForAll) {
+					List<String> targetDepts = List.of(record.get("targetDepts").split(","));
+					List<String> targetSpecs = List.of(record.get("targetSpecs").split(","));
+					course.setTargetDepts(getDepartments(targetDepts));
+					course.setTargetSpecializations(getSpecializations(targetSpecs));
+				} else {
+					course.setTargetDepts(null);
+					course.setTargetSpecializations(null);
+				}
+
+				course.setYear(batchService.getCurrentYear(record.get("forStudentsOfYear")));
+
+				String preReqCourseCode = record.get("preReqCourse");
+				course.setPreReqCourse(preReqCourseCode != null && !preReqCourseCode.isEmpty()
+						? cRepo.getCourseByCode(preReqCourseCode)
+						: null);
+
+				course.setL(Double.parseDouble(record.get("L")));
+				course.setT(Double.parseDouble(record.get("T")));
+				course.setP(Double.parseDouble(record.get("P")));
+				course.setS(Double.parseDouble(record.get("S")));
+
+				ccService.updateCC(category, course);
+
+				return course;
+			});
+
+			cRepo.saveAll(courses);
+			return "Courses uploaded successfully";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error uploading courses: " + e.getLocalizedMessage();
+		}
+	}
+
+	@Override
+	public List<CourseModel> getAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String updateLTPS(UUID id, Double L, Double T, Double P, Double S) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String updateCC(UUID id, String empId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String updateCourseTitle(UUID id, String title) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String deleteCourse(UUID id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DepartmentModel> getTargetDepts() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SpecializationModel> getTargetSpecs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,8 @@ import com.scrs.repository.BatchRepo;
 import com.scrs.repository.DepartmentRepo;
 import com.scrs.repository.SpecializationRepo;
 import com.scrs.repository.StudentRepo;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -48,7 +51,7 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public StudentModel createStudent(StudentRegsDTO dto, MultipartFile profilePicture) throws IOException {
 		String encryptedPassword = passwordEncoder.encode(dateString(dto.getDob()));
-		System.out.println("Is null at service ?" + profilePicture.isEmpty());
+		System.out.println("Is null at service ?" + profilePicture == null);
 
 		System.out.println("Going to create new Student");
 		StudentModel student = new StudentModel();
@@ -61,33 +64,40 @@ public class StudentServiceImpl implements StudentService {
 		student.setUserRole(UserRole.STUDENT);
 		student.setProfilePicture(profilePictureUrl);
 		student.setRegNum(dto.getRegNum());
-		student.setContact(dto.getContact());
 		student.setDob(dto.getDob());
+		student.setContact(dto.getContact());
+
+		// Set relationships
 		SpecializationModel spec = getSpecialization(dto.getSpec());
-		if (spec != null)
-			student.setSpecialization(getSpecialization(dto.getSpec()));
-		else {
+		if (spec != null) {
+			student.setSpecialization(spec);
+		} else {
 			System.err.println("NULL Specialization");
 			return null;
 		}
+
 		DepartmentModel dept = getDept(dto.getDept());
-		if (dept != null)
+		if (dept != null) {
 			student.setDept(dept);
-		else {
+		} else {
 			System.err.println("NULL Dept");
 			return null;
 		}
+
 		BatchModel batch = getBatch(dto.getBatch());
-		if (batch != null)
+		if (batch != null) {
 			student.setBatch(batch);
-		else {
+		} else {
 			System.err.println("NULL Batch");
 			return null;
 		}
-		student.setDob(dto.getDob());
 
 		System.out.println("Got Student: " + student.toString());
+
+		// Save student and increment counts
 		studentRepo.save(student);
+		incrementCounts(student);
+
 		return student;
 	}
 
@@ -178,11 +188,13 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	private void saveStudents(List<StudentModel> students) {
-		for (StudentModel student : students) {
-			studentRepo.save(student);
-			System.out.println("Saving student with ID: " + student.getId());
-		}
+	    for (StudentModel student : students) {
+	        studentRepo.save(student);
+	        incrementCounts(student); // Increment counts for each saved student
+	        System.out.println("Saved student with ID: " + student.getId());
+	    }
 	}
+
 
 	public Date parseDate(String string) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -194,5 +206,37 @@ public class StudentServiceImpl implements StudentService {
 			return null;
 		}
 	}
+
+	@Transactional
+	private void incrementCounts(StudentModel student) {
+		// Increment counts for Department, Specialization, and Batch
+		deptRepo.incrementStudentCount(student.getDept().getId());
+		specRepo.incrementStudentCount(student.getSpecialization().getId());
+		bRepo.incrementStudentCount(student.getBatch().getId());
+	}
+
+	@Transactional
+	private void decrementCounts(StudentModel student) {
+		// Decrement counts for Department, Specialization, and Batch
+		deptRepo.decrementStudentCount(student.getDept().getId());
+		specRepo.decrementStudentCount(student.getSpecialization().getId());
+		bRepo.decrementStudentCount(student.getBatch().getId());
+	}
+
+	@Override
+	public void deleteStudent(UUID studentId) {
+	    // Retrieve the student before deletion
+	    StudentModel student = studentRepo.findById(studentId)
+	            .orElseThrow(() -> new RuntimeException("Student not found"));
+
+	    // Decrement counts
+	    decrementCounts(student);
+
+	    // Delete the student
+	    studentRepo.deleteById(studentId);
+
+	    System.out.println("Deleted student with ID: " + studentId);
+	}
+
 
 }

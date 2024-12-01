@@ -176,10 +176,6 @@ public class FacultyServiceImpl implements FacultyService {
 
 		List<FacultyModel> facs = csvService.parseCsv(file, headers, record -> {
 			try {
-				if (record.size() < headers.length) {
-					System.err.println("Skipping malformed row: " + record);
-					return null;
-				}
 
 				FacultyModel fac = new FacultyModel();
 				fac.setName(record.get("name"));

@@ -43,7 +43,7 @@ public class BatchServiceImpl implements BatchService {
         }
     }
 
-    private YearEnum getCurrentYear(String currYr) {
+    public YearEnum getCurrentYear(String currYr) {
         System.out.println("Resolving current year from value: " + currYr);
         switch (currYr) {
             case "1":
@@ -110,6 +110,7 @@ public class BatchServiceImpl implements BatchService {
         System.out.println("Saving batches...");
         for (BatchModel batch : batches) {
             try {
+            	batch.setStudentCount((long) 0);
                 bRepo.save(batch);
                 System.out.println("Saved batch: " + batch.getName() + " " + batch.getId());
             } catch (Exception e) {
