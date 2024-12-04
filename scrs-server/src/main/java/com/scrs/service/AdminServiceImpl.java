@@ -35,7 +35,7 @@ public class AdminServiceImpl implements AdminService {
 
 		AdminModel admin = new AdminModel(adminDTO.getName(), adminDTO.getUsername(), adminDTO.getEmail(),
 				encryptedPassword, adminDTO.getContact(), profilePictureUrl, isSuperAdmin, adminDTO.getDob());
-		System.out.println("Saved admin: " + admin.toString());
+		System.out.println("Saved admin: " + admin);
 		return adminRepository.save(admin);
 	}
 

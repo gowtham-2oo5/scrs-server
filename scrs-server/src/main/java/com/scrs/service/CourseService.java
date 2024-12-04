@@ -2,9 +2,11 @@ package com.scrs.service;
 
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scrs.dto.CourseCreationDTO;
+import com.scrs.dto.CourseDTO;
 import com.scrs.model.CourseModel;
 import com.scrs.model.DepartmentModel;
 import com.scrs.model.SpecializationModel;
@@ -18,7 +20,8 @@ public interface CourseService {
 	public String bulkUploadCourses(MultipartFile file);
 
 	// Retrieve all
-	public List<CourseModel> getAll();
+	public List<CourseDTO> getAll();
+	
 
 	// Retrieve all from course category
 	// Update LTPS structure, Department, specialization and other fields
@@ -35,8 +38,9 @@ public interface CourseService {
 	public String deleteCourse(UUID id);
 
 	// get TargetDepts, targetSpecializations
-	public List<DepartmentModel> getTargetDepts();
 
-	public List<SpecializationModel> getTargetSpecs();
+	public List<SpecializationModel> getTargetSpecs(UUID id);
+
+	List<DepartmentModel> getTargetDepts(UUID id);
 
 }

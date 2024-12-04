@@ -270,4 +270,20 @@ public class FacultyServiceImpl implements FacultyService {
 	    return faculty;
 	}
 
+	@Override
+	public FacultyDTO getFacultyByEmpId(String empId) {
+		FacultyModel fac = facRepo.findByEmpId(empId);
+		FacultyDTO faculty = new FacultyDTO();
+		faculty.setName(fac.getName());
+		faculty.setEmail(fac.getEmail());
+		faculty.setContact(fac.getContact());
+		faculty.setProfilePicture(fac.getProfilePicture());
+		faculty.setDob(fac.getDob());
+		faculty.setEmpId(fac.getEmpId());
+		faculty.setDepartment(fac.getDepartment().getDeptName());
+		faculty.setDesignation(fac.getDesignation().name());
+		faculty.setExp(fac.getExp());
+		return faculty;
+	}
+
 }

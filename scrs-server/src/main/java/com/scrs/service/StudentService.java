@@ -22,4 +22,6 @@ public interface StudentService {
 	
 	public void deleteStudent(UUID studentId);
 
+	void saveStudents(List<StudentModel> students);
+
 }

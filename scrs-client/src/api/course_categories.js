@@ -1,9 +1,12 @@
 import axios from "axios";
-import { getToken } from ".";
+import { getToken } from "."; // Adjust this import based on your auth token utility
 
-export const getAllFaculties = async () => {
+const BASE_URL = "/api/course-category";
+
+// Insert a single course category
+export const insertCourseCategory = async (courseCategory) => {
   try {
-    const res = await axios.get(`/api/faculty`, {
+    const res = await axios.post(`${BASE_URL}/insert-one`, courseCategory, {
       headers: {
         Authorization: `Bearer ${getToken()}`,
       },
@@ -20,54 +23,58 @@ export const getAllFaculties = async () => {
   }
 };
 
-export const getFacultiesByDept = async (deptName) => {
+// Bulk upload course categories via CSV
+export const bulkUploadCourseCategories = async (csvFile) => {
   try {
-    const res = await axios.get(`/api/faculty/get-by-dept`, {
-      params: {
-        sn: deptName,
-      },
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    });
-    return {
-      data: res.data,
-      status: res.status,
-    };
-  } catch (error) {
-    return {
-      data: null,
-      error: error.response ? error.response.data : error.message,
-    };
-  }
-};
+    const formData = new FormData();
+    formData.append("csv_file", csvFile);
 
-export const getFacultyById = async (id) => {
-  try {
-    const res = await axios.get(`/api/faculty/get-by-id?empId=${id}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    });
-    return {
-      data: res.data,
-      status: res.status,
-    };
-  } catch (error) {
-    return {
-      data: null,
-      error: error.response ? error.response.data : error.message,
-    };
-  }
-};
-
-export const createNewFaculty = async (formData) => {
-  try {
-    const res = await axios.post(`/api/faculty/create`, formData, {
+    const res = await axios.post(`${BASE_URL}/bulk-upload`, formData, {
       headers: {
         Authorization: `Bearer ${getToken()}`,
         "Content-Type": "multipart/form-data",
       },
+    });
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+// Fetch all course categories
+export const getAllCourseCategories = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/get-all`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    return {
+      data: res.data,
+      status: res.status,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error.response ? error.response.data : error.message,
+    };
+  }
+};
+
+// Delete a single course category by title
+export const deleteCourseCategory = async (title) => {
+  try {
+    const res = await axios.delete(`${BASE_URL}`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      params: { title },
     });
     return {
       data: res.data,

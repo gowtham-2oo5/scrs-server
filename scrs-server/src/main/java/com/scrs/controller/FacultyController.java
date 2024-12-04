@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scrs.dto.FacultyDTO;
 import com.scrs.dto.FacultyRegsDTO;
 import com.scrs.model.FacultyModel;
 import com.scrs.service.FacultyService;
@@ -52,6 +53,19 @@ public class FacultyController {
 		System.out.println("In getting fac by dept");
 		try {
 			List<?> res = facService.getFacultiesByDept(sn);
+			System.out.println(res);
+			return ResponseEntity.ok().body(res);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Didnt get faculty ra lafoot");
+		}
+	}
+	
+	@SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/get-by-id")
+	public ResponseEntity<?> getFacBySN(@RequestParam String empId) {
+		try {
+			FacultyDTO res = facService.getFacultyByEmpId(empId);
 			System.out.println(res);
 			return ResponseEntity.ok().body(res);
 		} catch (Exception e) {

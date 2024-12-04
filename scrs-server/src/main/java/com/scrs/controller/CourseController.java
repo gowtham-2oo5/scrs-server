@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scrs.dto.CourseCreationDTO;
+import com.scrs.dto.CourseDTO;
 import com.scrs.model.CourseModel;
 import com.scrs.model.DepartmentModel;
 import com.scrs.model.SpecializationModel;
@@ -69,15 +70,17 @@ public class CourseController {
 
     // Endpoint to get all courses
     @GetMapping("/get-all")
-    public ResponseEntity<List<CourseModel>> getAllCourses() {
+    public ResponseEntity<List<CourseDTO>> getAllCourses() {
         try {
-            List<CourseModel> courses = courseService.getAll();
+            List<CourseDTO> courses = courseService.getAll();
             return ResponseEntity.ok(courses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
     }
+    
+    
 
     // Endpoint to update L-T-P-S
     @PutMapping("/update-ltps")
@@ -134,9 +137,9 @@ public class CourseController {
 
     // Endpoint to get target departments
     @GetMapping("/target-departments")
-    public ResponseEntity<List<DepartmentModel>> getTargetDepartments() {
+    public ResponseEntity<List<DepartmentModel>> getTargetDepartments(@RequestParam String id) {
         try {
-            List<DepartmentModel> departments = courseService.getTargetDepts();
+            List<DepartmentModel> departments = courseService.getTargetDepts(UUID.fromString(id));
             return ResponseEntity.ok(departments);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -146,9 +149,9 @@ public class CourseController {
 
     // Endpoint to get target specializations
     @GetMapping("/target-specializations")
-    public ResponseEntity<List<SpecializationModel>> getTargetSpecializations() {
+    public ResponseEntity<List<SpecializationModel>> getTargetSpecializations(@RequestParam String id) {
         try {
-            List<SpecializationModel> specializations = courseService.getTargetSpecs();
+            List<SpecializationModel> specializations = courseService.getTargetSpecs(UUID.fromString(id));
             return ResponseEntity.ok(specializations);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

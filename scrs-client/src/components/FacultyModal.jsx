@@ -7,6 +7,7 @@ import {
 
 export default function FacultyModal({ faculty, onClose }) {
   if (!faculty) return null;
+  console.log("In facModal", faculty);
 
   return (
     <Dialog open={!!faculty} onOpenChange={onClose}>

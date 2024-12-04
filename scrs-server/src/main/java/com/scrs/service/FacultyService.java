@@ -33,4 +33,6 @@ public interface FacultyService {
 
 	FacultyModel getFacById(String hodId);
 
+	public FacultyDTO getFacultyByEmpId(String empId);
+
 }

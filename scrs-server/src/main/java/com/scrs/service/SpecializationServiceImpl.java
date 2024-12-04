@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.scrs.dto.SpcRegsDTO;
 import com.scrs.model.DepartmentModel;
 import com.scrs.model.SpecializationModel;
+import com.scrs.model.StudentModel;
 import com.scrs.repository.SpecializationRepo;
 
 @Service
@@ -24,6 +25,9 @@ public class SpecializationServiceImpl implements SpecializationService {
 
 	@Autowired
 	private CsvService csvService;
+	
+	@Autowired
+	private StudentService studService;
 
 	@Override
 	public List<SpecializationModel> getAll() {
@@ -66,6 +70,7 @@ public class SpecializationServiceImpl implements SpecializationService {
 
 		} catch (Exception err) {
 			err.printStackTrace();
+			System.out.println("Error inserting specialization: "+err.getLocalizedMessage());
 		}
 	}
 
@@ -123,10 +128,16 @@ public class SpecializationServiceImpl implements SpecializationService {
 		try {
 			UUID specId = UUID.fromString(id);
 			SpecializationModel spec = specRepo.findByID(specId);
+			
 			if (spec == null) {
 				System.err.println("Specialization not found for ID: " + id);
 				return "Specialization not found";
 			}
+			List<StudentModel> students = spec.getStudents();
+			students.forEach(student ->{
+				student.setSpecialization(specRepo.findBySN("AI"));
+			});
+			studService.saveStudents(students);
 			specRepo.delete(spec);
 			System.out.println("Deleted specialization: " + spec);
 			return "Deleted successfully";

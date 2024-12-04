@@ -16,9 +16,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "depts")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentModel {
 
 	@Id
@@ -57,77 +63,5 @@ public class DepartmentModel {
 		}
 	}
 
-	public Long getStudentCount() {
-		return studentCount;
-	}
-
-	public void setStudentCount(Long studentCount) {
-		this.studentCount = studentCount;
-	}
-
-	public List<SpecializationModel> getSpecializations() {
-		return specializations;
-	}
-
-	public void setSpecializations(List<SpecializationModel> specializations) {
-		this.specializations = specializations;
-	}
-
-	public List<StudentModel> getStudents() {
-		return students;
-	}
-
-	public void setStudents(List<StudentModel> students) {
-		this.students = students;
-	}
-
-	public List<CourseModel> getCourses() {
-		return courses;
-	}
-
-	public void setCourses(List<CourseModel> courses) {
-		this.courses = courses;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getDeptName() {
-		return deptName;
-	}
-
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
-	}
-
-	public String getSn() {
-		return sn;
-	}
-
-	public void setSn(String sn) {
-		this.sn = sn;
-	}
-
-	public FacultyModel getHod() {
-		return hod;
-	}
-
-	public void setHod(FacultyModel hod) {
-		this.hod = hod;
-	}
-
-	@Override
-	public String toString() {
-		return "DepartmentModel [id=" + id + ", deptName=" + deptName + ", sn=" + sn + "]";
-	}
-
-	public boolean isEmpty() {
-		return this == null;
-	}
 
 }

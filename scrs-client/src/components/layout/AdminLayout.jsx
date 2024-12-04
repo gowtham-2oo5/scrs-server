@@ -40,7 +40,7 @@ const AdminLayout = ({ children }) => {
         // Manage and create new courses, edit handouts, and link to departments, specializations, prerequisites
         "Manage All Courses": "courses/manage", // Admin: Manage all courses, regardless of creator
         "Add New Course": "courses/add", // Admin: Create new courses
-        "Course Categories & Prerequisites": "courses/categories", // Admin: Manage course categories & set prerequisites
+        "Course Categories": "courses/categories", // Admin: Manage course categories & set prerequisites
       },
     },
     {

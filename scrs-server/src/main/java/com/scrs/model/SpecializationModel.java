@@ -15,9 +15,15 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "specs")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SpecializationModel {
 
 	@Id
@@ -42,68 +48,5 @@ public class SpecializationModel {
 
 	
 	private Long studentCount;
-
-	public Long getStudentCount() {
-		return studentCount;
-	}
-
-	public void setStudentCount(Long studentCount) {
-		this.studentCount = studentCount;
-	}
-
-
-	public DepartmentModel getDept() {
-		return dept;
-	}
-
-	public void setDept(DepartmentModel dept) {
-		this.dept = dept;
-	}
-
-	public List<StudentModel> getStudents() {
-		return students;
-	}
-
-	public void setStudents(List<StudentModel> students) {
-		this.students = students;
-	}
-
-	public List<CourseModel> getCourses() {
-		return courses;
-	}
-
-	public void setCourses(List<CourseModel> courses) {
-		this.courses = courses;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getSpecName() {
-		return specName;
-	}
-
-	public void setSpecName(String specName) {
-		this.specName = specName;
-	}
-
-	public String getSn() {
-		return sn;
-	}
-
-	public void setSn(String sn) {
-		this.sn = sn;
-	}
-
-	@Override
-	public String toString() {
-		return "SpecializationModel [id=" + id + ", specName=" + specName + ", sn=" + sn + ", dept=" + dept
-				+ ", students=" + students + ", courses=" + courses + "]";
-	}
 
 }

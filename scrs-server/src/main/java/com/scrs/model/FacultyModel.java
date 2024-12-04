@@ -15,10 +15,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "scrs_faculty")
 @DiscriminatorValue("ROLE_FACULTY")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class FacultyModel extends UserModel {
 
 	@Column(unique = true)
@@ -42,70 +48,5 @@ public class FacultyModel extends UserModel {
 
 	private Date joined_at;
 	private String exp;
-
-	public FacultyModel() {
-	}
-
-	public String getEmpId() {
-		return empId;
-	}
-
-	public void setEmpId(String empId) {
-		this.empId = empId;
-	}
-
-	public DepartmentModel getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(DepartmentModel department) {
-		this.department = department;
-	}
-
-	public String getInstructingCourse() {
-		return instructingCourse;
-	}
-
-	public void setInstructingCourse(String instructingCourse) {
-		this.instructingCourse = instructingCourse;
-	}
-
-	public FacultyDesignation getDesignation() {
-		return designation;
-	}
-
-	public void setDesignation(FacultyDesignation designation) {
-		this.designation = designation;
-	}
-
-	public List<CourseModel> getCourses() {
-		return courses;
-	}
-
-	public void setCourses(List<CourseModel> courses) {
-		this.courses = courses;
-	}
-
-	public Date getJoined_at() {
-		return joined_at;
-	}
-
-	public void setJoined_at(Date joined_at) {
-		this.joined_at = joined_at;
-	}
-
-	public String getExp() {
-		return exp;
-	}
-
-	public void setExp(String exp) {
-		this.exp = exp;
-	}
-
-	@Override
-	public String toString() {
-		return "FacultyModel [empId=" + empId + ", instructingCourse=" + instructingCourse + ", designation="
-				+ designation + ", courses=" + courses + ", joined_at=" + joined_at + ", exp=" + exp + "]";
-	}
 
 }

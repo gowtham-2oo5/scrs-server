@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,196 +19,115 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import CsvTable from "@/components/CsvTable";
-import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, Link } from "lucide-react";
 import {
-  getAllSpecs,
-  addSingleSpec,
-  bulkUploadSpecs,
-  deleteSpec,
-  updateSpecDept,
-  getSpecBySn,
-} from "@/api/specs";
-import { getDepts } from "@/api/dept";
+  getAllCourseCategories,
+  insertCourseCategory,
+  bulkUploadCourseCategories,
+  deleteCourseCategory,
+} from "@/api/course_categories";
 
-export default function SpecializationManagement() {
-  const [specializations, setSpecializations] = useState([]);
-  const [departments, setDepartments] = useState([]);
+export default function ManageCourseCategories() {
+  const [categories, setCategories] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
-  const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [csvData, setCsvData] = useState(null);
+  const [isCoursesModalOpen, setIsCoursesModalOpen] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const { control, handleSubmit, reset, setValue } = useForm({
-    defaultValues: {
-      id: null,
-      name: "",
-      sn: "",
-      dept: "",
-      studentCount: 0,
-    },
-  });
+  const { register, handleSubmit, reset, setValue } = useForm();
 
   useEffect(() => {
-    fetchSpecializations();
-    fetchDepartments();
+    fetchCategories();
   }, []);
 
-  const fetchSpecializations = async () => {
-    const response = await getAllSpecs();
+  const fetchCategories = async () => {
+    const response = await getAllCourseCategories();
     if (response.data) {
-      setSpecializations(response.data);
-    }
-  };
-
-  const fetchDepartments = async () => {
-    const response = await getDepts();
-    if (response.data) {
-      setDepartments(response.data);
+      console.log(response.data);
+      setCategories(response.data);
     }
   };
 
   const onSubmit = async (data) => {
-    if (data.id) {
-      await updateSpecDept(data.sn, data.dept);
+    if (isEditModalOpen) {
+      // Implement update logic here
     } else {
-      await addSingleSpec(data);
+      await insertCourseCategory(data);
     }
-    fetchSpecializations();
+    fetchCategories();
     reset();
     setIsAddModalOpen(false);
     setIsEditModalOpen(false);
   };
 
-  const handleEditSpecialization = async (sn) => {
-    const response = await getSpecBySn(sn);
-    if (response.data) {
-      reset(response.data);
-      setIsEditModalOpen(true);
-    }
+  const handleEditCategory = (category) => {
+    setValue("title", category.title);
+    setValue("descr", category.descr);
+    setIsEditModalOpen(true);
   };
 
-  const handleDeleteSpecialization = async (sn) => {
-    await deleteSpec(sn);
-    fetchSpecializations();
+  const handleDeleteCategory = async (title) => {
+    await deleteCourseCategory(title);
+    fetchCategories();
   };
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target.result;
-        setCsvData(content);
-        setIsBulkUploadOpen(false);
-        setIsReviewOpen(true);
-      };
-      reader.readAsText(file);
+      await bulkUploadCourseCategories(file);
+      fetchCategories();
+      setIsBulkUploadOpen(false);
     }
   };
 
-  const handleFileSubmit = async () => {
-    try {
-      const formData = new FormData();
-      formData.append(
-        "file",
-        new Blob([csvData], { type: "text/csv" }),
-        "specs.csv"
-      );
-      await bulkUploadSpecs(formData);
-      setIsReviewOpen(false);
-      fetchSpecializations();
-      alert("Data uploaded successfully");
-    } catch (error) {
-      console.error("Error uploading data:", error);
-      alert("Failed to upload data");
-    }
+  const handleViewCourses = (courses) => {
+    setSelectedCourses(courses.map((course) => course.courseTitle));
+    setIsCoursesModalOpen(true);
   };
 
-  const SpecializationForm = ({ isEdit = false }) => (
+  const CategoryForm = ({ isEdit = false }) => (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 py-4">
       <div className="grid items-center grid-cols-4 gap-4">
-        <Label htmlFor="name" className="font-semibold text-right">
+        <Label htmlFor="title" className="font-semibold text-right">
           Name
         </Label>
-        <Controller
-          name="name"
-          control={control}
-          rules={{ required: "Name is required" }}
-          render={({ field }) => (
-            <Input {...field} className="col-span-3 rounded-lg" />
-          )}
+        <Input
+          id="title"
+          {...register("title", { required: "Title is required" })}
+          className="col-span-3 rounded-lg"
         />
       </div>
       <div className="grid items-center grid-cols-4 gap-4">
-        <Label htmlFor="sn" className="font-semibold text-right">
-          SN
+        <Label htmlFor="descr" className="font-semibold text-right">
+          Description
         </Label>
-        <Controller
-          name="sn"
-          control={control}
-          rules={{ required: "SN is required" }}
-          render={({ field }) => (
-            <Input {...field} className="col-span-3 rounded-lg" />
-          )}
-        />
-      </div>
-      <div className="grid items-center grid-cols-4 gap-4">
-        <Label htmlFor="dept" className="font-semibold text-right">
-          Department
-        </Label>
-        <Controller
-          name="dept"
-          control={control}
-          rules={{ required: "Department is required" }}
-          render={({ field }) => (
-            <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger className="col-span-3 rounded-lg">
-                <SelectValue placeholder="Select Department" />
-              </SelectTrigger>
-              <SelectContent className="bg-blue-50">
-                {departments.map((dept) => (
-                  <SelectItem
-                    key={dept.sn}
-                    value={dept.sn}
-                    className="text-blue-800 hover:bg-blue-100"
-                  >
-                    {dept.deptName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <Input
+          id="descr"
+          {...register("descr", { required: "Description is required" })}
+          className="col-span-3 rounded-lg"
         />
       </div>
       <Button
         type="submit"
         className="px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md"
       >
-        {isEdit ? "Update Specialization" : "Add Specialization"}
+        {isEdit ? "Update Category" : "Add Category"}
       </Button>
     </form>
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = specializations.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(specializations.length / itemsPerPage);
+  const currentItems = categories.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
 
   return (
     <div className="container p-4 mx-auto sm:p-6">
-      <h1 className="mb-6 text-2xl font-bold">Manage Specializations</h1>
+      <h1 className="mb-6 text-2xl font-bold">Manage Course Categories</h1>
 
       <div className="flex flex-col justify-end mb-6 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -220,10 +139,10 @@ export default function SpecializationManagement() {
           <DialogContent className="border-2 shadow-lg rounded-xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
-                Add New Specialization
+                Add New Course Category
               </DialogTitle>
             </DialogHeader>
-            <SpecializationForm />
+            <CategoryForm />
           </DialogContent>
         </Dialog>
 
@@ -258,35 +177,43 @@ export default function SpecializationManagement() {
             <TableRow>
               <TableCell className="px-4 py-2">ID</TableCell>
               <TableCell className="px-4 py-2">Name</TableCell>
-              <TableCell className="px-4 py-2">SN</TableCell>
-              <TableCell className="px-4 py-2">Dept</TableCell>
-              <TableCell className="px-4 py-2">
-                Registered Student Count
-              </TableCell>
+              <TableCell className="px-4 py-2">Description</TableCell>
+              <TableCell className="px-4 py-2">Sessions Per Week</TableCell>
+              <TableCell className="px-4 py-2">Courses</TableCell>
               <TableCell className="px-4 py-2">Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentItems.map((spec, ind) => {
+            {currentItems.map((category, ind) => {
               const dynamicIndex = (currentPage - 1) * itemsPerPage + ind + 1;
               return (
                 <TableRow
-                  key={spec.sn}
+                  key={category.id}
                   className="font-medium transition-colors duration-200"
                 >
                   <TableCell className="px-4 py-2">{dynamicIndex}</TableCell>
-                  <TableCell className="px-4 py-2">{spec.specName}</TableCell>
-                  <TableCell className="px-4 py-2">{spec.sn}</TableCell>
+                  <TableCell className="px-4 py-2">{category.title}</TableCell>
                   <TableCell className="px-4 py-2">
-                    {spec.dept?.deptName || spec.dept || "N/A"}
+                    {category.description}
                   </TableCell>
                   <TableCell className="px-4 py-2">
-                    {spec.studentCount == null ? "0" : spec.studentCount}
+                    {category.minSessionsPerWeek} -{" "}
+                    {category.maxSessionsPerWeek}
+                  </TableCell>
+                  <TableCell className="px-4 py-2">
+                    <Button
+                      onClick={() => handleViewCourses(category.courses)}
+                      className="flex items-center px-3 py-2 space-x-1 transition-all duration-150 ease-in-out rounded-lg"
+                      variant="outline"
+                    >
+                      <Link className="w-4 h-4" />
+                      <span>View Courses</span>
+                    </Button>
                   </TableCell>
                   <TableCell className="px-4 py-2">
                     <div className="flex space-x-2">
                       <Button
-                        onClick={() => handleEditSpecialization(spec.sn)}
+                        onClick={() => handleEditCategory(category)}
                         className="flex items-center px-3 py-2 space-x-1 transition-all duration-150 ease-in-out rounded-lg"
                         variant="outline"
                       >
@@ -294,7 +221,7 @@ export default function SpecializationManagement() {
                         <span>Edit</span>
                       </Button>
                       <Button
-                        onClick={() => handleDeleteSpecialization(spec.id)}
+                        onClick={() => handleDeleteCategory(category.title)}
                         variant="destructive"
                         className="flex items-center px-3 py-2 space-x-1 transition-all duration-150 ease-in-out rounded-lg"
                       >
@@ -338,32 +265,29 @@ export default function SpecializationManagement() {
         <DialogContent className="border-2 shadow-lg bg-blue-50 rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
-              Edit Specialization
+              Edit Course Category
             </DialogTitle>
           </DialogHeader>
-          <SpecializationForm isEdit={true} />
+          <CategoryForm isEdit={true} />
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
+      <Dialog open={isCoursesModalOpen} onOpenChange={setIsCoursesModalOpen}>
         <DialogContent className="border-2 shadow-lg rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
-              Review CSV Data
+              Courses in Category
             </DialogTitle>
           </DialogHeader>
-          <div className="mt-4 overflow-scroll">
-            <p className="font-semibold">Review the data from the CSV file:</p>
-            <pre className="p-4 mt-2 overflow-auto font-mono text-sm rounded-lg max-h-60">
-              <CsvTable csvData={csvData} />
-            </pre>
+          <div className="mt-4 overflow-scroll max-h-96">
+            <ul className="space-y-2">
+              {selectedCourses.map((course, index) => (
+                <li key={index} className="p-2 bg-gray-100 rounded-lg">
+                  {course}
+                </li>
+              ))}
+            </ul>
           </div>
-          <Button
-            onClick={() => handleFileSubmit()}
-            className="px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md"
-          >
-            Upload Data
-          </Button>
         </DialogContent>
       </Dialog>
     </div>

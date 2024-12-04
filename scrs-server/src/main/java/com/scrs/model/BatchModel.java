@@ -12,9 +12,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Table(name = "batches")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class BatchModel {
 
 	@Id
@@ -33,67 +39,5 @@ public class BatchModel {
 	private List<StudentModel> students;
 
 	private Long studentCount;
-
-	public Long getStudentCount() {
-		return studentCount;
-	}
-
-	public void setStudentCount(Long studentCount) {
-		this.studentCount = studentCount;
-	}
-
-	public SemesterEnum getCurrentSem() {
-		return currentSem;
-	}
-
-	public void setCurrentSem(SemesterEnum currentSem) {
-		this.currentSem = currentSem;
-	}
-
-	public List<StudentModel> getStudents() {
-		return students;
-	}
-
-	public void setStudents(List<StudentModel> students) {
-		this.students = students;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public YearEnum getCurrentYear() {
-		return currentYear;
-	}
-
-	public void setCurrentYear(YearEnum currentYear) {
-		this.currentYear = currentYear;
-	}
-
-	public boolean isEligibleForNextRegs() {
-		return eligibleForNextRegs;
-	}
-
-	public void setEligibleForNextRegs(boolean eligibleForNextRegs) {
-		this.eligibleForNextRegs = eligibleForNextRegs;
-	}
-
-	@Override
-	public String toString() {
-		return "BatchModel [id=" + id + ", name=" + name + ", currentYear=" + currentYear + ", currentSem=" + currentSem
-				+ ", eligibleForNextRegs=" + eligibleForNextRegs + ", students=" + students + "]";
-	}
 
 }

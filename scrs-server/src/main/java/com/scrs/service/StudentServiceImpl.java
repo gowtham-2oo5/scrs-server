@@ -187,7 +187,8 @@ public class StudentServiceImpl implements StudentService {
 		saveStudents(students);
 	}
 
-	private void saveStudents(List<StudentModel> students) {
+	@Override
+	public void saveStudents(List<StudentModel> students) {
 	    for (StudentModel student : students) {
 	        studentRepo.save(student);
 	        incrementCounts(student); // Increment counts for each saved student

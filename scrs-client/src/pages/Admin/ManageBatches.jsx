@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,15 +43,18 @@ export default function BatchManagement() {
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [csvData, setCsvData] = useState(null);
-  const [newBatch, setNewBatch] = useState({
-    name: "",
-    currentYear: "FIRST",
-    currentSem: "FALL",
-    eligibleForNextRegs: false,
-    studentsCount: 0,
-  });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      name: "",
+      currentYear: "FIRST",
+      currentSem: "FALL",
+      eligibleForNextRegs: false,
+      studentsCount: 0,
+    },
+  });
 
   useEffect(() => {
     fetchBatches();
@@ -76,32 +80,10 @@ export default function BatchManagement() {
     { value: "SUMMER", label: "Summer" },
   ];
 
-  const handleInputChange = (e) => {
-    const { id, value, type, checked } = e.target;
-    setNewBatch((prev) => ({
-      ...prev,
-      [id]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleYearChange = (value) => {
-    setNewBatch((prev) => ({ ...prev, currentYear: value }));
-  };
-
-  const handleSemChange = (value) => {
-    setNewBatch((prev) => ({ ...prev, currentSem: value }));
-  };
-
-  const handleAddBatch = async () => {
-    await addSingleBatch(newBatch);
+  const onSubmit = async (data) => {
+    await addSingleBatch(data);
     fetchBatches();
-    setNewBatch({
-      name: "",
-      currentYear: "FIRST",
-      currentSem: "FALL",
-      eligibleForNextRegs: false,
-      studentsCount: 0,
-    });
+    reset();
     setIsAddModalOpen(false);
   };
 
@@ -142,7 +124,7 @@ export default function BatchManagement() {
   };
 
   const BatchForm = ({ isEdit = false }) => (
-    <div className="grid gap-6 py-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 py-4">
       <div className="grid items-center grid-cols-4 gap-4">
         <Label
           htmlFor="name"
@@ -150,11 +132,16 @@ export default function BatchManagement() {
         >
           Name
         </Label>
-        <Input
-          id="name"
-          value={newBatch.name}
-          onChange={handleInputChange}
-          className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500"
+        <Controller
+          name="name"
+          control={control}
+          rules={{ required: "Name is required" }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500"
+            />
+          )}
         />
       </div>
       <div className="grid items-center grid-cols-4 gap-4">
@@ -164,30 +151,66 @@ export default function BatchManagement() {
         >
           Year
         </Label>
-        <Select onValueChange={handleYearChange} value={newBatch.currentYear}>
-          <SelectTrigger className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500">
-            <SelectValue placeholder="Select Year" />
-          </SelectTrigger>
-          <SelectContent className="border-blue-200 bg-blue-50">
-            {[1, 2, 3, 4].map((year) => (
-              <SelectItem
-                key={year}
-                value={year}
-                className="text-blue-800 hover:bg-blue-100"
-              >
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Controller
+          name="currentYear"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent className="border-blue-200 bg-blue-50">
+                {yearOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-blue-800 hover:bg-blue-100"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </div>
+      <div className="grid items-center grid-cols-4 gap-4">
+        <Label
+          htmlFor="currentSem"
+          className="font-semibold text-right text-blue-800"
+        >
+          Semester
+        </Label>
+        <Controller
+          name="currentSem"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className="col-span-3 border-blue-300 rounded-lg focus:border-blue-500">
+                <SelectValue placeholder="Select Semester" />
+              </SelectTrigger>
+              <SelectContent className="border-blue-200 bg-blue-50">
+                {semesterOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="text-blue-800 hover:bg-blue-100"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
       <Button
-        onClick={handleAddBatch}
+        type="submit"
         className="px-6 py-2 font-semibold text-white transition duration-300 ease-in-out bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
       >
         {isEdit ? "Update Batch" : "Add Batch"}
       </Button>
-    </div>
+    </form>
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;

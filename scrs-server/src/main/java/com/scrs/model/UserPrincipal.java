@@ -22,7 +22,7 @@ public class UserPrincipal extends UserModel implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_"+getUserRole().name()));
+		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_"+getUserRole()));
 	}
 
 	@Override

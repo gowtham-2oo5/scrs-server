@@ -4,7 +4,13 @@ import java.util.UUID;
 
 import com.scrs.model.UserModel;
 import com.scrs.model.UserRole;
+import lombok.*;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminDTO {
 
 	private UUID id;
@@ -17,49 +23,10 @@ public class AdminDTO {
 		this.id = user.getId();
 		this.name = user.getName();
 		this.profilePicture = user.getProfilePicture();
-		this.role = user.getUserRole();
+		this.role = UserRole.valueOf(user.getUserRole());
 		this.isSuperAdmin = superAdmin;
 	}
 
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getProfilePicture() {
-		return profilePicture;
-	}
-
-	public void setProfilePicture(String profilePicture) {
-		this.profilePicture = profilePicture;
-	}
-
-	public boolean isSuperAdmin() {
-		return isSuperAdmin;
-	}
-
-	public void setSuperAdmin(boolean isSuperAdmin) {
-		this.isSuperAdmin = isSuperAdmin;
-	}
-
-	public UserRole getRole() {
-		return role;
-	}
-
-	public void setRole(UserRole role) {
-		this.role = role;
-	}
 
 	@Override
 	public String toString() {

@@ -3,12 +3,14 @@ package com.scrs.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scrs.dto.CourseCreationDTO;
+import com.scrs.dto.CourseDTO;
 import com.scrs.model.CourseCategory;
 import com.scrs.model.CourseModel;
 import com.scrs.model.DepartmentModel;
@@ -155,46 +157,121 @@ public class CourseServiceImpl implements CourseService {
 			return "Error uploading courses: " + e.getLocalizedMessage();
 		}
 	}
-
 	@Override
-	public List<CourseModel> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<CourseDTO> getAll() {
+	    List<CourseModel> courses = cRepo.findAll();
+	    List<CourseDTO> resCourses = new ArrayList<>();
+
+	    // Convert each CourseModel to CourseDTO
+	    courses.forEach(course -> {
+	        CourseDTO temp = mapToDTO(course);
+	        resCourses.add(temp);
+	    });
+
+	    return resCourses;
 	}
+
+	// Helper method to map CourseModel to CourseDTO
+	private CourseDTO mapToDTO(CourseModel course) {
+	    CourseDTO temp = new CourseDTO();
+
+	    temp.setId(course.getId());
+	    temp.setCourseCode(course.getCourseCode());
+	    temp.setCourseTitle(course.getCourseTitle());
+	    temp.setCourseDesc(course.getCourseDesc());
+
+	    // Handling null values safely
+	    String inchargeName = (course.getIncharge() != null && course.getIncharge().getEmpId() != null)
+	        ? facService.getFacById(course.getIncharge().getEmpId()).getName()
+	        : "No Incharge Assigned";
+	    temp.setCourseIncharge(inchargeName);
+	    temp.setCourseInchargeId(course.getIncharge().getEmpId());
+
+	    String offeringDept = (course.getOfferingDept() != null)
+	        ? deptService.getDept(course.getOfferingDept().getSn()).getSn()
+	        : "No Department Assigned";
+	    temp.setOfferingDept(offeringDept);
+
+	    String whoCanRegister = course.isOpenForAll()
+	        ? "Any student irrespective of department or specialization"
+	        : "Students of department: " + course.getTargetDepts()
+	              .stream()
+	              .map(dept -> dept.getDeptName())
+	              .collect(Collectors.joining(", ")) + " only";
+	    temp.setWhoCanRegister(whoCanRegister);
+
+	    temp.setCredits(course.getCredits());
+	    temp.setL(course.getL());
+	    temp.setT(course.getT());
+	    temp.setP(course.getP());
+	    temp.setS(course.getS());
+
+	    return temp;
+	}
+
 
 	@Override
 	public String updateLTPS(UUID id, Double L, Double T, Double P, Double S) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			CourseModel course = cRepo.getCourseById(id);
+			course.setL(L);
+			course.setP(P);
+			course.setT(T);
+			course.setS(S);
+			cRepo.save(course);
+			return "Updated L-T-P-S successfully";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error updating LTPS: " + e.getLocalizedMessage();
+		}
 	}
 
 	@Override
 	public String updateCC(UUID id, String empId) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			CourseModel course = cRepo.getCourseById(id);
+			course.setIncharge(facService.getFacById(empId));
+			cRepo.save(course);
+			return "Updated CC successfully";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error updating CC: " + e.getLocalizedMessage();
+		}
 	}
 
 	@Override
 	public String updateCourseTitle(UUID id, String title) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			CourseModel course = cRepo.getCourseById(id);
+			course.setCourseTitle(title);
+			cRepo.save(course);
+			return "Updated Course Title successfully";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error updating Course title: " + e.getLocalizedMessage();
+		}
 	}
 
 	@Override
 	public String deleteCourse(UUID id) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			CourseModel course = cRepo.getCourseById(id);
+			cRepo.delete(course);
+			return "Deleted course successfully";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error deleting course: " + e.getLocalizedMessage();
+		}
 	}
 
 	@Override
-	public List<DepartmentModel> getTargetDepts() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DepartmentModel> getTargetDepts(UUID id) {
+		return cRepo.getCourseById(id).getTargetDepts();
 	}
 
 	@Override
-	public List<SpecializationModel> getTargetSpecs() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<SpecializationModel> getTargetSpecs(UUID id) {
+		return cRepo.getCourseById(id).getTargetSpecializations();
 	}
+
 }

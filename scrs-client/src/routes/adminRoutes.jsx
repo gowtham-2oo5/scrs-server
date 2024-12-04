@@ -6,14 +6,16 @@ import AdminDashboard from "@/pages/Admin/AdminDashboard";
 import DepartmentManagement from "@/pages/Admin/ManageDepartments";
 import SpecializationManagement from "@/pages/Admin/ManageSpecializations";
 import BatchManagement from "@/pages/Admin/ManageBatches";
+import ManageCourseCategories from "@/pages/Admin/ManageCourseCategories";
 import { ManageAdmins } from "@/pages/Admin/ManageAdmins";
 import ManageFaculty from "@/pages/Admin/ManageFaculty";
+import ManageCourses from "@/pages/Admin/ManageCourses";
 
 const adminRoutes = [
   { path: "", element: <AdminDashboard /> },
   {
     path: "courses/manage",
-    element: <div>Manage Courses Page (To be created)</div>,
+    element: <ManageCourses />,
   },
   {
     path: "courses/add",
@@ -21,7 +23,7 @@ const adminRoutes = [
   },
   {
     path: "courses/categories",
-    element: <div>Course Categories Page (To be created)</div>,
+    element: <ManageCourseCategories />,
   },
   {
     path: "schedule/view",
