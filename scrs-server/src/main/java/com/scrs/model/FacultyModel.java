@@ -20,11 +20,9 @@ import lombok.*;
 @Entity
 @Table(name = "scrs_faculty")
 @DiscriminatorValue("ROLE_FACULTY")
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class FacultyModel extends UserModel {
 
 	@Column(unique = true)
