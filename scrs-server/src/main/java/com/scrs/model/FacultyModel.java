@@ -1,21 +1,13 @@
 package com.scrs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.*;
 
 @Entity
 @Table(name = "scrs_faculty")
@@ -25,26 +17,29 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 public class FacultyModel extends UserModel {
 
-	@Column(unique = true)
-	private String empId;
+    @Column(unique = true)
+    private String empId;
 
-	@ManyToOne
-	@JoinColumn(name = "department_id", nullable = false)
-	@JsonIgnore
-	private DepartmentModel department;
+    @ManyToOne
+    @JoinColumn(name = "department_id", nullable = false)
+    @JsonIgnore
+    private DepartmentModel department;
 
-	@Column(name = "instructing_course")
-	@JsonIgnore
-	private String instructingCourse;
+    @Column(name = "instructing_course")
+    @JsonIgnore
+    private String instructingCourse;
 
-	@Enumerated(EnumType.STRING)
-	private FacultyDesignation designation;
+    @Enumerated(EnumType.STRING)
+    private FacultyDesignation designation;
 
-	@OneToMany(mappedBy = "incharge", fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<CourseModel> courses;
+    @OneToMany(mappedBy = "incharge", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CourseModel> courses;
 
-	private Date joined_at;
-	private String exp;
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    private List<SectionModel> sections;
+
+    private Date joined_at;
+    private String exp;
 
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,14 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import  ShadcnDatePicker  from "@/components/ShadcnDatePicker"; // Adjust the import path
 import { getDepts } from "@/api/dept";
 
 export default function AddFacultyForm({
@@ -25,7 +20,7 @@ export default function AddFacultyForm({
   isEdit = false,
   initialFaculty = {},
 }) {
-  const { register, handleSubmit, control, setValue, watch } = useForm({
+  const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       name: "",
       contact: "",
@@ -118,107 +113,62 @@ export default function AddFacultyForm({
         </div>
         <div>
           <Label htmlFor="dept">Department</Label>
-          <Controller
-            name="dept"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  {deptOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+          <Select
+            onValueChange={(value) => setValue("dept", value)}
+            value={watch("dept")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select department" />
+            </SelectTrigger>
+            <SelectContent>
+              {deptOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Date of Birth */}
+        <div>
+          <Label htmlFor="dob">Date of Birth</Label>
+          <ShadcnDatePicker
+            startYear={1900}
+            endYear={2024}
+            selected={watch("dob")}
+            onSelect={(date) => setValue("dob", date)}
           />
         </div>
 
         <div>
-          <Label htmlFor="dob">Date of Birth</Label>
-          <Controller
-            name="dob"
-            control={control}
-            render={({ field }) => (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${
-                      !field.value && "text-muted-foreground"
-                    }`}
-                  >
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    {field.value ? format(field.value, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          />
-        </div>
-        <div>
           <Label htmlFor="designation">Designation</Label>
-          <Controller
-            name="designation"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select designation" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="HOD">HOD</SelectItem>
-                  <SelectItem value="CC">CC</SelectItem>
-                  <SelectItem value="Professor">Professor</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
+          <Select
+            onValueChange={(value) => setValue("designation", value)}
+            value={watch("designation")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select designation" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="HOD">HOD</SelectItem>
+              <SelectItem value="CC">CC</SelectItem>
+              <SelectItem value="Professor">Professor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Joined At */}
         <div>
           <Label htmlFor="joined_at">Joined At</Label>
-          <Controller
-            name="joined_at"
-            control={control}
-            render={({ field }) => (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${
-                      !field.value && "text-muted-foreground"
-                    }`}
-                  >
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    {field.value ? format(field.value, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
+          <ShadcnDatePicker
+            startYear={1900}
+            endYear={2024}
+            selected={watch("joined_at")}
+            onSelect={(date) => setValue("joined_at", date)}
           />
         </div>
+
         <div>
           <Label htmlFor="exp">Experience (years)</Label>
           <Input

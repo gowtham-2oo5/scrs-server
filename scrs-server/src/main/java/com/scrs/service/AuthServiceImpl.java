@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	private AuthResponse createAuthResponseForUser(UserModel user) {
-		UserRole userRole = user.getUserRole();
+		UserRole userRole = user.getRole();
 		AuthResponse response = new AuthResponse();
 
 		switch (userRole) {
@@ -111,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
 		AdminDTO adminDTO = new AdminDTO(user, adminModel.isSuperAdmin());
 		response.setData(adminDTO);
 		response.setUsername(adminModel.getUsername());
-		response.setRole(adminModel.getUserRole().name());
+		response.setRole(adminModel.getRole().name());
 		return response;
 	}
 
@@ -120,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
 		FacultyDTO facultyDTO = new FacultyDTO(user, facultyModel);
 		response.setData(facultyDTO);
 		response.setUsername(facultyModel.getUsername());
-		response.setRole(facultyModel.getUserRole().name());
+		response.setRole(facultyModel.getRole().name());
 		return response;
 	}
 

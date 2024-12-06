@@ -7,11 +7,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class DeptRegsDTO {
+public class ScheduleSlotDTO {
 
-    private String name;
-    private String sn;
-    private String hodId;
-
+    private String day;
+    private String timeSlot;
+    private String courseCategory;
 
 }

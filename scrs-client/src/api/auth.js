@@ -21,7 +21,7 @@ export const loginUser = async (credentials) => {
 
 export const verifyGivenOtp = async (otp) => {
   try {
-    const response = await axios.post(`/api/auth/verify-otp`, { otp });
+    const response = await axios.post(`/api/auth/verify-otp?otp=${otp}`);
     return {
       data: response.data,
       status: response.status,

@@ -12,7 +12,7 @@ import BulkUpload from "@/components/BulkUploadFaculty";
 import FacultyTable from "@/components/FacultyTable";
 import FacultyModal from "@/components/FacultyModal";
 import { getAllFaculties, createNewFaculty } from "@/api/faculty";
-import toast, { Toaster } from "react-hot-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function FacultyManagement() {
   const [faculty, setFaculty] = useState([]);
@@ -23,19 +23,23 @@ export default function FacultyManagement() {
   const [selectedFaculty, setSelectedFaculty] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { toast } = useToast();
+
   const fetchFaculty = async () => {
     try {
       const response = await getAllFaculties();
-      // console.log("API Response:", response.data);
       setFaculty(response.data);
     } catch (error) {
       console.error("Error fetching faculty:", error);
-      toast.error("Failed to fetch faculty data");
+      toast({
+        title: "Error",
+        description: "Failed to fetch faculty data",
+        variant: "destructive",
+      });
     }
   };
 
   useEffect(() => {
-    // console.log("Fetching faculty");
     fetchFaculty();
   }, []);
 
@@ -44,16 +48,27 @@ export default function FacultyManagement() {
     try {
       const res = await createNewFaculty(newFaculty);
       if (res.status === 200) {
-        toast.success("Faculty added successfully");
+        toast({
+          title: "Success",
+          description: "Faculty added successfully",
+        });
         setIsAddModalOpen(false);
         setIsEditModalOpen(false);
         await fetchFaculty();
       } else {
-        toast.error(res.data.message || "Failed to add faculty");
+        toast({
+          title: "Error",
+          description: res.data.message || "Failed to add faculty",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Error adding/editing faculty:", error);
-      toast.error("An unexpected error occurred");
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -67,13 +82,18 @@ export default function FacultyManagement() {
   const handleDeleteFaculty = async (id) => {
     try {
       // Call the delete API here
-      // console.log(`Deleting faculty with ID: ${id}`);
-      // After deletion, refresh the faculty list
       await fetchFaculty();
-      toast.success("Faculty deleted successfully");
+      toast({
+        title: "Success",
+        description: "Faculty deleted successfully",
+      });
     } catch (error) {
       console.error("Error deleting faculty:", error);
-      toast.error("Failed to delete faculty");
+      toast({
+        title: "Error",
+        description: "Failed to delete faculty",
+        variant: "destructive",
+      });
     }
   };
 
@@ -84,19 +104,24 @@ export default function FacultyManagement() {
   const handleBulkUpload = async (csvData) => {
     try {
       // Implement bulk upload API call here
-      // console.log("Uploading CSV data:", csvData);
       setIsBulkUploadOpen(false);
       await fetchFaculty();
-      toast.success("Bulk upload completed successfully");
+      toast({
+        title: "Success",
+        description: "Bulk upload completed successfully",
+      });
     } catch (error) {
       console.error("Error during bulk upload:", error);
-      toast.error("Failed to complete bulk upload");
+      toast({
+        title: "Error",
+        description: "Failed to complete bulk upload",
+        variant: "destructive",
+      });
     }
   };
 
   return (
     <div className="container p-4 mx-auto sm:p-6">
-      <Toaster position="top-right" />
       <h1 className="mb-6 text-2xl font-bold">Manage Faculty</h1>
 
       {/* Add and Bulk Upload Buttons */}

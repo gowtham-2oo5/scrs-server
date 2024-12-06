@@ -1,12 +1,10 @@
 package com.scrs.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import com.scrs.dto.BatchRegsDTO;
+import com.scrs.model.BatchModel;
+import com.scrs.model.SemesterEnum;
+import com.scrs.model.YearEnum;
+import com.scrs.repository.BatchRepo;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -14,17 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.scrs.dto.BatchRegsDTO;
-import com.scrs.model.BatchModel;
-import com.scrs.model.SemesterEnum;
-import com.scrs.model.YearEnum;
-import com.scrs.repository.BatchRepo;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BatchServiceImpl implements BatchService {
 
     @Autowired
     private BatchRepo bRepo;
+
+    @Override
+    public BatchModel getByName(String name) {
+        return bRepo.getBatchFromName(name);
+    }
 
     @Override
     public void insertOne(BatchRegsDTO bDTO) {
@@ -110,7 +114,7 @@ public class BatchServiceImpl implements BatchService {
         System.out.println("Saving batches...");
         for (BatchModel batch : batches) {
             try {
-            	batch.setStudentCount((long) 0);
+                batch.setStudentCount((long) 0);
                 bRepo.save(batch);
                 System.out.println("Saved batch: " + batch.getName() + " " + batch.getId());
             } catch (Exception e) {
@@ -234,6 +238,11 @@ public class BatchServiceImpl implements BatchService {
             System.err.println("Error updating semesters for batch: " + name + ", Error: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public BatchModel getById(UUID batchId) {
+        return bRepo.getReferenceById(batchId);
     }
 
     @Override

@@ -23,15 +23,8 @@ public class AdminDTO {
 		this.id = user.getId();
 		this.name = user.getName();
 		this.profilePicture = user.getProfilePicture();
-		this.role = UserRole.valueOf(user.getUserRole());
+		this.role = user.getRole();
 		this.isSuperAdmin = superAdmin;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Sending this Admin DATA: [id=" + id + ", name=" + name + ", profilePicture=" + profilePicture
-				+ ", isSuperAdmin=" + isSuperAdmin + ", role=" + role + "]";
 	}
 
 }

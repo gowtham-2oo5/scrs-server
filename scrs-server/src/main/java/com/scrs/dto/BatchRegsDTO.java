@@ -1,26 +1,16 @@
 package com.scrs.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class BatchRegsDTO {
 
-	private String name;
-	private String currentYear;
+    private String name;
+    private String currentYear;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCurrentYear() {
-		return currentYear;
-	}
-
-	public void setCurrentYear(String currentYear) {
-		this.currentYear = currentYear;
-	}
-
-	
 
 }

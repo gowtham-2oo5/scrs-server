@@ -19,7 +19,13 @@ public class ScheduleTemplate {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy = "scheduleTemplate", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ScheduleSlot> schedules;
+    private String title;
+
+    @OneToOne
+    @JoinColumn(name = "cluster_id")
+    private ClusterModel cluster;
+
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ScheduleSlot> slots;
 
 }

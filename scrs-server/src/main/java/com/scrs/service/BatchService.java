@@ -1,25 +1,28 @@
 package com.scrs.service;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.scrs.dto.BatchRegsDTO;
 import com.scrs.model.BatchModel;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 public interface BatchService {
 
-	public void insertOne(BatchRegsDTO bDTO);
+    BatchModel getByName(String name);
 
-	public void bulkUpload(MultipartFile file) throws IOException;
+    public void insertOne(BatchRegsDTO bDTO);
 
-	public List<BatchModel> getAll();
+    public void bulkUpload(MultipartFile file) throws IOException;
 
-	public void delAll();
-	
-	public String deleteBatch(String id);
+    public List<BatchModel> getAll();
 
-	public void updateSems(String name);
+    public void delAll();
 
+    public String deleteBatch(String id);
+
+    public void updateSems(String name);
+
+    BatchModel getById(UUID batchId);
 }

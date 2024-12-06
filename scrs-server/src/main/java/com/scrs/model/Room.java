@@ -21,9 +21,21 @@ public class Room {
 
     private String block;
     private Integer floor;
-    private String roomNum;
+    private Integer roomNum;
     private Integer capacity;
+    private String roomType;
 
     @OneToMany(mappedBy = "room")
-    private List<Section> sections;
+    private List<SectionModel> sections;
+
+    @OneToMany(mappedBy = "room")
+    private List<ScheduleSlot> bookedSlots;
+
+    public String getRoomName() {
+        return block + floor.toString() + getFormattedRoomNum();
+    }
+
+    private String getFormattedRoomNum() {
+        return (roomNum > 10) ? "0" + roomNum.toString() : roomNum.toString();
+    }
 }

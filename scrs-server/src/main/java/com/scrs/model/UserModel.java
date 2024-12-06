@@ -61,14 +61,7 @@ public class UserModel {
 
     @Column(name = "user_role", insertable = false, updatable = false)
     private String discriminator;
-
-    public void setUserRole(String discriminator) {
-        this.discriminator = discriminator;
-    }
-
-    public String getUserRole() {
-        return role.name();
-    }
+    
 
     public UserModel(String name, String username, String email, String password, String contact, UserRole userRole,
                      String profilePicture, Date dob) {

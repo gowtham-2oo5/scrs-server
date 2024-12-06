@@ -18,7 +18,7 @@ public class StudentDTO {
 		this.name = user.getName();
 		this.profilePicture = user.getProfilePicture();
 		this.regNum = regNum;
-		this.role = user.getUserRole();
+		this.role = user.getRole();
 	}
 
 
