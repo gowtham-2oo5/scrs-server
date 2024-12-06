@@ -58,8 +58,8 @@ const AdminLayout = ({ children }) => {
       label: "Scheduling",
       items: {
         // View and create schedules, manage clusters, and define section limits for students
-        "View Schedules": "schedule/view", // Admin: View all schedules
-        "Create New Schedule": "schedule/create", // Admin: Create new schedules
+        "Manage Schedules": "schedule/manage", // Admin: View all schedules
+        // "Create New Schedule": "schedule/create", // Admin: Create new schedules
         "Manage Time Slots": "schedule/time-slots", // Admin: Manage time slots
         "Create & Manage Clusters": "schedule/clusters", // Admin: Manage clusters and set section limits for students
       },

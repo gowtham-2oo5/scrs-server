@@ -10,6 +10,9 @@ import ManageCourseCategories from "@/pages/Admin/ManageCourseCategories";
 import { ManageAdmins } from "@/pages/Admin/ManageAdmins";
 import ManageFaculty from "@/pages/Admin/ManageFaculty";
 import ManageCourses from "@/pages/Admin/ManageCourses";
+import ManageSchedules from "@/pages/Admin/ManageScheduleTemplates";
+import { element } from "prop-types";
+import CreateScheduleTemplate from "@/pages/Admin/CreateScheduleTemplate";
 
 const adminRoutes = [
   { path: "", element: <AdminDashboard /> },
@@ -26,8 +29,8 @@ const adminRoutes = [
     element: <ManageCourseCategories />,
   },
   {
-    path: "schedule/view",
-    element: <div>View Schedules Page (To be created)</div>,
+    path: "schedule/manage",
+    element: <ManageSchedules />,
   },
   {
     path: "schedule/create",
@@ -106,7 +109,7 @@ const adminRoutes = [
     element: <div>Notifications & Alerts Page (To be created)</div>,
   },
   { path: "help", element: <div>Help & Support Page (To be created)</div> },
-
+  { path: "schedule/create-template", element: <CreateScheduleTemplate /> },
   {
     path: "create",
     element: (
