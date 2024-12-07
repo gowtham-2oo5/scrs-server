@@ -26,7 +26,7 @@ import com.scrs.service.SpecializationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/api/spec")
 @SecurityRequirement(name = "bearerAuth")
 public class SpecializationController {

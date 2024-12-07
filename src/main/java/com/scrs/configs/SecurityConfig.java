@@ -63,7 +63,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration configuration = new CorsConfiguration();
-	    configuration.addAllowedOriginPattern("*"); // Allow all origins for testing
+	    configuration.addAllowedOriginPattern("https://scrs.vercel.app"); // Allow all origins for testing
 	    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*"));
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

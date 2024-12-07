@@ -30,7 +30,7 @@ import com.scrs.service.CourseService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/api/course")
 @SecurityRequirement(name = "bearerAuth")
 public class CourseController {

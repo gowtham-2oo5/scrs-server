@@ -21,7 +21,6 @@ import com.scrs.model.AdminModel;
 import com.scrs.service.AdminService;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/admin")
 public class AdminController {
 

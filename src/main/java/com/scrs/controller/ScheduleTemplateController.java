@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RequestMapping("/api/template")
 @SecurityRequirement(name = "bearerAuth")
 public class ScheduleTemplateController {
