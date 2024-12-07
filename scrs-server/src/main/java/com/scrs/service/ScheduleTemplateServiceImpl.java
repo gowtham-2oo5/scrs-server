@@ -2,12 +2,14 @@ package com.scrs.service;
 
 import com.scrs.dto.ScheduleSlotDTO;
 import com.scrs.dto.ScheduleTemplateDTO;
+import com.scrs.model.BatchModel;
 import com.scrs.model.ClusterModel;
 import com.scrs.model.ScheduleSlot;
 import com.scrs.model.ScheduleTemplate;
-import com.scrs.repository.ScheduleSlotRepo;
 import com.scrs.repository.ScheduleTemplateRepo;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +25,13 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
 
     @Autowired
     private ScheduleSlotService scheduleSlotService;
-    @Autowired
-    private ScheduleSlotRepo scheduleSlotRepo;
 
-//    @Autowired
-//    private ClusterService clusterService; // Assuming a service for fetching ClusterModel
+    @Autowired
+    private BatchService batchService;
+
+    @Autowired
+    @Lazy
+    private ClusterService clusterService; // Assuming a service for fetching ClusterModel
 
 
     @Transactional
@@ -40,20 +44,20 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
         ScheduleTemplate template = new ScheduleTemplate();
         template.setTitle(dto.getTitle());
 
-        // Fetch the ClusterModel from a service or repository
-        ClusterModel cluster = null; //clusterService.(dto.getClusterId());
+        ClusterModel cluster = clusterService.getClusterRefById(UUID.fromString(dto.getCluster()));
 //        if (cluster == null) {
 //            throw new IllegalArgumentException("Invalid Cluster ID: " + dto.getClusterId());
 //        }
         template.setCluster(cluster);
 
-        // Save the template first to generate its ID
+        BatchModel batch = batchService.getByName(dto.getBatch());
+        template.setTemplate_batch(batch);
+
         scheduleTemplateRepo.save(template);
 
         System.out.println("TEMPLATE CREATED RAAAA");
         System.out.println(template.getId());
 
-        // Create and map slots to the saved template
         List<ScheduleSlot> scheduleSlots = getScheduleSlots(slots);
         mapSlotsToTemplate(scheduleSlots, template);
 
@@ -105,7 +109,8 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
 
     @Override
     public ScheduleTemplate getScheduleTemplateById(UUID templateId) {
-        return scheduleTemplateRepo.getReferenceById(templateId);
+        return scheduleTemplateRepo.findById(templateId)
+                .orElseThrow(() -> new EntityNotFoundException("Cluster not found with ID: " + templateId));
     }
 
     private void mapSlotsToTemplate(List<ScheduleSlot> slots, ScheduleTemplate template) {

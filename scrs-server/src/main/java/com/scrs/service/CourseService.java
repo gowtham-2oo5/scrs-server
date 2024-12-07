@@ -1,46 +1,48 @@
 package com.scrs.service;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.scrs.dto.CourseCreationDTO;
 import com.scrs.dto.CourseDTO;
+import com.scrs.dto.SectionDTO;
 import com.scrs.model.CourseModel;
 import com.scrs.model.DepartmentModel;
 import com.scrs.model.SpecializationModel;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface CourseService {
 
-	// Single upload
-	public CourseModel singleCreate(CourseCreationDTO course);
+    // Single upload
+    public CourseModel singleCreate(CourseCreationDTO course);
 
-	// Bulk upload
-	public String bulkUploadCourses(MultipartFile file);
+    // Bulk upload
+    public String bulkUploadCourses(MultipartFile file);
 
-	// Retrieve all
-	public List<CourseDTO> getAll();
-	
+    // Retrieve all
+    public List<CourseDTO> getAll();
 
-	// Retrieve all from course category
-	// Update LTPS structure, Department, specialization and other fields
-	// 1. Update LTPS
-	public String updateLTPS(UUID id, Double L, Double T, Double P, Double S);
 
-	// 2. Update FacultyIncharge
-	public String updateCC(UUID id, String empId);
+    // Retrieve all from course category
+    // Update LTPS structure, Department, specialization and other fields
+    // 1. Update LTPS
+    public String updateLTPS(UUID id, Double L, Double T, Double P, Double S);
 
-	// 3. Update course title
-	public String updateCourseTitle(UUID id, String title);
+    // 2. Update FacultyIncharge
+    public String updateCC(UUID id, String empId);
 
-	// Delete by id
-	public String deleteCourse(UUID id);
+    // 3. Update course title
+    public String updateCourseTitle(UUID id, String title);
 
-	// get TargetDepts, targetSpecializations
+    // Delete by id
+    public String deleteCourse(UUID id);
 
-	public List<SpecializationModel> getTargetSpecs(UUID id);
+    // get TargetDepts, targetSpecializations
 
-	List<DepartmentModel> getTargetDepts(UUID id);
+    public List<SpecializationModel> getTargetSpecs(UUID id);
+
+    List<DepartmentModel> getTargetDepts(UUID id);
+
+    List<SectionDTO> getSectionOfCourse(UUID id) throws Exception;
 
 }

@@ -19,7 +19,6 @@ public class SectionModel {
     private UUID id;
 
     private String name;
-    private TimeSlotEnum timeSlot;
 
     @ManyToOne
     private ClusterModel cluster;

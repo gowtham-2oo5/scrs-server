@@ -34,6 +34,9 @@ public class BatchModel {
     @OneToMany(mappedBy = "for_batch")
     private List<ClusterModel> clusters;
 
+    @OneToMany(mappedBy = "template_batch")
+    private List<ScheduleTemplate> templates;
+
     private Long studentCount;
 
 }

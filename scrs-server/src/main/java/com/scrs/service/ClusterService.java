@@ -1,6 +1,7 @@
 package com.scrs.service;
 
 import com.scrs.dto.ClusterDTO;
+import com.scrs.model.ClusterModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,5 +22,9 @@ public interface ClusterService {
 
     void updateCluster(UUID id, ClusterDTO updatedClusterDTO);
 
+    void setClusterTemplate(UUID clusterId, UUID templateId);
+
     void deleteCluster(UUID id);
+
+    ClusterModel getClusterRefById(UUID uuid);
 }

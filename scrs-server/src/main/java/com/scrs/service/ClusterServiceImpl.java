@@ -4,6 +4,7 @@ import com.scrs.dto.ClusterDTO;
 import com.scrs.model.ClusterModel;
 import com.scrs.model.ScheduleTemplate;
 import com.scrs.repository.ClusterRepo;
+import com.scrs.repository.ScheduleTemplateRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class ClusterServiceImpl implements ClusterService {
     private BatchService batchService;
 
     @Autowired
-    private ScheduleTemplateService scheduleTemplateService;
+    private ScheduleTemplateRepo scheduleTemplateRepo;
 
     @Autowired
     private CsvService csvService;
@@ -32,6 +33,7 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public List<ClusterDTO> getAllClusters() {
         List<ClusterModel> clusters = clusterRepo.findAll();
+
         if (clusters == null || clusters.isEmpty())
             return new ArrayList<>();
 
@@ -93,7 +95,8 @@ public class ClusterServiceImpl implements ClusterService {
 
     @Override
     public void updateCluster(UUID id, ClusterDTO updatedClusterDTO) {
-        ClusterModel existingCluster = clusterRepo.findById(id)
+        ClusterModel existingCluster = clusterRepo
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cluster not found with ID: " + id));
 
         if (updatedClusterDTO.getName() != null) {
@@ -102,12 +105,23 @@ public class ClusterServiceImpl implements ClusterService {
         if (updatedClusterDTO.getBatch() != null) {
             existingCluster.setFor_batch(batchService.getByName(updatedClusterDTO.getBatch()));
         }
-        if (updatedClusterDTO.getTemplateId() != null) {
-            existingCluster.setTemplate(getTemplate(updatedClusterDTO.getTemplateId()));
-        }
 
         clusterRepo.save(existingCluster);
         System.out.println("Updated Cluster with ID: " + id);
+    }
+
+    @Override
+    public void setClusterTemplate(UUID clusterId, UUID templateId) {
+        ClusterModel cluster = clusterRepo.findById(clusterId)
+                .orElseThrow(() -> new EntityNotFoundException("Cluster not found with ID: " + clusterId));
+        ScheduleTemplate template = scheduleTemplateRepo.getReferenceById(templateId);
+        if (!cluster.getFor_batch().getName().equals(template.getTemplate_batch().getName())) {
+            System.err.println("Invalid cluster and template !!");
+            return;
+        }
+        cluster.setTemplate(template);
+        clusterRepo.save(cluster);
+        System.out.println("Saved template with ID: " + templateId);
     }
 
     @Override
@@ -118,8 +132,13 @@ public class ClusterServiceImpl implements ClusterService {
         System.out.println("Deleted Cluster with ID: " + id);
     }
 
+    @Override
+    public ClusterModel getClusterRefById(UUID uuid) {
+        return clusterRepo.findById(uuid).orElse(null);
+    }
+
     private ScheduleTemplate getTemplate(UUID templateId) {
-        return scheduleTemplateService.getScheduleTemplateById(templateId);
+        return scheduleTemplateRepo.getReferenceById(templateId);
     }
 
     private ClusterDTO mapToDTO(ClusterModel cluster) {

@@ -28,6 +28,9 @@ public class ScheduleTemplate {
     @JoinColumn(name = "cluster_id")
     private ClusterModel cluster;
 
+    @ManyToOne
+    private BatchModel template_batch;
+
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScheduleSlot> slots;
 

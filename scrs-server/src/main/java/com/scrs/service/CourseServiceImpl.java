@@ -2,11 +2,10 @@ package com.scrs.service;
 
 import com.scrs.dto.CourseCreationDTO;
 import com.scrs.dto.CourseDTO;
-import com.scrs.model.CourseCategory;
-import com.scrs.model.CourseModel;
-import com.scrs.model.DepartmentModel;
-import com.scrs.model.SpecializationModel;
+import com.scrs.dto.SectionDTO;
+import com.scrs.model.*;
 import com.scrs.repository.CourseRepo;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +38,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private BatchServiceImpl batchService;
+    private CourseRepo courseRepo;
 
     @Override
     public CourseModel singleCreate(CourseCreationDTO dto) {
@@ -267,6 +267,31 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<DepartmentModel> getTargetDepts(UUID id) {
         return cRepo.getCourseById(id).getTargetDepts();
+    }
+
+    @Override
+    public List<SectionDTO> getSectionOfCourse(UUID id) throws Exception {
+        List<SectionDTO> res = null;
+        CourseModel course = cRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Cant find course with ID: " + id));
+        res = mapSectionDTO(course.getSections());
+        return res;
+    }
+
+    private List<SectionDTO> mapSectionDTO(List<SectionModel> sections) {
+        List<SectionDTO> res = new ArrayList<>();
+        sections.forEach(section -> {
+            SectionDTO temp = new SectionDTO();
+            temp.setCourseId(section.getCourse().getId());
+            temp.setSectionId(section.getId());
+            temp.setCourseName(section.getCourse().getCourseTitle());
+            temp.setCourseCategoryId(section.getCourse().getCategory().getId());
+            temp.setClusterName(section.getCluster().getName());
+            temp.setClusterId(section.getCluster().getId());
+            temp.setRoomId(section.getRoom().getId());
+            temp.setRoomName(section.getRoom().getRoomName());
+        });
+
+        return res;
     }
 
     @Override
