@@ -20,7 +20,7 @@ import com.scrs.model.UserModel;
 import com.scrs.service.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/user")
 public class UserController {
 

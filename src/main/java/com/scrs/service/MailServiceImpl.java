@@ -106,7 +106,7 @@ public class MailServiceImpl implements MailService {
                     "          <li>Start your learning adventure!</li>" +
                     "        </ol>" +
                     "      </div>" +
-                    "      <a href='" + clientUrl + "' class='cta-button'>Go to Portal</a>" +
+                    "      <a href='https://scrs.vercel.app' class='cta-button'>Go to Portal</a>" +
                     "    </div>" +
                     "    <div class='footer'>" +
                     "      <p>If you have any questions, please don't hesitate to contact our support team.</p>" +
