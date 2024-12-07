@@ -10,10 +10,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailServiceImpl implements MailService {
-
-    @Value("${client.url}")
-    String clientUrl;
-
     @Autowired
     private JavaMailSender mailSender;
 
