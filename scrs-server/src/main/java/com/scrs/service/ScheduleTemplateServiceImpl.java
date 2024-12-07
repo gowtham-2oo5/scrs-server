@@ -96,6 +96,7 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
             dto.setTitle(temp.getTitle());
             dto.setCluster((temp.getCluster() == null) ? "None" : temp.getCluster().getName());
             dto.setSlots(mapSlotsWithDTO(temp.getSlots()));
+//            dto.setBatch(temp.get);
             res.add(dto);
         }
 

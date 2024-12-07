@@ -1,11 +1,11 @@
 package com.scrs.service;
 
-import com.scrs.dto.StudentMailDTO;
+import com.scrs.dto.AccountConfirmationMailDTO;
 
 public interface MailService {
 
 
-    public void sendStudentAccountConfirmationMail(String email, StudentMailDTO student);
+    void sendStudentAccountConfirmationMail(String email, AccountConfirmationMailDTO student);
 
     void sendLoginOtp(String otp, String mail);
 

@@ -38,18 +38,15 @@ const getTimeFromSlot = (slot) => {
   return `${hour + 7}:00 - ${hour + 8}:00`;
 };
 
-export function TemplateViewer({ template, isOpen, onClose }) {
-  if (!template) return null;
+export function TemplateViewer({ templates, isOpen, onClose }) {
+  if (!templates || templates.length === 0) return null;
 
-  const scheduleData = JSON.parse(template.content);
-
-  const createScheduleMatrix = (schedule) => {
+  const createScheduleMatrix = (slots) => {
     const matrix = timeSlots.map(() => new Array(days.length).fill(null));
-    schedule.slots.forEach((slot) => {
+    slots.forEach((slot) => {
       const rowIndex = timeSlots.indexOf(slot.timeSlot);
       const colIndex = days.indexOf(
-        slot.day.toLowerCase().charAt(0).toUpperCase() +
-          slot.day.toLowerCase().slice(1)
+        slot.day.charAt(0).toUpperCase() + slot.day.slice(1).toLowerCase()
       );
       if (rowIndex !== -1 && colIndex !== -1) {
         matrix[rowIndex][colIndex] = slot.courseCategory;
@@ -62,12 +59,15 @@ export function TemplateViewer({ template, isOpen, onClose }) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl">
         <DialogHeader>
-          <DialogTitle>{template.title}</DialogTitle>
+          <DialogTitle>Schedule Templates</DialogTitle>
         </DialogHeader>
         <div className="mt-4 max-h-[70vh] overflow-auto">
-          {scheduleData.map((schedule, index) => (
-            <div key={index} className="mb-6">
-              <h3 className="mb-2 text-lg font-semibold">{schedule.title}</h3>
+          {templates.map((template, index) => (
+            <div key={template.id} className="mb-6">
+              <h3 className="mb-2 text-lg font-semibold">{template.title}</h3>
+              <p className="mb-2 text-sm text-gray-500">
+                Cluster: {template.cluster}
+              </p>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -81,22 +81,24 @@ export function TemplateViewer({ template, isOpen, onClose }) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {createScheduleMatrix(schedule).map((row, rowIndex) => (
-                      <TableRow key={rowIndex}>
-                        <TableCell className="font-medium">
-                          {getTimeFromSlot(timeSlots[rowIndex])}
-                        </TableCell>
-                        {row.map((cell, cellIndex) => (
-                          <TableCell key={cellIndex} className="text-center">
-                            {cell ? (
-                              <div className="p-2 rounded bg-primary text-primary-foreground">
-                                {cell}
-                              </div>
-                            ) : null}
+                    {createScheduleMatrix(template.slots).map(
+                      (row, rowIndex) => (
+                        <TableRow key={rowIndex}>
+                          <TableCell className="font-medium">
+                            {getTimeFromSlot(timeSlots[rowIndex])}
                           </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
+                          {row.map((cell, cellIndex) => (
+                            <TableCell key={cellIndex} className="text-center">
+                              {cell ? (
+                                <div className="p-2 rounded bg-primary text-primary-foreground">
+                                  {cell}
+                                </div>
+                              ) : null}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      )
+                    )}
                   </TableBody>
                 </Table>
               </div>

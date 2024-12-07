@@ -5,6 +5,7 @@ import { getTokenData } from "@/utils/tokenHandling";
 const RoleBasedRedirect = () => {
   const navigate = useNavigate();
   const userRole = getSessionItem("role");
+  console.log(`Received role: ${userRole}`);
   // console.log(getTokenData(getSessionItem("token")));
 
   useEffect(() => {
@@ -15,10 +16,11 @@ const RoleBasedRedirect = () => {
       case "SUPER-ADMIN":
         navigate("/admin");
         break;
-      case "STUDENT":
+      case "ROLE_STUDENT":
+        console.log("Student got");
         navigate("/student");
         break;
-      case "FACULTY":
+      case "ROLE_FACULTY":
         navigate("/faculty");
         break;
       default:

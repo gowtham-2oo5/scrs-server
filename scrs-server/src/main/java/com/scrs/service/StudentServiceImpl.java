@@ -1,6 +1,6 @@
 package com.scrs.service;
 
-import com.scrs.dto.StudentMailDTO;
+import com.scrs.dto.AccountConfirmationMailDTO;
 import com.scrs.dto.StudentRegsDTO;
 import com.scrs.model.*;
 import com.scrs.repository.BatchRepo;
@@ -97,24 +97,26 @@ public class StudentServiceImpl implements StudentService {
         // Save student and increment counts
         studentRepo.save(student);
 
-        StudentMailDTO studentDTO = new StudentMailDTO();
+        AccountConfirmationMailDTO studentDTO = new AccountConfirmationMailDTO();
         studentDTO.setEmail(student.getEmail());
         studentDTO.setName(student.getName());
         studentDTO.setPassword(currPass);
+        studentDTO.setUsername(student.getUsername());
+        System.out.println("Sending confirmation mail ");
         mailService.sendStudentAccountConfirmationMail(student.getEmail(), studentDTO);
-
+        System.out.println(studentDTO.toString());
         incrementCounts(student);
 
         return student;
     }
-
-    private String dateString(Date dob) {
-        if (dob == null) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        return dateFormat.format(dob);
-    }
+//
+//    private String dateString(Date dob) {
+//        if (dob == null) {
+//            return null;
+//        }
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+//        return dateFormat.format(dob);
+//    }
 
     private BatchModel getBatch(String name) {
         try {
@@ -202,13 +204,15 @@ public class StudentServiceImpl implements StudentService {
             studentRepo.save(student);
             incrementCounts(student);
 
-            StudentMailDTO dto = new StudentMailDTO();
+            AccountConfirmationMailDTO dto = new AccountConfirmationMailDTO();
             dto.setEmail(student.getEmail());
             dto.setName(student.getName());
+            dto.setUsername(student.getUsername());
             dto.setPassword(currPass);
 
+            System.out.println("Sending confirmation mail");
             mailService.sendStudentAccountConfirmationMail(student.getEmail(), dto);
-
+            System.out.println(dto.toString());
             System.out.println("Saved student with ID: " + student.getId());
         }
     }

@@ -43,7 +43,7 @@ public class ScheduleSlotServiceImpl implements ScheduleSlotService {
 
     @Override
     public ScheduleSlot saveSlot(ScheduleSlot slot) {
-        
+
         if (slot == null) {
             throw new IllegalArgumentException("Slot cannot be null");
         }
@@ -56,12 +56,12 @@ public class ScheduleSlotServiceImpl implements ScheduleSlotService {
         if (courseCategory == null || courseCategory.isEmpty()) {
             throw new IllegalArgumentException("Course Category cannot be null/empty");
         }
-        return courseCategoryService.getCcByTitle(courseCategory);
+        return courseCategoryService.getById(courseCategory);
     }
 
     private TimeSlotEnum getTimeSlot(String timeSlot) {
         try {
-            return TimeSlotEnum.valueOf("HOUR_" + timeSlot);
+            return TimeSlotEnum.valueOf(timeSlot);
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Invalid Time Slot: " + timeSlot, ex);
         }

@@ -36,9 +36,21 @@ Student JSON String:
   "dob": "2005-03-08T21:48:40.293Z"
 }
 
-Login JSON String:
+Admin Login JSON String:
 {
   "username": "gows",
   "password": "Gowth$2k5"
 }
+
+Faculty Login JSON:
+{
+  "username": "EMP12345",
+  "password": "PhPT&Jd7"
+}
+Student login JSON:
+{
+  "username": "2200031641",
+  "password": "x7@*?a*B"
+}
+
 

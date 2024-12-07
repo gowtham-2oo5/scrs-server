@@ -16,6 +16,8 @@ import AdminLayout from "./components/layout/AdminLayout.jsx";
 import RoleBasedRedirect from "./components/RoleBasedRedirect.jsx";
 import Logout from "./components/Logout.jsx";
 import adminRoutes from "./routes/adminRoutes.jsx";
+import StudentDashboard from "./pages/Student/StudentDashboard.jsx";
+import FacultyDashboard from "./pages/Faculty/FacultyDashboard.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,11 +45,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/student",
-    element: <div>Student Dashboard WIP</div>,
+    element: <StudentDashboard />,
   },
   {
     path: "/faculty",
-    element: <div>Faculty Dashboard WIP</div>,
+    element: <FacultyDashboard />,
   },
   {
     path: "/forbidden",

@@ -1,86 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { TemplateCard } from "@/components/TemplateCard";
 import { TemplateViewer } from "@/components/TemplateViewer";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-const initialTemplates = [
-  {
-    id: "1",
-    title: "Computer Science 101",
-    description: "Introductory computer science course schedule",
-    lastModified: "2023-06-20",
-    content: JSON.stringify([
-      {
-        slots: [
-          { day: "MONDAY", timeSlot: "HOUR_2", courseCategory: "CS101" },
-          { day: "WEDNESDAY", timeSlot: "HOUR_2", courseCategory: "CS101" },
-          { day: "FRIDAY", timeSlot: "HOUR_2", courseCategory: "CS101" },
-        ],
-        title: "Computer Science 101",
-        cluster: "CS",
-      },
-    ]),
-  },
-  {
-    id: "2",
-    title: "Data Structures",
-    description: "Advanced data structures course schedule",
-    lastModified: "2023-06-19",
-    content: JSON.stringify([
-      {
-        slots: [
-          { day: "TUESDAY", timeSlot: "HOUR_3", courseCategory: "DS201" },
-          { day: "THURSDAY", timeSlot: "HOUR_3", courseCategory: "DS201" },
-        ],
-        title: "Data Structures",
-        cluster: "CS",
-      },
-    ]),
-  },
-  {
-    id: "3",
-    title: "Web Development",
-    description: "Full-stack web development course schedule",
-    lastModified: "2023-06-18",
-    content: JSON.stringify([
-      {
-        slots: [
-          { day: "MONDAY", timeSlot: "HOUR_4", courseCategory: "WD301" },
-          { day: "WEDNESDAY", timeSlot: "HOUR_4", courseCategory: "WD301" },
-          { day: "FRIDAY", timeSlot: "HOUR_4", courseCategory: "WD301" },
-        ],
-        title: "Web Development",
-        cluster: "WebDev",
-      },
-    ]),
-  },
-];
+import { getAllTemplates } from "@/api/scheduleTemplate";
 
 export default function ManageSchedules() {
-  const [templates, setTemplates] = useState(initialTemplates);
-  const [viewingTemplate, setViewingTemplate] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [viewingTemplates, setViewingTemplates] = useState([]);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const navigate = useNavigate(); // Use useNavigate from react-router-dom
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      setIsLoading(true);
+      const result = await getAllTemplates();
+      console.log(result.data);
+      if (result.data) {
+        setTemplates(result.data);
+        setError(null);
+      } else {
+        setError(result.error || "Failed to fetch templates");
+      }
+      setIsLoading(false);
+    };
+
+    fetchTemplates();
+  }, []);
 
   const handleView = (template) => {
-    setViewingTemplate(template);
+    setViewingTemplates([template]);
     setIsViewerOpen(true);
   };
 
   const handleEdit = (template) => {
     console.log("Editing template:", template.id);
+    // Implement edit functionality here
+    // For example: router.push(`/admin/schedule/edit-template/${template.id}`);
   };
 
   const handleDelete = (template) => {
     setTemplates(templates.filter((t) => t.id !== template.id));
+    // Implement actual delete API call here
   };
 
   const handleCreateNew = () => {
-    navigate("/admin/schedule/create-template"); // Assuming "create-template" is part of adminRoutes
+    navigate("/admin/schedule/create-template");
   };
+
+  if (isLoading) {
+    return <div className="container p-8 mx-auto">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="container p-8 mx-auto text-red-500">Error: {error}</div>
+    );
+  }
 
   return (
     <div className="container p-8 mx-auto">
@@ -108,7 +90,7 @@ export default function ManageSchedules() {
         </p>
       )}
       <TemplateViewer
-        template={viewingTemplate}
+        templates={viewingTemplates}
         isOpen={isViewerOpen}
         onClose={() => setIsViewerOpen(false)}
       />

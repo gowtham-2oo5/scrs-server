@@ -15,9 +15,9 @@ export function TemplateCard({ template, onView, onEdit, onDelete }) {
         <CardTitle>{template.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">{template.description}</p>
+        <p className="text-sm text-muted-foreground">{template.id}</p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Last modified: {template.lastModified}
+          Last modified: Today
         </p>
       </CardContent>
       <CardFooter className="flex justify-end space-x-2">

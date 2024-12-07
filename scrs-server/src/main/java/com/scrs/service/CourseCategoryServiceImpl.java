@@ -1,16 +1,17 @@
 package com.scrs.service;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.scrs.dto.CourseCategoryDTO;
 import com.scrs.model.CourseCategory;
 import com.scrs.model.CourseModel;
 import com.scrs.repository.CourseCategoryRepo;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CourseCategoryServiceImpl implements CourseCategoryService {
@@ -38,7 +39,7 @@ public class CourseCategoryServiceImpl implements CourseCategoryService {
 
     @Override
     public String bulkUpload(MultipartFile file) throws IOException {
-        String[] headers = { "title", "descr" }; // Updated headers for description
+        String[] headers = {"title", "descr"}; // Updated headers for description
         List<CourseCategory> courseCats = csvService.parseCsv(file, headers, record -> {
             String title = record.get("title");
 
@@ -89,18 +90,56 @@ public class CourseCategoryServiceImpl implements CourseCategoryService {
             category.setMaxSessionsPerWeek(0);
         } else {
             double minCredits = courses.stream()
-                                        .mapToDouble(CourseModel::getCredits)
-                                        .min()
-                                        .orElse(0);
+                    .mapToDouble(CourseModel::getCredits)
+                    .min()
+                    .orElse(0);
             double maxCredits = courses.stream()
-                                        .mapToDouble(CourseModel::getCredits)
-                                        .max()
-                                        .orElse(0);
+                    .mapToDouble(CourseModel::getCredits)
+                    .max()
+                    .orElse(0);
             category.setMinSessionsPerWeek((int) Math.ceil(minCredits));
             category.setMaxSessionsPerWeek((int) Math.ceil(maxCredits));
         }
         ccRepo.save(category);
     }
+
+    @Override
+    public CourseCategory getById(String courseCategory) {
+        try {
+            // Validate the input
+            if (courseCategory == null || courseCategory.isEmpty()) {
+                throw new IllegalArgumentException("Course category ID cannot be null or empty");
+            }
+
+            // Attempt to parse the UUID
+            UUID courseCategoryId;
+            try {
+                courseCategoryId = UUID.fromString(courseCategory);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid UUID format for course category ID: " + courseCategory, e);
+            }
+
+            // Retrieve the course category by ID
+            CourseCategory category = ccRepo.getReferenceById(courseCategoryId);
+
+            // Check if the category is found
+            if (category == null) {
+                throw new EntityNotFoundException("Course category with ID " + courseCategory + " not found");
+            }
+
+            // Debugging log
+            System.out.println("Successfully retrieved course category with ID: " + courseCategory);
+
+            return category;
+
+        } catch (Exception e) {
+            // Debugging log for the exception
+            System.err.println("Error occurred while retrieving course category by ID: " + courseCategory);
+            e.printStackTrace();
+            throw e; // Rethrow the exception to propagate it
+        }
+    }
+
 
     @Override
     public void updateCC(CourseCategory category, CourseModel course) {

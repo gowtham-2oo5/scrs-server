@@ -8,10 +8,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class StudentMailDTO {
+public class AccountConfirmationMailDTO {
 
     private String name;
     private String email;
     private String password;
+    private String username;
 
 }

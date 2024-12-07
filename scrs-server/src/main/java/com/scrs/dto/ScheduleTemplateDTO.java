@@ -17,5 +17,6 @@ public class ScheduleTemplateDTO {
     private UUID id;
     private String title;
     private String cluster;
+    private String batch;
 
 }

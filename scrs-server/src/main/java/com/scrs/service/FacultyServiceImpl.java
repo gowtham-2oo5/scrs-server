@@ -1,5 +1,6 @@
 package com.scrs.service;
 
+import com.scrs.dto.AccountConfirmationMailDTO;
 import com.scrs.dto.FacultyDTO;
 import com.scrs.dto.FacultyRegsDTO;
 import com.scrs.model.DepartmentModel;
@@ -35,6 +36,12 @@ public class FacultyServiceImpl implements FacultyService {
     private PhotoService photoSer;
 
     @Autowired
+    private MailService mailSer;
+
+    @Autowired
+    private PasswordService passwordSer;
+
+    @Autowired
     private CsvService csvService;
 
     @Override
@@ -55,7 +62,9 @@ public class FacultyServiceImpl implements FacultyService {
         if (profilePicture != null) {
             uploadedPic = photoSer.savePic(profilePicture);
         }
-        String encryptedPassword = passwordEncoder.encode("test");
+        String requiredPass = passwordSer.generatePassword(8);
+        String encryptedPassword = passwordEncoder.encode(requiredPass);
+        System.out.println("Faculty saving password: " + requiredPass);
         DepartmentModel facDept = getDept(facDetails.getDept());
 
         if (facDept != null) {
@@ -72,6 +81,7 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setEmpId(facDetails.getEmpId());
             faculty.setDob(facDetails.getDob());
             facRepo.save(faculty);
+            sendMail(faculty, requiredPass);
             return faculty;
         } else {
             System.out.println("Error Adding Faculty, Invalid Department");
@@ -79,10 +89,20 @@ public class FacultyServiceImpl implements FacultyService {
         }
     }
 
+    private void sendMail(FacultyModel faculty, String pass) {
+        AccountConfirmationMailDTO dto = new AccountConfirmationMailDTO();
+        dto.setUsername(faculty.getEmpId());
+        dto.setPassword(pass);
+        dto.setEmail(faculty.getEmail());
+        dto.setName(faculty.getName());
+        mailSer.sendStudentAccountConfirmationMail(dto.getEmail(), dto);
+        System.out.println(dto.toString());
+    }
+
     @Override
     public UUID createSingleFaculty(FacultyRegsDTO facDetails) {
         try {
-            String plainPass = parseDateString(facDetails.getDob());
+            String plainPass = passwordSer.generatePassword(8);
             String encryptedPassword = passwordEncoder.encode(plainPass);
             DepartmentModel facDept = getDept(facDetails.getDept());
 
@@ -102,6 +122,10 @@ public class FacultyServiceImpl implements FacultyService {
                 faculty.setExp(facDetails.getExp());
                 faculty.setJoined_at(facDetails.getJoined_at());
                 facRepo.save(faculty);
+
+                // Call sendMail after saving the faculty
+                sendMail(faculty, plainPass);
+
                 return faculty.getId();
             } else {
                 System.out.println("Error Adding Faculty, Invalid Department");
@@ -139,7 +163,7 @@ public class FacultyServiceImpl implements FacultyService {
     public List<FacultyDTO> getFacultiesByDept(String sn) {
         System.out.println("Searching SN : " + sn);
         DepartmentModel department = getDept(sn);
-        System.out.println("received dept: " + department);
+        System.out.println("received dept: " + department.getDeptName());
         if (department == null) {
             throw new IllegalArgumentException("Department not found with SN: " + sn);
         }
@@ -220,12 +244,18 @@ public class FacultyServiceImpl implements FacultyService {
         }
     }
 
-    private void saveFacs(List<FacultyModel> facs) {
-        for (FacultyModel fac : facs) {
+    private void saveFacs(List<FacultyModel> faculties) {
+        for (FacultyModel fac : faculties) {
             facRepo.save(fac);
+
+            // Generate the plain password using the faculty's DOB and send email
+            String plainPass = parseDateString(fac.getDob());
+            sendMail(fac, plainPass);
+
             System.out.println("Saved faculty with empId: " + fac.getEmpId() + " , id: " + fac.getId());
         }
     }
+
 
     private DepartmentModel getDept(String dept) {
         return deptRepo.findBySN(dept);

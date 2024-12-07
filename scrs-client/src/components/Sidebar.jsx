@@ -56,35 +56,40 @@ const Sidebar = ({ className, sidebarItems, singleItems }) => {
             onValueChange={setOpenItem}
             className="w-full"
           >
-            {sidebarItems.map((item, index) => (
-              <AccordionItem value={`item-${index}`} key={index}>
-                <AccordionTrigger onClick={() => handleAccordionToggle(index)}>
-                  <div className="flex items-center gap-2">
-                    {React.createElement(item.icon, { className: "h-4 w-4" })}
-                    {item.label}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="flex flex-col pl-6 space-y-2">
-                    {Object.entries(item.items).map(
-                      ([subItemLabel, subItemPath], subIndex) => (
-                        <Button
-                          key={subIndex}
-                          variant="ghost" // Use ghost variant for sub-items
-                          className={`justify-start gap-2 ${
-                            selectedSubItem === subItemPath ? "underline" : ""
-                          }`} // Underline for selected
-                          onClick={() => handleSubItemClick(subItemPath)} // Handle sub item click
-                          asChild // Enables the Link to be treated as the Button child
-                        >
-                          <Link to={subItemPath}>{subItemLabel}</Link>
-                        </Button>
-                      )
-                    )}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+            {sidebarItems.map((item, index) => {
+              // console.log("Rendering sidebar item:", item);
+              return (
+                <AccordionItem value={`item-${index}`} key={index}>
+                  <AccordionTrigger
+                    onClick={() => handleAccordionToggle(index)}
+                  >
+                    <div className="flex items-center gap-2">
+                      {React.createElement(item.icon, { className: "h-4 w-4" })}
+                      {item.label}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex flex-col pl-6 space-y-2">
+                      {Object.entries(item.items).map(
+                        ([subItemLabel, subItemPath], subIndex) => (
+                          <Button
+                            key={subIndex}
+                            variant="ghost"
+                            className={`justify-start gap-2 ${
+                              selectedSubItem === subItemPath ? "underline" : ""
+                            }`}
+                            onClick={() => handleSubItemClick(subItemPath)}
+                            asChild
+                          >
+                            <Link to={subItemPath}>{subItemLabel}</Link>
+                          </Button>
+                        )
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
           <div className="mt-4 space-y-2">
             {singleItems.map((item, index) => (

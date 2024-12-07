@@ -137,6 +137,7 @@ const AdminLayout = ({ children }) => {
 
     if (role) {
       if (role === "SUPER-ADMIN") {
+        console.log("Super admin bro :)");
         setUserRole("Owner");
 
         // Check if the "Create Admin" item has been added using the ref
@@ -169,7 +170,7 @@ const AdminLayout = ({ children }) => {
       {/* Sidebar for larger screens */}
       <Sidebar
         className="hidden lg:block lg:w-64 w-[16rem]  border-blue-200 border text-blue-800 font-semibold"
-        sidebarItems={sidebarItems}
+        sidebarItems={sidebarIts}
         singleItems={initialItems}
       />
 
@@ -209,7 +210,7 @@ const AdminLayout = ({ children }) => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
-              <Sidebar sidebarItems={sidebarItems} singleItems={initialItems} />
+              <Sidebar sidebarItems={sidebarIts} singleItems={initialItems} />
             </SheetContent>
           </Sheet>
         </header>

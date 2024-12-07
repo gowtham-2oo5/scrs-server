@@ -22,7 +22,6 @@ public class CourseCategoryController {
     @Autowired
     private CourseCategoryService courseCategoryService;
 
-    // Endpoint to insert a single course category
     @PostMapping("/insert-one")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> insertOne(@RequestBody CourseCategoryDTO dto) {
@@ -35,7 +34,6 @@ public class CourseCategoryController {
         }
     }
 
-    // Endpoint to upload course categories in bulk via CSV
     @PostMapping(value = "/bulk-upload", consumes = "multipart/form-data")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> bulkUpload(@RequestPart("csv_file") MultipartFile file) {
@@ -52,7 +50,6 @@ public class CourseCategoryController {
         }
     }
 
-    // Endpoint to fetch all course categories
     @GetMapping("/get-all")
     public ResponseEntity<List<CourseCategory>> getAllCourseCategories() {
         try {
