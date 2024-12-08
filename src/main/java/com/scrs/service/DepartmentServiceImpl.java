@@ -62,6 +62,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             DepartmentModel dept = new DepartmentModel();
             dept.setDeptName(record.get("Name"));
             dept.setSn(record.get("SN"));
+            dept.setHod(null);
             return dept;
         });
 

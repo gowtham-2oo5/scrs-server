@@ -43,7 +43,7 @@ public class DepartmentModel {
     @JsonIgnore
     private List<StudentModel> students;
 
-    @Column(name = "student_count", nullable = false)
+    @Column(name = "student_count")
     private Long studentCount;
 
     @PrePersist
