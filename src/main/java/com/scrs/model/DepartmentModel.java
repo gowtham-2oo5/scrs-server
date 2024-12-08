@@ -27,7 +27,7 @@ public class DepartmentModel {
     private String sn;
 
     @ManyToOne(fetch = FetchType.LAZY) // Use LAZY fetch type for performance
-    @JoinColumn(name = "hod_id", referencedColumnName = "id") // Ensure nullable aligns with DB schema
+    @JoinColumn(name = "hod_id", referencedColumnName = "id", nullable = true) // Ensure nullable aligns with DB schema
     @JsonIgnore
     private FacultyModel hod;
 
