@@ -62,15 +62,21 @@ public class SecurityConfig {
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration configuration = new CorsConfiguration();
-	    configuration.addAllowedOriginPattern("https://scrs.vercel.app/"); // Allow all origins for testing
-	    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*"));
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", configuration);
-	    return source;
-	}
+		CorsConfiguration configuration = new CorsConfiguration();
+		// Add allowed origins
+		configuration.addAllowedOrigin("https://scrs.vercel.app");
+		configuration.addAllowedOrigin("https://scrs-server-production.up.railway.app");
+		// Add allowed methods
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		// Add allowed headers
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*"));
+		// Allow credentials if needed
+		configuration.setAllowCredentials(true);
 
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
 	@Bean
 	PasswordEncoder passwordEncoder() {

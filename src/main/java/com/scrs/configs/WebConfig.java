@@ -9,9 +9,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("https://scrs.vercel.app/")
-                .allowedMethods("*")
-                .allowedHeaders("*");
+        registry.addMapping("/**") // Allow CORS for all endpoints
+                .allowedOrigins(
+                        "https://scrs.vercel.app",
+                        "https://scrs-server-production.up.railway.app"
+                ) // Specify allowed origins
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Allow specific HTTP methods
+                .allowedHeaders("*") // Allow all headers
+                .allowCredentials(true); // Allow cookies and credentials
     }
 }
