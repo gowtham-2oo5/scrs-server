@@ -35,10 +35,7 @@ public class SwaggerConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")))
                 .addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement().addList("bearerAuth"))
-                .servers(List.of(
-                        new Server().url("https://scrs-server-production.up.railway.app").description("Production Server"),
-                        new Server().url("https://scrs.vercel.app").description("Development Server")
-                ));
+                ;
     }
 
 }

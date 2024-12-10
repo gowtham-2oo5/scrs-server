@@ -15,12 +15,13 @@ public class AuthController {
     private AuthService authService;
 
     @GetMapping
-    public ResponseEntity<String> testinAuth() {
+    public ResponseEntity<String> testingAuth() {
         return new ResponseEntity<>("Path working bro, all good", HttpStatus.OK);
     }
 
     @PostMapping("login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDTO loginInfo) {
+        System.out.println("In login controller");
         String msg = authService.authenticate(loginInfo.getUsername(), loginInfo.getPassword());
 
         if (msg.startsWith("OTP has been sent")) {

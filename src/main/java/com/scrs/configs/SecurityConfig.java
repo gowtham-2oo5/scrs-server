@@ -64,8 +64,7 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		// Add allowed origins
-		configuration.addAllowedOrigin("https://scrs.vercel.app");
-		configuration.addAllowedOrigin("https://scrs-server-production.up.railway.app");
+		configuration.addAllowedOrigin("*");
 		// Add allowed methods
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		// Add allowed headers
